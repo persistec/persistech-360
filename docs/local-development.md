@@ -5,7 +5,7 @@
 Instalar localmente:
 
 - Node.js LTS;
-- pnpm;
+- npm;
 - Git;
 - Docker Desktop ou runtime Docker compatível;
 - cliente PostgreSQL opcional.
@@ -32,8 +32,8 @@ Para executar:
 
 ```bash
 cd apps/web
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
 URL padrão:
@@ -54,8 +54,8 @@ Para executar:
 
 ```bash
 cd apps/api
-pnpm install
-pnpm start:dev
+npm install
+npm run start:dev
 ```
 
 URL padrão:
@@ -116,19 +116,19 @@ Terminal 1:
 
 ```bash
 cd apps/web
-pnpm dev
+npm run dev
 ```
 
 Terminal 2:
 
 ```bash
 cd apps/api
-pnpm start:dev
+npm run start:dev
 ```
 
 ## Instalação de dependências
 
-Não executar `pnpm install` na raiz nem em `apps/`, porque não estamos a usar workspace pnpm no MVP.
+Não executar `npm install` na raiz. Cada aplicação deve instalar dependências no seu próprio diretório, porque não estamos a usar workspace npm no MVP.
 
 Executar sempre dentro de:
 
@@ -137,7 +137,7 @@ apps/web
 apps/api
 ```
 
-## Sem workspace pnpm
+## Sem workspace npm
 
 Durante o MVP, não criar:
 
@@ -155,16 +155,16 @@ Frontend:
 
 ```bash
 cd apps/web
-pnpm lint
-pnpm build
+npm run lint
+npm run build
 ```
 
 Backend:
 
 ```bash
 cd apps/api
-pnpm test
-pnpm build
+npm test
+npm run build
 ```
 
 ## Observação

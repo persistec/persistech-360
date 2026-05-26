@@ -8,6 +8,8 @@ A Vercel será usada como hospedagem provisória para o MVP.
 
 Deploys automáticos nativos da Vercel não devem ser o mecanismo principal de implantação.
 
+As validações devem usar npm dentro da aplicação afetada, com `npm ci` baseado no `package-lock.json` da própria app.
+
 ## Projetos de implantação
 
 Existem dois projetos Vercel:

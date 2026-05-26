@@ -36,16 +36,16 @@ Frontend:
 
 ```bash
 cd apps/web
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
 Backend:
 
 ```bash
 cd apps/api
-pnpm install
-pnpm start:dev
+npm install
+npm run start:dev
 ```
 
 URLs locais:
@@ -87,7 +87,7 @@ A comunicação entre frontend e backend deve ocorrer por contrato HTTP versiona
 
 ## Execução
 
-Não executar `pnpm install` na raiz nem em `apps/`.
+Não executar `npm install` na raiz.
 
 Executar dentro de cada aplicação:
 

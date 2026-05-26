@@ -10,6 +10,7 @@ Este sistema não é uma plataforma de votação. É uma aplicação de avaliaç
 - Backend: NestJS + TypeScript
 - Base de dados: PostgreSQL
 - ORM e migrations: Prisma
+- Gestão de dependências: npm, sem workspaces
 - CI/CD: GitHub Actions
 - Hospedagem provisória: Vercel
 - Hospedagem final: self-hosted deployment após aprovação do MVP
