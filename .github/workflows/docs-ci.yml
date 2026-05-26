@@ -1,0 +1,55 @@
+name: Docs CI
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'AGENTS.md'
+      - 'README.md'
+      - '.github/workflows/docs-ci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'AGENTS.md'
+      - 'README.md'
+      - '.github/workflows/docs-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  docs-ci:
+    name: Validate docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check required documentation files
+        run: |
+          set -euo pipefail
+
+          required_files=(
+            "AGENTS.md"
+            "README.md"
+            "docs/architecture.md"
+            "docs/business-rules.md"
+            "docs/domain-model.md"
+            "docs/security-and-permissions.md"
+            "docs/google-workspace-integration.md"
+            "docs/api-contract.md"
+            "docs/ci-cd.md"
+            "docs/local-development.md"
+            "docs/mvp-scope.md"
+            "docs/open-decisions.md"
+          )
+
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "Missing required file: $file"
+              exit 1
+            fi
+          done
