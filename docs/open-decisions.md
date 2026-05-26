@@ -1,0 +1,89 @@
+# Decisões em aberto
+
+## Decisões funcionais
+
+- A chefia verá apenas agregados da equipa ou também resultados individuais dos subordinados?
+- RH deve rever comentários finais antes de ficarem visíveis para os avaliados?
+- RH poderá remover, ocultar ou moderar comentários abusivos?
+- Os pesos serão globais ou configuráveis por ciclo?
+- A publicação de resultados exigirá aprovação manual?
+- O mínimo de avaliações válidas será exatamente três ou configurável?
+- Quais formatos de exportação serão obrigatórios: PDF, Excel, Google Sheets ou todos?
+- O avaliado poderá responder ao comentário final ou apenas recebê-lo?
+- Haverá recurso ou revisão formal de avaliação?
+- Ciclos serão trimestrais, semestrais ou configuráveis livremente?
+- A direção terá acesso a dados identificados ou apenas relatórios executivos?
+
+## Decisões Google Workspace
+
+- O Google Workspace contém dados hierárquicos confiáveis?
+- Departamentos estão representados por organizational units, grupos ou outro modelo?
+- A empresa aprovará acesso ao Admin SDK?
+- Domain-wide delegation será permitido?
+- Qual domínio Workspace será aceite no login?
+- Haverá múltiplos domínios ou aliases corporativos?
+- O envio de emails será feito via Gmail API, SMTP autorizado ou serviço transacional externo?
+- A sincronização de utilizadores será automática, manual ou híbrida no MVP?
+
+## Decisões técnicas
+
+- Modelo final de hospedagem self-hosted após MVP.
+- Modelo final de hospedagem PostgreSQL.
+- Estratégia de observabilidade.
+- Estratégia de backups.
+- Estratégia de rollback.
+- Necessidade de Redis ou fila antes do MVP.
+- Uso ou não de cliente OpenAPI gerado no frontend.
+- Estratégia de autenticação entre frontend e backend.
+- Estratégia de armazenamento de exports.
+- Estratégia para jobs recorrentes no MVP.
+- Estratégia para logs estruturados.
+- Estratégia para seed inicial de dados.
+
+## Decisões CI/CD
+
+- Política exata de branches.
+- Se `main` faz deploy automático para staging.
+- Se produção exige aprovação manual.
+- Se PRs apenas com documentação executam markdown lint.
+- Se haverá ambientes protegidos no GitHub.
+- Quem pode aprovar deploy de produção.
+- Se preview deployments serão criados para toda PR ou apenas por label/manual trigger.
+- Como evitar deploys da Vercel fora do GitHub Actions.
+
+## Decisões de segurança
+
+- Quem pode assumir papel de RH admin?
+- Quem pode assumir papel de system admin?
+- Como auditar acesso de administradores técnicos?
+- Por quanto tempo logs de auditoria serão retidos?
+- Exports expirados serão apagados automaticamente?
+- Dados antigos serão eliminados ou anonimizados?
+- Comentários abusivos serão apenas ocultados ou também preservados para auditoria?
+- Quais ações administrativas exigem confirmação adicional?
+- Haverá trilha de auditoria visível para RH?
+
+## Decisões de produto
+
+- Nome final do sistema.
+- Identidade visual final.
+- Idiomas suportados.
+- Periodicidade padrão dos ciclos.
+- Quem cria ciclos: RH, direção ou administradores técnicos?
+- Quem publica resultados?
+- Que métricas aparecem no dashboard inicial?
+- Que informações aparecem no dashboard do colaborador?
+- Que informações aparecem no dashboard administrativo?
+- Que dados aparecem no relatório individual?
+
+## Como tratar decisões em aberto
+
+Antes de implementar uma funcionalidade afetada por uma decisão em aberto, a equipa deve:
+
+1. identificar a decisão;
+2. propor uma opção;
+3. validar com responsável funcional;
+4. atualizar este documento;
+5. só depois implementar.
+
+Isto evita que decisões importantes sejam tomadas escondidas dentro de código, que é o equivalente técnico de assinar contrato em guardanapo.
