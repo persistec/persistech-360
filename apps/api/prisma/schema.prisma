@@ -1,0 +1,80 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  REMOVED
+}
+
+model User {
+  id               String          @id @default(uuid())
+  googleSub        String?         @map("google_sub")
+  workspaceEmail   String          @unique @map("workspace_email")
+  name             String
+  departmentId     String?         @map("department_id")
+  roleId           String?         @map("role_id")
+  hierarchyLevelId String?         @map("hierarchy_level_id")
+  managerId        String?         @map("manager_id")
+  status           UserStatus      @default(ACTIVE)
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+
+  department     Department?     @relation(fields: [departmentId], references: [id])
+  role           Role?           @relation(fields: [roleId], references: [id])
+  hierarchyLevel HierarchyLevel? @relation(fields: [hierarchyLevelId], references: [id])
+  manager        User?           @relation("UserManager", fields: [managerId], references: [id])
+  subordinates   User[]          @relation("UserManager")
+
+  @@map("users")
+}
+
+model Department {
+  id                 String       @id @default(uuid())
+  name               String       @unique
+  parentDepartmentId String?      @map("parent_department_id")
+  createdAt          DateTime     @default(now()) @map("created_at")
+  updatedAt          DateTime     @updatedAt @map("updated_at")
+
+  parent   Department?  @relation("DepartmentHierarchy", fields: [parentDepartmentId], references: [id])
+  children Department[] @relation("DepartmentHierarchy")
+  users    User[]
+  roles    Role[]
+
+  @@map("departments")
+}
+
+model Role {
+  id               String          @id @default(uuid())
+  name             String
+  departmentId     String?         @map("department_id")
+  hierarchyLevelId String?         @map("hierarchy_level_id")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+
+  department     Department?     @relation(fields: [departmentId], references: [id])
+  hierarchyLevel HierarchyLevel? @relation(fields: [hierarchyLevelId], references: [id])
+  users          User[]
+
+  @@map("roles")
+}
+
+model HierarchyLevel {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  rank      Int      @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users User[]
+  roles Role[]
+
+  @@map("hierarchy_levels")
+}

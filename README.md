@@ -40,9 +40,13 @@ npm install
 npm run dev
 ```
 
-Backend:
+Backend (requer subir o PostgreSQL local via Docker na porta 5433 primeiro):
 
 ```bash
+# Na raiz do repositório
+docker compose up -d
+
+# Na pasta da API
 cd apps/api
 npm install
 npm run start:dev
@@ -52,7 +56,8 @@ URLs locais:
 
 ```text
 Frontend: http://localhost:3000
-Backend:  http://localhost:4000
+Backend API / Swagger: http://localhost:4000/docs
+Health: http://localhost:4000/api/v1/health
 ```
 
 ## Documentação
