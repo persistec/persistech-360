@@ -81,6 +81,46 @@ POST /api/v1/cycles/:id/publish-results
 POST /api/v1/cycles/:id/generate-assignments
 ```
 
+## Endpoints administrativos base
+
+Durante a fundação do MVP, o backend expõe CRUD administrativo para dados
+estruturais do domínio. Estes endpoints não implementam autenticação nem
+autorização ainda; antes de produção devem ser protegidos no backend.
+
+```text
+GET    /api/v1/departments
+GET    /api/v1/departments/:id
+POST   /api/v1/departments
+PATCH  /api/v1/departments/:id
+DELETE /api/v1/departments/:id
+
+GET    /api/v1/hierarchy-levels
+GET    /api/v1/hierarchy-levels/:id
+POST   /api/v1/hierarchy-levels
+PATCH  /api/v1/hierarchy-levels/:id
+DELETE /api/v1/hierarchy-levels/:id
+
+GET    /api/v1/roles
+GET    /api/v1/roles/:id
+POST   /api/v1/roles
+PATCH  /api/v1/roles/:id
+DELETE /api/v1/roles/:id
+
+GET    /api/v1/users
+GET    /api/v1/users/:id
+POST   /api/v1/users
+PATCH  /api/v1/users/:id
+DELETE /api/v1/users/:id
+```
+
+Regras de contrato destes endpoints:
+
+- registos inexistentes devolvem `404`;
+- conflitos de unicidade devolvem `409`;
+- relações inválidas devolvem `400`;
+- deletes são bloqueados quando existem relações dependentes relevantes;
+- respostas de `User` não expõem `googleSub`.
+
 ## Compatibilidade
 
 Evitar quebrar contrato da API sem necessidade.
