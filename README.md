@@ -32,25 +32,17 @@ persistech-360/
 
 ## Desenvolvimento local
 
-Frontend:
+Agora é possível executar os três serviços em containers separados com Docker Compose na raiz do repositório:
 
 ```bash
-cd apps/web
-npm install
-npm run dev
+docker compose up --build -d
 ```
 
-Backend (requer subir o PostgreSQL local via Docker na porta 5433 primeiro):
+Isso levanta:
 
-```bash
-# Na raiz do repositório
-docker compose up -d
-
-# Na pasta da API
-cd apps/api
-npm install
-npm run start:dev
-```
+- `postgres` como base de dados PostgreSQL;
+- `api` como aplicação NestJS em `http://localhost:4000`;
+- `web` como aplicação Next.js em `http://localhost:3000`.
 
 URLs locais:
 
@@ -58,6 +50,22 @@ URLs locais:
 Frontend: http://localhost:3000
 Backend API / Swagger: http://localhost:4000/docs
 Health: http://localhost:4000/api/v1/health
+```
+
+Rede local:
+
+- O host liga-se ao PostgreSQL em `localhost:5433`.
+- O container `api` liga-se ao PostgreSQL em `postgres:5432`.
+- O browser chama a API em `http://localhost:4000`.
+- Não usar IPs de containers nem substituir o nome de serviço `postgres`.
+- Não usar `localhost:5433` dentro do container da API.
+- Não combinar `postgres`, `api` e `web` num único container.
+
+Para migrações e seed no contexto Docker:
+
+```bash
+docker compose exec api npx prisma migrate dev
+docker compose exec api npx prisma db seed
 ```
 
 ## Documentação
@@ -72,6 +80,7 @@ Consultar primeiro:
 - `docs/google-workspace-integration.md`
 - `docs/api-contract.md`
 - `docs/ci-cd.md`
+- `docs/environment-networking.md`
 - `docs/local-development.md`
 - `docs/mvp-scope.md`
 - `docs/open-decisions.md`
