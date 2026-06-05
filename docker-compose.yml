@@ -23,6 +23,7 @@ services:
       context: ./apps/api
       dockerfile: Dockerfile
     container_name: persistech-api
+    user: "${UID:-1000}:${GID:-1000}"
     depends_on:
       postgres:
         condition: service_healthy
@@ -43,6 +44,7 @@ services:
       context: ./apps/web
       dockerfile: Dockerfile
     container_name: persistech-web
+    user: "${UID:-1000}:${GID:-1000}"
     depends_on:
       - api
     environment:
