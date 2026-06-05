@@ -7,10 +7,10 @@ export class RoleResponseDto {
   @ApiProperty()
   name: string;
 
-  @ApiPropertyOptional({ nullable: true })
+  @ApiPropertyOptional({ nullable: true, type: String })
   departmentId: string | null;
 
-  @ApiPropertyOptional({ nullable: true })
+  @ApiPropertyOptional({ nullable: true, type: String })
   hierarchyLevelId: string | null;
 
   @ApiProperty()

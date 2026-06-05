@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -81,7 +82,7 @@ export class DepartmentsService {
     ]);
 
     if (users > 0 || roles > 0 || children > 0) {
-      throw new ConflictException(
+      throw new BadRequestException(
         'Department cannot be deleted while it has users, roles, or child departments.',
       );
     }
@@ -128,6 +129,8 @@ export class DepartmentsService {
       if (error.code === 'P2003') {
         throw new BadRequestException('Invalid department relation.');
       }
+
+      throw new InternalServerErrorException('Database operation failed.');
     }
 
     throw error;

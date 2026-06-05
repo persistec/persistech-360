@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -66,7 +65,7 @@ export class RolesController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a role' })
   @ApiOkResponse({ type: RoleResponseDto })
-  @ApiConflictResponse({ description: 'Role still has users' })
+  @ApiBadRequestResponse({ description: 'Role still has users' })
   @ApiNotFoundResponse({ description: 'Role not found' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.rolesService.remove(id);

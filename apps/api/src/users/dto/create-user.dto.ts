@@ -19,7 +19,11 @@ export class CreateUserDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiPropertyOptional({ example: 'google-oauth-subject', nullable: true })
+  @ApiPropertyOptional({
+    example: 'google-oauth-subject',
+    nullable: true,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   @IsNotEmpty()
@@ -28,6 +32,7 @@ export class CreateUserDto {
   @ApiPropertyOptional({
     example: '2efc8fe7-0f62-4c65-97d7-d9e24b3938f4',
     nullable: true,
+    type: String,
   })
   @IsOptional()
   @IsUUID()
@@ -36,6 +41,7 @@ export class CreateUserDto {
   @ApiPropertyOptional({
     example: '2efc8fe7-0f62-4c65-97d7-d9e24b3938f4',
     nullable: true,
+    type: String,
   })
   @IsOptional()
   @IsUUID()
@@ -44,6 +50,7 @@ export class CreateUserDto {
   @ApiPropertyOptional({
     example: '2efc8fe7-0f62-4c65-97d7-d9e24b3938f4',
     nullable: true,
+    type: String,
   })
   @IsOptional()
   @IsUUID()
@@ -52,6 +59,7 @@ export class CreateUserDto {
   @ApiPropertyOptional({
     example: '2efc8fe7-0f62-4c65-97d7-d9e24b3938f4',
     nullable: true,
+    type: String,
   })
   @IsOptional()
   @IsUUID()

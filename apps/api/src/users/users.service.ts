@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -106,7 +107,7 @@ export class UsersService {
     });
 
     if (subordinates > 0) {
-      throw new ConflictException(
+      throw new BadRequestException(
         'User cannot be deleted while assigned as manager of other users.',
       );
     }
@@ -209,6 +210,8 @@ export class UsersService {
       if (error.code === 'P2003') {
         throw new BadRequestException('Invalid user relation.');
       }
+
+      throw new InternalServerErrorException('Database operation failed.');
     }
 
     throw error;

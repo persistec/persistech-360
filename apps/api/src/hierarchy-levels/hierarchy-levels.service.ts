@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -71,7 +73,7 @@ export class HierarchyLevelsService {
     ]);
 
     if (users > 0 || roles > 0) {
-      throw new ConflictException(
+      throw new BadRequestException(
         'Hierarchy level cannot be deleted while it has users or roles.',
       );
     }
@@ -113,6 +115,8 @@ export class HierarchyLevelsService {
       if (error.code === 'P2025') {
         throw new NotFoundException('Hierarchy level not found.');
       }
+
+      throw new InternalServerErrorException('Database operation failed.');
     }
 
     throw error;

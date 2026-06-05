@@ -1,7 +1,7 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -65,7 +65,9 @@ export class RolesService {
     const users = await this.prisma.user.count({ where: { roleId: id } });
 
     if (users > 0) {
-      throw new ConflictException('Role cannot be deleted while it has users.');
+      throw new BadRequestException(
+        'Role cannot be deleted while it has users.',
+      );
     }
 
     try {
@@ -107,6 +109,8 @@ export class RolesService {
       if (error.code === 'P2003') {
         throw new BadRequestException('Invalid role relation.');
       }
+
+      throw new InternalServerErrorException('Database operation failed.');
     }
 
     throw error;

@@ -68,7 +68,7 @@ export class UsersController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a user' })
   @ApiOkResponse({ type: UserResponseDto })
-  @ApiConflictResponse({ description: 'User still has relations' })
+  @ApiBadRequestResponse({ description: 'User still has relations' })
   @ApiNotFoundResponse({ description: 'User not found' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.remove(id);

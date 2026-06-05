@@ -9,6 +9,7 @@ import {
   Post,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -66,7 +67,9 @@ export class HierarchyLevelsController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a hierarchy level' })
   @ApiOkResponse({ type: HierarchyLevelResponseDto })
-  @ApiConflictResponse({ description: 'Hierarchy level still has relations' })
+  @ApiBadRequestResponse({
+    description: 'Hierarchy level still has relations',
+  })
   @ApiNotFoundResponse({ description: 'Hierarchy level not found' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.hierarchyLevelsService.remove(id);

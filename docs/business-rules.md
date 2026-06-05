@@ -19,6 +19,30 @@ O sistema não é uma plataforma de votação.
 - Administradores autorizados podem consultar registos completos.
 - Avaliados não podem ver a identidade dos avaliadores.
 
+## Cadastros administrativos base
+
+Os cadastros administrativos de departamentos, níveis hierárquicos, cargos e
+utilizadores são mantidos pelo backend como fundação do domínio. Estes endpoints
+não implementam autenticação ou autorização ainda, mas já devem validar dados e
+relações no servidor.
+
+Regras:
+
+- `Department.name` é obrigatório e único.
+- `Department.parentDepartmentId` é opcional, mas deve referenciar um departamento existente quando informado.
+- Departamentos não podem ser removidos enquanto tiverem departamentos filhos, utilizadores ou cargos associados.
+- `HierarchyLevel.name` e `HierarchyLevel.rank` são obrigatórios e únicos.
+- `HierarchyLevel.rank` deve ser um inteiro positivo.
+- Níveis hierárquicos não podem ser removidos enquanto forem usados por utilizadores ou cargos.
+- `Role.name` é obrigatório.
+- `Role.departmentId` e `Role.hierarchyLevelId` são opcionais, mas devem referenciar registos existentes quando informados.
+- Cargos não podem ser removidos enquanto forem usados por utilizadores.
+- `User.workspaceEmail` é obrigatório e único.
+- `User.googleSub` é opcional e único quando informado.
+- `User.departmentId`, `roleId`, `hierarchyLevelId` e `managerId` são opcionais, mas devem referenciar registos existentes quando informados.
+- Um utilizador não pode ser definido como seu próprio gestor.
+- Utilizadores não podem ser removidos enquanto forem gestores de outros utilizadores.
+
 ## Categorias de avaliação
 
 ### Categorias corporativas gerais
@@ -142,4 +166,3 @@ archived
 12. Administrador revê consistência.
 13. Resultados são publicados.
 14. Dados seguem política de retenção e exportação.
-

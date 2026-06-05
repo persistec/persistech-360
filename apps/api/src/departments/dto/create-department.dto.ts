@@ -10,6 +10,7 @@ export class CreateDepartmentDto {
   @ApiPropertyOptional({
     example: '2efc8fe7-0f62-4c65-97d7-d9e24b3938f4',
     nullable: true,
+    type: String,
   })
   @IsOptional()
   @IsUUID()

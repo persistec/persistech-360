@@ -1,4 +1,8 @@
-import { BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserStatus } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { UsersService } from './users.service';
@@ -85,11 +89,54 @@ describe('UsersService', () => {
     ).rejects.toBeInstanceOf(ConflictException);
   });
 
+  it('rejects duplicate Google subjects', async () => {
+    prisma.user.findUnique.mockResolvedValue(null);
+    prisma.user.findFirst.mockResolvedValue({ ...user, id: 'other-user-id' });
+
+    await expect(
+      service.create({
+        workspaceEmail: 'ana.silva@example.com',
+        name: 'Ana Silva',
+        googleSub: 'google-sub',
+      }),
+    ).rejects.toBeInstanceOf(ConflictException);
+  });
+
+  it('rejects missing departments', async () => {
+    prisma.user.findUnique.mockResolvedValue(null);
+    prisma.department.findUnique.mockResolvedValue(null);
+
+    await expect(
+      service.create({
+        workspaceEmail: 'ana.silva@example.com',
+        name: 'Ana Silva',
+        departmentId: 'missing-id',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('throws not found when a user does not exist', async () => {
+    prisma.user.findUnique.mockResolvedValue(null);
+
+    await expect(service.findOne('missing-id')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
+
   it('rejects self manager updates', async () => {
     prisma.user.findUnique.mockResolvedValue(user);
 
     await expect(
       service.update('user-id', { managerId: 'user-id' }),
     ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('blocks delete when the user manages other users', async () => {
+    prisma.user.findUnique.mockResolvedValue(user);
+    prisma.user.count.mockResolvedValue(1);
+
+    await expect(service.remove('user-id')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
   });
 });

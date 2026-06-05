@@ -67,7 +67,7 @@ export class DepartmentsController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a department' })
   @ApiOkResponse({ type: DepartmentResponseDto })
-  @ApiConflictResponse({ description: 'Department still has relations' })
+  @ApiBadRequestResponse({ description: 'Department still has relations' })
   @ApiNotFoundResponse({ description: 'Department not found' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.departmentsService.remove(id);

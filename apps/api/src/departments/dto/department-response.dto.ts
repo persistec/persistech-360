@@ -7,7 +7,7 @@ export class DepartmentResponseDto {
   @ApiProperty()
   name: string;
 
-  @ApiPropertyOptional({ nullable: true })
+  @ApiPropertyOptional({ nullable: true, type: String })
   parentDepartmentId: string | null;
 
   @ApiProperty()

@@ -118,7 +118,7 @@ Regras de contrato destes endpoints:
 - registos inexistentes devolvem `404`;
 - conflitos de unicidade devolvem `409`;
 - relações inválidas devolvem `400`;
-- deletes são bloqueados quando existem relações dependentes relevantes;
+- deletes bloqueados por relações dependentes devolvem `400`;
 - respostas de `User` não expõem `googleSub`.
 
 ## Compatibilidade

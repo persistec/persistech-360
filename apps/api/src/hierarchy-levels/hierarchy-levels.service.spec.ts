@@ -1,4 +1,8 @@
-import { ConflictException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { HierarchyLevelsService } from './hierarchy-levels.service';
 
@@ -60,13 +64,21 @@ describe('HierarchyLevelsService', () => {
     ).rejects.toBeInstanceOf(ConflictException);
   });
 
+  it('throws not found when a hierarchy level does not exist', async () => {
+    prisma.hierarchyLevel.findUnique.mockResolvedValue(null);
+
+    await expect(service.findOne('missing-id')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
+
   it('blocks delete when users are associated', async () => {
     prisma.hierarchyLevel.findUnique.mockResolvedValue(hierarchyLevel);
     prisma.user.count.mockResolvedValue(1);
     prisma.role.count.mockResolvedValue(0);
 
     await expect(service.remove('level-id')).rejects.toBeInstanceOf(
-      ConflictException,
+      BadRequestException,
     );
   });
 });

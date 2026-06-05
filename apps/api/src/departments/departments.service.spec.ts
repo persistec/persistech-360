@@ -1,4 +1,8 @@
-import { BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { DepartmentsService } from './departments.service';
 
@@ -70,5 +74,24 @@ describe('DepartmentsService', () => {
     await expect(
       service.create({ name: 'Engineering', parentDepartmentId: 'missing-id' }),
     ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('throws not found when a department does not exist', async () => {
+    prisma.department.findUnique.mockResolvedValue(null);
+
+    await expect(service.findOne('missing-id')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
+
+  it('blocks delete when child departments exist', async () => {
+    prisma.department.findUnique.mockResolvedValue(department);
+    prisma.user.count.mockResolvedValue(0);
+    prisma.role.count.mockResolvedValue(0);
+    prisma.department.count.mockResolvedValue(1);
+
+    await expect(service.remove('department-id')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
   });
 });
