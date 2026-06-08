@@ -14,6 +14,12 @@ enum UserStatus {
   REMOVED
 }
 
+enum DimensionType {
+  corporate
+  departmental
+  leadership
+}
+
 model User {
   id               String          @id @default(uuid())
   googleSub        String?         @map("google_sub")
@@ -77,4 +83,101 @@ model HierarchyLevel {
   roles Role[]
 
   @@map("hierarchy_levels")
+}
+
+// ---------------------------------------------------------------------------
+// Evaluation domain configuration
+// ---------------------------------------------------------------------------
+
+model Dimension {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  type        DimensionType
+  description String?
+  weight      Float         @default(1.0)
+  active      Boolean       @default(true)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  criteria            Criterion[]
+  applicabilityRules  ApplicabilityRule[]
+
+  @@map("dimensions")
+}
+
+model Criterion {
+  id          String   @id @default(uuid())
+  dimensionId String   @map("dimension_id")
+  text        String
+  description String?
+  weight      Float    @default(1.0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  dimension          Dimension           @relation(fields: [dimensionId], references: [id])
+  options            CriterionOption[]
+  applicabilityRules ApplicabilityRule[]
+
+  @@map("criteria")
+}
+
+model CriterionOption {
+  id          String   @id @default(uuid())
+  criterionId String   @map("criterion_id")
+  label       String
+  scoreValue  Float?   @map("score_value")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  criterion Criterion @relation(fields: [criterionId], references: [id], onDelete: Cascade)
+
+  @@map("criterion_options")
+}
+
+model ApplicabilityRule {
+  id                           String   @id @default(uuid())
+  // Either dimensionId or criterionId must be set (not both, not neither)
+  dimensionId                  String?  @map("dimension_id")
+  criterionId                  String?  @map("criterion_id")
+  relationshipType             String?  @map("relationship_type")
+  sameDepartmentRequired       Boolean  @default(false) @map("same_department_required")
+  crossDepartmentAllowed       Boolean  @default(true) @map("cross_department_allowed")
+  minHierarchyRank             Int?     @map("min_hierarchy_rank")
+  maxHierarchyRank             Int?     @map("max_hierarchy_rank")
+  requiredRoleFamily           String?  @map("required_role_family")
+  blockedIfEvaluateeAboveEvaluator Boolean @default(true) @map("blocked_if_evaluatee_above_evaluator")
+  createdAt                    DateTime @default(now()) @map("created_at")
+  updatedAt                    DateTime @updatedAt @map("updated_at")
+
+  dimension Dimension? @relation(fields: [dimensionId], references: [id], onDelete: SetNull)
+  criterion Criterion? @relation(fields: [criterionId], references: [id], onDelete: SetNull)
+
+  @@map("applicability_rules")
+}
+
+model WeightRule {
+  id                    String   @id @default(uuid())
+  relationshipType      String   @map("relationship_type")
+  sameDepartmentWeight  Float    @default(1.0) @map("same_department_weight")
+  crossDepartmentWeight Float    @default(1.0) @map("cross_department_weight")
+  categoryWeight        Float    @default(1.0) @map("category_weight")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  @@map("weight_rules")
+}
+
+model RetentionPolicy {
+  id                                 String   @id @default(uuid())
+  name                               String   @unique
+  evaluationsVisibleUntilOffset      Int      @map("evaluations_visible_until_offset")
+  exportsAllowedUntilOffset          Int      @map("exports_allowed_until_offset")
+  rawDataRetentionUntilOffset        Int      @map("raw_data_retention_until_offset")
+  anonymizedSummaryRetentionUntilOffset Int   @map("anonymized_summary_retention_until_offset")
+  createdAt                          DateTime @default(now()) @map("created_at")
+  updatedAt                          DateTime @updatedAt @map("updated_at")
+
+  @@map("retention_policies")
 }

@@ -7,53 +7,47 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5433:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d persistech_360"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
+      - '5433:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d persistech_360']
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   api:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
     container_name: persistech-api
-    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/persistech_360
+      WEB_APP_URL: http://localhost:3000
+    ports:
+      - '4000:4000'
     depends_on:
       postgres:
         condition: service_healthy
-    environment:
-      NODE_ENV: development
-      PORT: "4000"
-      WEB_APP_URL: http://localhost:3000
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/persistech_360
-    ports:
-      - "4000:4000"
-    volumes:
-      - ./apps/api:/app
-      - /app/node_modules
     restart: unless-stopped
+    # NOTE: No node_modules volume mount — deps are baked into the image at
+    # build time. Mounting node_modules as a volume was the root cause of the
+    # EACCES error on npx prisma generate.
 
   web:
     build:
       context: ./apps/web
       dockerfile: Dockerfile
     container_name: persistech-web
-    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+    ports:
+      - '3000:3000'
     depends_on:
       - api
-    environment:
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:4000
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./apps/web:/app
-      - /app/node_modules
     restart: unless-stopped
 
 volumes:
