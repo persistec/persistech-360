@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@39757654ed98286a111a0b51e5138f6b0f9c2d82 # v4.2.0
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
