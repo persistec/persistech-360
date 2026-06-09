@@ -13,6 +13,7 @@
 - Haverá recurso ou revisão formal de avaliação?
 - Ciclos serão trimestrais, semestrais ou configuráveis livremente?
 - A direção terá acesso a dados identificados ou apenas relatórios executivos?
+- Cross-department peer assignments: A geração automática de avaliações entre departamentos diferentes (cross_department_peer) está atualmente fora do motor de geração automática e é tratada como escopo futuro/criação manual.
 
 ## Decisões Google Workspace
 

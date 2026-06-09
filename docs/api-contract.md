@@ -185,3 +185,29 @@ Exemplo:
   "createdAt": "2026-05-26T15:30:00.000Z"
 }
 ```
+
+## Endpoints de Ciclos e Atribuições
+
+### Cycles (/api/v1/cycles)
+- `GET /api/v1/cycles`: Lista todos os ciclos criados.
+- `GET /api/v1/cycles/:id`: Devolve os detalhes de um ciclo específico.
+- `POST /api/v1/cycles`: Cria um novo ciclo de avaliação.
+  * Validações: `startAt` e `endAt` obrigatórios; `endAt > startAt`; `retentionPolicyId` e `createdById` devem existir se informados.
+- `PATCH /api/v1/cycles/:id`: Atualiza um ciclo existente.
+- `DELETE /api/v1/cycles/:id`: Remove um ciclo.
+  * Validações: Bloqueado se possuir atribuições, a menos que o estado seja `draft`.
+- `POST /api/v1/cycles/:id/open`: Abre o ciclo.
+  * Validações: Apenas a partir de `draft` ou `scheduled`. Exige pelo menos uma atribuição gerada.
+- `POST /api/v1/cycles/:id/close`: Fecha o ciclo.
+  * Validações: Apenas a partir de `open` ou `closing_soon`.
+- `POST /api/v1/cycles/:id/generate-assignments`: Despoleta a geração automática de atribuições.
+  * Validações: Bloqueado se o ciclo estiver fechado, publicado ou arquivado.
+- `GET /api/v1/cycles/:id/assignments`: Lista todas as atribuições associadas ao ciclo.
+
+### Evaluation Assignments (/api/v1/evaluation-assignments)
+- `GET /api/v1/evaluation-assignments`: Lista todas as atribuições no sistema.
+- `GET /api/v1/evaluation-assignments/:id`: Devolve uma atribuição pelo seu ID.
+- `POST /api/v1/evaluation-assignments`: Cria manualmente uma atribuição.
+  * Validações: `evaluatorId` diferente de `evaluateeId`; ambos devem existir e estar ativos; o avaliador não pode avaliar um superior na hierarquia (por manager ou rank); unicidade no ciclo.
+- `PATCH /api/v1/evaluation-assignments/:id`: Atualiza uma atribuição.
+- `DELETE /api/v1/evaluation-assignments/:id`: Remove uma atribuição.

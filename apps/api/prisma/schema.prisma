@@ -33,11 +33,14 @@ model User {
   createdAt        DateTime        @default(now()) @map("created_at")
   updatedAt        DateTime        @updatedAt @map("updated_at")
 
-  department     Department?     @relation(fields: [departmentId], references: [id])
-  role           Role?           @relation(fields: [roleId], references: [id])
-  hierarchyLevel HierarchyLevel? @relation(fields: [hierarchyLevelId], references: [id])
-  manager        User?           @relation("UserManager", fields: [managerId], references: [id])
-  subordinates   User[]          @relation("UserManager")
+  department           Department?             @relation(fields: [departmentId], references: [id])
+  role                 Role?                   @relation(fields: [roleId], references: [id])
+  hierarchyLevel       HierarchyLevel?         @relation(fields: [hierarchyLevelId], references: [id])
+  manager              User?                   @relation("UserManager", fields: [managerId], references: [id])
+  subordinates         User[]                  @relation("UserManager")
+  createdCycles        Cycle[]                 @relation("CycleCreator")
+  evaluatorAssignments EvaluationAssignment[] @relation("EvaluatorAssignments")
+  evaluateeAssignments EvaluationAssignment[] @relation("EvaluateeAssignments")
 
   @@map("users")
 }
@@ -178,6 +181,67 @@ model RetentionPolicy {
   anonymizedSummaryRetentionUntilOffset Int   @map("anonymized_summary_retention_until_offset")
   createdAt                          DateTime @default(now()) @map("created_at")
   updatedAt                          DateTime @updatedAt @map("updated_at")
+  cycles                             Cycle[]
 
   @@map("retention_policies")
+}
+
+enum CycleStatus {
+  draft
+  scheduled
+  open
+  closing_soon
+  closed
+  results_published
+  archived
+}
+
+enum AssignmentStatus {
+  pending
+  completed
+  locked
+  cancelled
+}
+
+enum RelationshipType {
+  same_department_peer
+  cross_department_peer
+  manager_to_subordinate
+  manual_assignment
+}
+
+model Cycle {
+  id                String                 @id @default(uuid())
+  name              String
+  description       String?
+  startAt           DateTime               @map("start_at")
+  endAt             DateTime               @map("end_at")
+  status            CycleStatus            @default(draft)
+  retentionPolicyId String?                @map("retention_policy_id")
+  createdById       String?                @map("created_by_id")
+  createdAt         DateTime               @default(now()) @map("created_at")
+  updatedAt         DateTime               @updatedAt @map("updated_at")
+  retentionPolicy   RetentionPolicy?       @relation(fields: [retentionPolicyId], references: [id], onDelete: SetNull)
+  createdBy         User?                  @relation("CycleCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  assignments       EvaluationAssignment[]
+
+  @@map("cycles")
+}
+
+model EvaluationAssignment {
+  id               String           @id @default(uuid())
+  cycleId          String           @map("cycle_id")
+  evaluatorId      String           @map("evaluator_id")
+  evaluateeId      String           @map("evaluatee_id")
+  relationshipType RelationshipType @map("relationship_type")
+  status           AssignmentStatus @default(pending)
+  required         Boolean          @default(true)
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  cycle            Cycle            @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  evaluator        User             @relation("EvaluatorAssignments", fields: [evaluatorId], references: [id], onDelete: Cascade)
+  evaluatee        User             @relation("EvaluateeAssignments", fields: [evaluateeId], references: [id], onDelete: Cascade)
+
+  @@unique([cycleId, evaluatorId, evaluateeId])
+  @@map("evaluation_assignments")
 }

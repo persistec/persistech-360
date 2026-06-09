@@ -116,12 +116,12 @@ Campos sugeridos:
 ```text
 id
 name
-type
+description
 start_at
 end_at
 status
 retention_policy_id
-created_by
+created_by_id
 created_at
 updated_at
 ```
