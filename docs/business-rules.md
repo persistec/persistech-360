@@ -15,9 +15,11 @@ O sistema não é uma plataforma de votação.
 - Avaliações entre departamentos diferentes são permitidas apenas para categorias gerais.
 - Critérios técnicos ou departamentais só aparecem quando o avaliador tem contexto suficiente.
 - Enquanto o ciclo estiver aberto, avaliações submetidas podem ser editadas.
-- Após o fecho do ciclo, utilizadores comuns não podem editar avaliações.
+- Após o fecho do ciclo ou após submissão final, utilizadores comuns não podem editar avaliações.
 - Administradores autorizados podem consultar registos completos.
 - Avaliados não podem ver a identidade dos avaliadores.
+- Submissões requerem que a assignment esteja no status `pending` e o ciclo em `open` ou `closing_soon`.
+- Apenas rascunhos (onde `submitted_at` não está preenchido) podem ser atualizados. A submissão é uma ação final e irreversível pelo utilizador.
 
 ## Cadastros administrativos base
 
@@ -99,7 +101,7 @@ Escala recomendada:
 N/A - Não tenho informação suficiente
 ````
 
-A opção `N/A` não entra no cálculo.
+A opção `N/A` não entra no cálculo. Na API, respostas N/A são registadas com o envio de `criterionOptionId = null` quando o modelo de dados permitir que esta intencionalidade seja diferenciada da ausência de resposta, sendo aceite no rascunho como abstensão até ao submit.
 
 ## Comentário final aberto
 

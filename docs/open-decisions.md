@@ -14,6 +14,8 @@
 - Ciclos serão trimestrais, semestrais ou configuráveis livremente?
 - A direção terá acesso a dados identificados ou apenas relatórios executivos?
 - Cross-department peer assignments: A geração automática de avaliações entre departamentos diferentes (cross_department_peer) está atualmente fora do motor de geração automática e é tratada como escopo futuro/criação manual.
+- Applicabilidade na submissão: Full applicability engine validation by relationship/dimension at the answer level is deferred to the next phase.
+- Critério N/A: `criterionOptionId` can be explicitly null se a intenção for N/A ou se o critério não tiver opções no futuro.
 
 ## Decisões Google Workspace
 

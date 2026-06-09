@@ -9,6 +9,7 @@ import { RolesModule } from './roles/roles.module';
 import { UsersModule } from './users/users.module';
 import { CyclesModule } from './cycles/cycles.module';
 import { EvaluationAssignmentsModule } from './evaluation-assignments/evaluation-assignments.module';
+import { EvaluationSubmissionsModule } from './evaluation-submissions/evaluation-submissions.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { EvaluationAssignmentsModule } from './evaluation-assignments/evaluation
     UsersModule,
     CyclesModule,
     EvaluationAssignmentsModule,
+    EvaluationSubmissionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

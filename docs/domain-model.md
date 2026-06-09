@@ -182,47 +182,32 @@ manager_to_subordinate
 manual_assignment
 ```
 
-### Evaluation
+### EvaluationSubmission
 
-Representa uma avaliação submetida ou em rascunho.
+Representa uma avaliação submetida ou em rascunho, vinculada a uma assignment.
 
 Campos sugeridos:
 
 ```text
 id
 assignment_id
-cycle_id
-evaluator_id
-evaluatee_id
-status
+final_comment
 submitted_at
-last_edited_at
-locked_at
 created_at
 updated_at
-```
-
-Estados possíveis:
-
-```text
-draft
-submitted
-locked
-invalidated
 ```
 
 Restrições obrigatórias:
 
 ```text
-UNIQUE(cycle_id, evaluator_id, evaluatee_id)
-CHECK(evaluator_id <> evaluatee_id)
+UNIQUE(assignment_id)
 ```
 
 Notas:
 
-- Enquanto o ciclo estiver aberto, uma avaliação submetida pode ser editada.
-- Após o fecho do ciclo, a avaliação deve ser bloqueada para utilizadores comuns.
-- Edições administrativas devem ser auditadas.
+- Enquanto a data `submitted_at` não estiver preenchida, é considerada um rascunho.
+- Enquanto o rascunho existir e o ciclo estiver aberto, a avaliação pode ser editada (respostas).
+- Após a submissão, a avaliação é fechada e as edições normais são bloqueadas.
 
 ### EvaluationAnswer
 
@@ -232,18 +217,25 @@ Campos sugeridos:
 
 ```text
 id
-evaluation_id
+submission_id
 criterion_id
-selected_option_id
-score_value
+criterion_option_id
+score_value_snapshot
 created_at
 updated_at
 ```
 
+Restrições obrigatórias:
+
+```text
+UNIQUE(submission_id, criterion_id)
+```
+
 Notas:
 
-- `score_value` pode ser copiado da opção selecionada no momento da submissão para preservar histórico.
-- Respostas `N/A` devem ter `score_value = null` e não entram no cálculo.
+- `score_value_snapshot` deve ser copiado de `CriterionOption.scoreValue` no momento da submissão para preservar histórico.
+- Respostas explícitas de `N/A` devem ser passadas com `criterion_option_id = null`.
+- Critérios inativos não podem ser respondidos.
 
 ### EvaluationRevision
 
@@ -519,10 +511,9 @@ EvaluationAssignment belongs to Cycle
 EvaluationAssignment has evaluator User
 EvaluationAssignment has evaluatee User
 
-Evaluation belongs to EvaluationAssignment
-Evaluation has many EvaluationAnswers
-Evaluation has many EvaluationRevisions
-Evaluation may have one CommentMessage
+EvaluationSubmission belongs to EvaluationAssignment
+EvaluationSubmission has many EvaluationAnswers
+EvaluationSubmission has many EvaluationRevisions
 
 Dimension has many Criteria
 Criterion has many CriterionOptions

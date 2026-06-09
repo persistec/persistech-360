@@ -211,3 +211,17 @@ Exemplo:
   * Validações: `evaluatorId` diferente de `evaluateeId`; ambos devem existir e estar ativos; o avaliador não pode avaliar um superior na hierarquia (por manager ou rank); unicidade no ciclo.
 - `PATCH /api/v1/evaluation-assignments/:id`: Atualiza uma atribuição.
 - `DELETE /api/v1/evaluation-assignments/:id`: Remove uma atribuição.
+
+### Evaluation Submissions e Answers (/api/v1/evaluation-submissions)
+- `GET /api/v1/evaluation-submissions`: Lista todas as submissões.
+- `GET /api/v1/evaluation-submissions/:id`: Detalhes de uma submissão.
+- `GET /api/v1/evaluation-assignments/:id/submission`: Obtém a submissão associada a uma assignment específica.
+- `POST /api/v1/evaluation-assignments/:id/submission`: Cria (ou recupera) o rascunho de uma submissão para a assignment.
+  * Validações: A assignment deve estar `pending`, e o ciclo deve estar `open` ou `closing_soon`.
+- `PATCH /api/v1/evaluation-submissions/:id`: Atualiza o rascunho da submissão (ex: comentário final).
+  * Validações: Não pode ser editado após ter sido submetida.
+- `POST /api/v1/evaluation-submissions/:id/submit`: Realiza a submissão final, travando edições.
+  * Validações: Atualiza também a assignment para `completed`. Requer ao menos uma resposta válida nesta fase.
+- `GET /api/v1/evaluation-submissions/:id/answers`: Obtém as respostas de um rascunho/submissão.
+- `PUT /api/v1/evaluation-submissions/:id/answers`: Faz upsert de várias respostas ao mesmo tempo.
+  * Validações: Rejeita critérios inativos, duplicados no payload, ou opções que não pertencem ao critério. Copia o scoreValue da opção. Opção nula representa N/A ou abstenção suportada.
