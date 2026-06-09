@@ -19,6 +19,30 @@ O sistema não é uma plataforma de votação.
 - Administradores autorizados podem consultar registos completos.
 - Avaliados não podem ver a identidade dos avaliadores.
 
+## Cadastros administrativos base
+
+Os cadastros administrativos de departamentos, níveis hierárquicos, cargos e
+utilizadores são mantidos pelo backend como fundação do domínio. Estes endpoints
+não implementam autenticação ou autorização ainda, mas já devem validar dados e
+relações no servidor.
+
+Regras:
+
+- `Department.name` é obrigatório e único.
+- `Department.parentDepartmentId` é opcional, mas deve referenciar um departamento existente quando informado.
+- Departamentos não podem ser removidos enquanto tiverem departamentos filhos, utilizadores ou cargos associados.
+- `HierarchyLevel.name` e `HierarchyLevel.rank` são obrigatórios e únicos.
+- `HierarchyLevel.rank` deve ser um inteiro positivo.
+- Níveis hierárquicos não podem ser removidos enquanto forem usados por utilizadores ou cargos.
+- `Role.name` é obrigatório.
+- `Role.departmentId` e `Role.hierarchyLevelId` são opcionais, mas devem referenciar registos existentes quando informados.
+- Cargos não podem ser removidos enquanto forem usados por utilizadores.
+- `User.workspaceEmail` é obrigatório e único.
+- `User.googleSub` é opcional e único quando informado.
+- `User.departmentId`, `roleId`, `hierarchyLevelId` e `managerId` são opcionais, mas devem referenciar registos existentes quando informados.
+- Um utilizador não pode ser definido como seu próprio gestor.
+- Utilizadores não podem ser removidos enquanto forem gestores de outros utilizadores.
+
 ## Categorias de avaliação
 
 ### Categorias corporativas gerais
@@ -143,3 +167,12 @@ archived
 13. Resultados são publicados.
 14. Dados seguem política de retenção e exportação.
 
+## Regras de Geração de Atribuições
+
+Na geração automática de atribuições, o sistema segue as seguintes diretivas:
+- **Utilizadores Ativos**: Apenas colaboradores com estado ativo entram no processo.
+- **Deduplicação**: Atribuições já existentes não são recriadas nem duplicadas.
+- **same_department_peer**: Gera atribuições entre colaboradores do mesmo departamento e com o mesmo nível hierárquico, excluindo autoavaliações.
+- **manager_to_subordinate**: Gera atribuição de avaliação do gestor direto (`managerId` definido em `User`) para o seu subordinado.
+- **Subordinado avalia superior**: Fica expressamente bloqueado; nenhum subordinado avalia o seu superior hierárquico (seja por chefia direta ou por rank hierárquico maior).
+- **cross_department_peer**: Não é gerado de forma automática (mantido como pendente/manual nesta fase).

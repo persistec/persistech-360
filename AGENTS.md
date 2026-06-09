@@ -25,7 +25,7 @@ persistech-360/
 ├── docs/
 ├── scripts/
 └── .github/workflows/
-````
+```
 
 Durante o MVP não devem existir:
 
@@ -51,57 +51,75 @@ Frontend e backend devem permanecer instaláveis, testáveis, compiláveis e imp
 
 ## Fonte de verdade documental
 
-* Arquitetura: `docs/architecture.md`
-* Regras de negócio: `docs/business-rules.md`
-* Modelo de domínio: `docs/domain-model.md`
-* Segurança e permissões: `docs/security-and-permissions.md`
-* Integração Google Workspace: `docs/google-workspace-integration.md`
-* Contrato da API: `docs/api-contract.md`
-* CI/CD: `docs/ci-cd.md`
-* Desenvolvimento local: `docs/local-development.md`
-* Escopo do MVP: `docs/mvp-scope.md`
-* Decisões em aberto: `docs/open-decisions.md`
+- Arquitetura: `docs/architecture.md`
+- Regras de negócio: `docs/business-rules.md`
+- Modelo de domínio: `docs/domain-model.md`
+- Segurança e permissões: `docs/security-and-permissions.md`
+- Integração Google Workspace: `docs/google-workspace-integration.md`
+- Contrato da API: `docs/api-contract.md`
+- CI/CD: `docs/ci-cd.md`
+- Ambiente e rede: `docs/environment-networking.md`
+- Desenvolvimento local: `docs/local-development.md`
+- Escopo do MVP: `docs/mvp-scope.md`
+- Decisões em aberto: `docs/open-decisions.md`
 
 ## Responsabilidades do frontend
 
 O frontend é responsável por:
 
-* interface do utilizador;
-* dashboards;
-* formulários;
-* apresentação dos dados retornados pela API;
-* validações auxiliares de experiência;
-* chamadas à API backend;
-* gestão local de estado.
+- interface do utilizador;
+- dashboards;
+- formulários;
+- apresentação dos dados retornados pela API;
+- validações auxiliares de experiência;
+- chamadas à API backend;
+- gestão local de estado.
 
 O frontend não é fonte de verdade para:
 
-* permissões;
-* elegibilidade;
-* pesos;
-* scoring;
-* restrições hierárquicas;
-* auditoria;
-* retenção;
-* exportação.
+- permissões;
+- elegibilidade;
+- pesos;
+- scoring;
+- restrições hierárquicas;
+- auditoria;
+- retenção;
+- exportação.
+
+## Ambiente de desenvolvimento local com Docker Compose
+
+O desenvolvimento local agora deve usar três serviços independentes no Docker Compose:
+
+- `postgres` para a base de dados PostgreSQL;
+- `api` para a API NestJS;
+- `web` para o frontend Next.js.
+
+Regras obrigatórias:
+
+- Não combinar `postgres`, `api` e `web` num único container.
+- O host deve ligar-se à base de dados em `localhost:5433`.
+- O container da API deve ligar-se à base de dados em `postgres:5432`.
+- O browser deve chamar a API em `http://localhost:4000`.
+- Não substituir nomes de serviço por IPs de container.
+- Não usar `localhost:5433` dentro do container da API.
 
 ## Responsabilidades do backend
 
 O backend é a fonte de verdade para:
 
-* validação de autenticação;
-* autorização;
-* RBAC;
-* ciclos de avaliação;
-* motor de elegibilidade;
-* motor de aplicabilidade;
-* motor de ponderação;
-* auditoria;
-* retenção;
-* exportações;
-* integração Google Workspace;
-* notificações;
-* persistência.
+- validação de autenticação;
+- autorização;
+- RBAC;
+- ciclos de avaliação;
+- motor de elegibilidade;
+- motor de aplicabilidade;
+- motor de ponderação;
+- auditoria;
+- retenção;
+- exportações;
+- integração Google Workspace;
+- notificações;
+- persistência.
 
 ## Contrato da API
 
@@ -115,9 +133,8 @@ O frontend pode manter tipos locais ou gerar um cliente local a partir do contra
 
 A implantação deve ser seletiva:
 
-* mudanças em `apps/web` afetam apenas o frontend;
-* mudanças em `apps/api` afetam apenas o backend;
-* mudanças em `docs` não disparam deploy;
-* mudanças em CI/CD exigem revisão cuidadosa;
-* deploy automático nativo da Vercel não deve ser o mecanismo principal de CI/CD.
-
+- mudanças em `apps/web` afetam apenas o frontend;
+- mudanças em `apps/api` afetam apenas o backend;
+- mudanças em `docs` não disparam deploy;
+- mudanças em CI/CD exigem revisão cuidadosa;
+- deploy automático nativo da Vercel não deve ser o mecanismo principal de CI/CD.

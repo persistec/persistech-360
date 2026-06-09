@@ -81,6 +81,46 @@ POST /api/v1/cycles/:id/publish-results
 POST /api/v1/cycles/:id/generate-assignments
 ```
 
+## Endpoints administrativos base
+
+Durante a fundação do MVP, o backend expõe CRUD administrativo para dados
+estruturais do domínio. Estes endpoints não implementam autenticação nem
+autorização ainda; antes de produção devem ser protegidos no backend.
+
+```text
+GET    /api/v1/departments
+GET    /api/v1/departments/:id
+POST   /api/v1/departments
+PATCH  /api/v1/departments/:id
+DELETE /api/v1/departments/:id
+
+GET    /api/v1/hierarchy-levels
+GET    /api/v1/hierarchy-levels/:id
+POST   /api/v1/hierarchy-levels
+PATCH  /api/v1/hierarchy-levels/:id
+DELETE /api/v1/hierarchy-levels/:id
+
+GET    /api/v1/roles
+GET    /api/v1/roles/:id
+POST   /api/v1/roles
+PATCH  /api/v1/roles/:id
+DELETE /api/v1/roles/:id
+
+GET    /api/v1/users
+GET    /api/v1/users/:id
+POST   /api/v1/users
+PATCH  /api/v1/users/:id
+DELETE /api/v1/users/:id
+```
+
+Regras de contrato destes endpoints:
+
+- registos inexistentes devolvem `404`;
+- conflitos de unicidade devolvem `409`;
+- relações inválidas devolvem `400`;
+- deletes bloqueados por relações dependentes devolvem `400`;
+- respostas de `User` não expõem `googleSub`.
+
 ## Compatibilidade
 
 Evitar quebrar contrato da API sem necessidade.
@@ -145,3 +185,29 @@ Exemplo:
   "createdAt": "2026-05-26T15:30:00.000Z"
 }
 ```
+
+## Endpoints de Ciclos e Atribuições
+
+### Cycles (/api/v1/cycles)
+- `GET /api/v1/cycles`: Lista todos os ciclos criados.
+- `GET /api/v1/cycles/:id`: Devolve os detalhes de um ciclo específico.
+- `POST /api/v1/cycles`: Cria um novo ciclo de avaliação.
+  * Validações: `startAt` e `endAt` obrigatórios; `endAt > startAt`; `retentionPolicyId` e `createdById` devem existir se informados.
+- `PATCH /api/v1/cycles/:id`: Atualiza um ciclo existente.
+- `DELETE /api/v1/cycles/:id`: Remove um ciclo.
+  * Validações: Bloqueado se possuir atribuições, a menos que o estado seja `draft`.
+- `POST /api/v1/cycles/:id/open`: Abre o ciclo.
+  * Validações: Apenas a partir de `draft` ou `scheduled`. Exige pelo menos uma atribuição gerada.
+- `POST /api/v1/cycles/:id/close`: Fecha o ciclo.
+  * Validações: Apenas a partir de `open` ou `closing_soon`.
+- `POST /api/v1/cycles/:id/generate-assignments`: Despoleta a geração automática de atribuições.
+  * Validações: Bloqueado se o ciclo estiver fechado, publicado ou arquivado.
+- `GET /api/v1/cycles/:id/assignments`: Lista todas as atribuições associadas ao ciclo.
+
+### Evaluation Assignments (/api/v1/evaluation-assignments)
+- `GET /api/v1/evaluation-assignments`: Lista todas as atribuições no sistema.
+- `GET /api/v1/evaluation-assignments/:id`: Devolve uma atribuição pelo seu ID.
+- `POST /api/v1/evaluation-assignments`: Cria manualmente uma atribuição.
+  * Validações: `evaluatorId` diferente de `evaluateeId`; ambos devem existir e estar ativos; o avaliador não pode avaliar um superior na hierarquia (por manager ou rank); unicidade no ciclo.
+- `PATCH /api/v1/evaluation-assignments/:id`: Atualiza uma atribuição.
+- `DELETE /api/v1/evaluation-assignments/:id`: Remove uma atribuição.

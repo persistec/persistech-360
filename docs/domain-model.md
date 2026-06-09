@@ -36,6 +36,7 @@ Notas:
 - `workspace_email` deve corresponder ao email corporativo.
 - `manager_id` aponta para outro `User`.
 - `status` pode indicar se o colaborador está ativo, inativo, suspenso ou removido.
+- A API administrativa aceita `google_sub` para preparação de integração, mas não deve expor este campo nas respostas públicas.
 
 ### Department
 
@@ -115,12 +116,12 @@ Campos sugeridos:
 ```text
 id
 name
-type
+description
 start_at
 end_at
 status
 retention_policy_id
-created_by
+created_by_id
 created_at
 updated_at
 ```
@@ -542,6 +543,34 @@ Closed cycles block normal edits.
 Published results should not be recalculated without administrative audit.
 N/A answers do not enter scoring.
 Non-applicable criteria do not enter scoring.
+```
+
+## Regras administrativas base
+
+As entidades estruturais iniciais (`Department`, `HierarchyLevel`, `Role` e
+`User`) têm CRUD administrativo no backend para permitir configuração do MVP.
+Estas operações ainda não substituem regras futuras de RBAC.
+
+Regras mínimas:
+
+```text
+Department.name is unique.
+Department.parent_department_id must reference an existing Department when set.
+Department cannot be deleted while it has users, roles, or child departments.
+
+HierarchyLevel.name is unique.
+HierarchyLevel.rank is unique and must be a positive integer.
+HierarchyLevel cannot be deleted while it has users or roles.
+
+Role.department_id must reference an existing Department when set.
+Role.hierarchy_level_id must reference an existing HierarchyLevel when set.
+Role cannot be deleted while it has users.
+
+User.workspace_email is unique.
+User.google_sub is treated as unique when set.
+User relation ids must reference existing records when set.
+User.manager_id cannot point to the same User.
+User cannot be deleted while assigned as manager of other users.
 ```
 
 ## Observação final
