@@ -184,3 +184,12 @@ Na geração automática de atribuições, o sistema segue as seguintes diretiva
 - **manager_to_subordinate**: Gera atribuição de avaliação do gestor direto (`managerId` definido em `User`) para o seu subordinado.
 - **Subordinado avalia superior**: Fica expressamente bloqueado; nenhum subordinado avalia o seu superior hierárquico (seja por chefia direta ou por rank hierárquico maior).
 - **cross_department_peer**: Não é gerado de forma automática (mantido como pendente/manual nesta fase).
+
+## Cálculo de Resultados (Scoring)
+
+1. **Inclusão de Dados**: Apenas respostas provenientes de submissões concluídas (`submittedAt IS NOT NULL`) e associadas a assignments concluídos (`status: completed`) são contabilizadas. Comentários finais são ignorados.
+2. **N/A e Respostas Nulas**: Respostas não aplicáveis (`scoreValueSnapshot = null`) são removidas do numerador e denominador das médias para não distorcer resultados, sendo apenas contabilizadas na métrica `naAnswerCount`.
+3. **Fórmula Nível Critério**: Média ponderada usando os pesos do `WeightRule` (baseado no `relationshipType` e de departamento). O peso do próprio critério não é aplicado nesta fase para evitar distorções internas.
+4. **Fórmula Nível Dimensão**: Média ponderada das pontuações dos critérios internos multiplicados pelo peso de cada critério (`Criterion.weight`).
+5. **Fórmula Geral do Avaliado**: Média ponderada das pontuações das dimensões multiplicadas pelo peso de cada dimensão (`Dimension.weight`).
+6. **Mínimo de Respostas**: Existe um limiar mínimo de avaliação (`minimumResponseThreshold` = 3). O motor exporta uma contagem de submissões válidas (com > 0 respostas pontuadas) e uma flag (`minimumResponseThresholdMet`) para posterior utilização nas regras de visibilidade.
