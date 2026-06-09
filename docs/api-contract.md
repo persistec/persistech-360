@@ -227,3 +227,8 @@ Exemplo:
 - `GET /api/v1/evaluation-submissions/:id/answers`: Obtém as respostas de um rascunho/submissão.
 - `PUT /api/v1/evaluation-submissions/:id/answers`: Faz upsert de várias respostas ao mesmo tempo.
   * Validações: Rejeita critérios inativos, duplicados no payload, ou opções que não pertencem ao critério. Copia o scoreValue da opção. Opção nula representa N/A ou abstenção suportada.
+
+### Scoring and Results
+
+- `GET /api/v1/cycles/:id/results`: Retorna os resultados agregados de um ciclo de avaliação (apenas inclui métricas, sem quebrar políticas de visibilidade, aguardando issue #11).
+- `GET /api/v1/cycles/:cycleId/evaluatees/:evaluateeId/results`: Retorna os resultados agregados para um avaliado num ciclo específico. Inclui contagens de respostas não aplicáveis e status do threshold mínimo de resposta.

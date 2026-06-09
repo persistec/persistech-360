@@ -74,6 +74,9 @@
   - **Deteção de Liderança:** Apenas verificamos se o colaborador (evaluatee) possui outros colaboradores ativos que reportam a ele (`subordinates` com `status: ACTIVE`). Se o status de liderança estiver embutido apenas em nomeações ou títulos (ex: "Scrum Master") sem que haja colaboradores vinculados ao `managerId`, a liderança não é detetada de forma genérica no momento.
   - **Rank Hierárquico:** Presumimos que números maiores em `rank` representam posições mais altas na hierarquia (ex: 6 = Diretor, 1 = Estagiário). Avaliações onde o avaliado está "acima" do avaliador ocorrem quando `evaluatee.rank > evaluator.rank`. Se um dos utilizadores não tiver nível hierárquico, esta verificação é ignorada.
 - Qual a estratégia de caching para o motor de elegibilidade.
+- **Limitações do Motor de Pontuação (Scoring):**
+  - O campo `categoryWeight` do modelo `WeightRule` foi propositadamente ignorado por falta de clareza sobre qual "categoria" (dimensão, tipo, etc.) se refere. Fica pendente de decisão e especificação formal antes de ser integrado na fórmula.
+  - A visibilidade e anonimização dos resultados foram deliberadamente deixadas para a Fase de Result Visibility (Issue #11), sendo aqui exposta apenas a métrica agregada.
 
 ## Decisões de produto
 

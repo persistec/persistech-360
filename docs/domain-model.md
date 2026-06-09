@@ -567,3 +567,12 @@ User cannot be deleted while assigned as manager of other users.
 ## Observação final
 
 Este modelo é conceitual. O schema Prisma pode ajustar nomes, enums, índices e relações, mas não deve quebrar as regras centrais descritas aqui.
+
+### Scoring Engine Output
+A pontuação não é armazenada na base de dados, sendo calculada de forma on-the-fly pelo `ScoringService`.
+As saídas incluem:
+- `score`: O resultado final da média ponderada em formato numérico.
+- `scoredAnswerCount`: O número de respostas com pontuação > 0, utilizado para cálculo do threshold.
+- `naAnswerCount`: Respostas não aplicáveis (`null`) ou em branco, ignoradas nas médias.
+- `validSubmissionCount`: Número de submissões concluídas que continham pelo menos uma resposta com pontuação real.
+- `minimumResponseThresholdMet`: Um boolean (baseado em validSubmissionCount >= 3) que indicará a elegibilidade de visibilidade na fase posterior.
