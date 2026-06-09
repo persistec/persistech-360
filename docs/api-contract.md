@@ -205,12 +205,14 @@ Exemplo:
 - `GET /api/v1/cycles/:id/assignments`: Lista todas as atribuições associadas ao ciclo.
 
 ### Evaluation Assignments (/api/v1/evaluation-assignments)
-- `GET /api/v1/evaluation-assignments`: Lista todas as atribuições no sistema.
-- `GET /api/v1/evaluation-assignments/:id`: Devolve uma atribuição pelo seu ID.
-- `POST /api/v1/evaluation-assignments`: Cria manualmente uma atribuição.
+
+- `GET /api/v1/evaluation-assignments`: Listar assignments.
+- `GET /api/v1/evaluation-assignments/:id`: Detalhe de uma assignment.
+- `GET /api/v1/evaluation-assignments/:id/applicable-criteria`: Retorna a lista de critérios que se aplicam a esta assignment, calculados pelo motor de aplicabilidade.
+- `POST /api/v1/evaluation-assignments`: Criar atribuição manual.
   * Validações: `evaluatorId` diferente de `evaluateeId`; ambos devem existir e estar ativos; o avaliador não pode avaliar um superior na hierarquia (por manager ou rank); unicidade no ciclo.
-- `PATCH /api/v1/evaluation-assignments/:id`: Atualiza uma atribuição.
-- `DELETE /api/v1/evaluation-assignments/:id`: Remove uma atribuição.
+- `PATCH /api/v1/evaluation-assignments/:id`: Atualizar status/obrigatoriedade.
+- `DELETE /api/v1/evaluation-assignments/:id`: Remover assignment.
 
 ### Evaluation Submissions e Answers (/api/v1/evaluation-submissions)
 - `GET /api/v1/evaluation-submissions`: Lista todas as submissões.

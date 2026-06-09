@@ -61,9 +61,13 @@ Podem aplicar-se entre departamentos:
 - alinhamento com valores da empresa;
 - capacidade de trabalhar com outros departamentos.
 
+O motor de aplicabilidade permite estas categorias por predefinição. Caso existam regras explícitas (ex: restrições de nível hierárquico), o avaliador terá de cumprir pelo menos uma regra para ter acesso ao critério.
+
 ### Categorias departamentais
 
 Aplicam-se apenas quando o avaliador tem contexto adequado.
+Por padrão, o motor de aplicabilidade exige que o avaliador e o avaliado pertençam ao mesmo departamento.
+O contexto inter-departamental (cross-department) só é validado caso exista uma regra de aplicabilidade explícita a permiti-lo.
 
 Exemplos para TI:
 
@@ -86,7 +90,9 @@ Exemplos para Comercial:
 
 Aplicam-se apenas a colaboradores em funções de liderança e apenas quando o avaliador é elegível para avaliar esse tipo de competência.
 
-No escopo atual, subordinados não avaliam chefias.
+O motor de aplicabilidade deteta um contexto de liderança verificando se o avaliado possui outros colaboradores ativos associados a si (subordinados diretos com `status: ACTIVE`). Se o avaliado não possuir subordinados, os critérios de liderança nunca são aplicados.
+
+No escopo atual, subordinados não avaliam chefias. Esta restrição pode ser configurada usando a regra `blocked_if_evaluatee_above_evaluator` no critério ou dimensão. O sistema cruza os `rank` dos níveis hierárquicos para o garantir (ranks maiores = níveis mais altos).
 
 ## Escala de resposta
 

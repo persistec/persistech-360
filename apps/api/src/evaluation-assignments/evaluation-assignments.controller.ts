@@ -21,12 +21,15 @@ import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { UpdateAssignmentDto } from './dto/update-assignment.dto';
 import { AssignmentResponseDto } from './dto/assignment-response.dto';
 import { EvaluationAssignmentsService } from './evaluation-assignments.service';
+import { ApplicabilityEngineService } from '../applicability-engine/applicability-engine.service';
+import { ApplicableCriterionResponseDto } from './dto/applicable-criteria.dto';
 
 @ApiTags('Evaluation Assignments')
 @Controller('evaluation-assignments')
 export class EvaluationAssignmentsController {
   constructor(
     private readonly assignmentsService: EvaluationAssignmentsService,
+    private readonly applicabilityEngineService: ApplicabilityEngineService,
   ) {}
 
   @Get()
@@ -42,6 +45,14 @@ export class EvaluationAssignmentsController {
   @ApiNotFoundResponse({ description: 'Evaluation assignment not found' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.assignmentsService.findOne(id);
+  }
+
+  @Get(':id/applicable-criteria')
+  @ApiOperation({ summary: 'Get applicable criteria for an assignment' })
+  @ApiOkResponse({ type: ApplicableCriterionResponseDto, isArray: true })
+  @ApiNotFoundResponse({ description: 'Evaluation assignment not found' })
+  getApplicableCriteria(@Param('id', ParseUUIDPipe) id: string) {
+    return this.applicabilityEngineService.getApplicableCriteria(id);
   }
 
   @Post()

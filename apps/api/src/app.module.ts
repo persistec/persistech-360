@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module';
 import { CyclesModule } from './cycles/cycles.module';
 import { EvaluationAssignmentsModule } from './evaluation-assignments/evaluation-assignments.module';
 import { EvaluationSubmissionsModule } from './evaluation-submissions/evaluation-submissions.module';
+import { ApplicabilityEngineModule } from './applicability-engine/applicability-engine.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EvaluationSubmissionsModule } from './evaluation-submissions/evaluation
     CyclesModule,
     EvaluationAssignmentsModule,
     EvaluationSubmissionsModule,
+    ApplicabilityEngineModule,
   ],
   controllers: [AppController],
   providers: [AppService],

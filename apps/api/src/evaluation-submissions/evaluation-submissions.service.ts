@@ -9,9 +9,14 @@ import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { UpsertAnswersDto } from './dto/upsert-answers.dto';
 import { Prisma } from '@prisma/client';
 
+import { ApplicabilityEngineService } from '../applicability-engine/applicability-engine.service';
+
 @Injectable()
 export class EvaluationSubmissionsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly applicabilityEngine: ApplicabilityEngineService,
+  ) {}
 
   async create(assignmentId: string) {
     const assignment = await this.prisma.evaluationAssignment.findUnique({
@@ -137,30 +142,25 @@ export class EvaluationSubmissionsService {
       );
     }
 
-    // Fetch criteria and options to validate
-    const criteria = await this.prisma.criterion.findMany({
-      where: { id: { in: criterionIds } },
-      include: { dimension: true, options: true },
-    });
+    // Fetch criteria and options to validate from ApplicabilityEngine
+    const applicableCriteria =
+      await this.applicabilityEngine.getApplicableCriteria(
+        submission.assignmentId,
+      );
 
-    if (criteria.length !== criterionIds.length) {
-      const foundIds = criteria.map((c) => c.id);
-      const missingIds = criterionIds.filter((id) => !foundIds.includes(id));
+    const foundIds = applicableCriteria.map((c) => c.id);
+    const missingIds = criterionIds.filter((id) => !foundIds.includes(id));
+
+    if (missingIds.length > 0) {
       throw new BadRequestException(
-        `Criteria not found: ${missingIds.join(', ')}`,
+        `Criteria not applicable or not found for this assignment: ${missingIds.join(', ')}`,
       );
     }
 
     for (const answerDto of upsertDto.answers) {
-      const criterion = criteria.find((c) => c.id === answerDto.criterionId);
-      if (!criterion!.active) {
-        throw new BadRequestException(`Criterion ${criterion!.id} is inactive`);
-      }
-      if (!criterion!.dimension.active) {
-        throw new BadRequestException(
-          `Dimension for criterion ${criterion!.id} is inactive`,
-        );
-      }
+      const criterion = applicableCriteria.find(
+        (c) => c.id === answerDto.criterionId,
+      );
 
       if (answerDto.criterionOptionId) {
         const option = criterion!.options.find(
@@ -176,7 +176,9 @@ export class EvaluationSubmissionsService {
 
     // Proceed with upserts inside a transaction for atomicity, or parallel promises
     const operations = upsertDto.answers.map((answerDto) => {
-      const criterion = criteria.find((c) => c.id === answerDto.criterionId)!;
+      const criterion = applicableCriteria.find(
+        (c) => c.id === answerDto.criterionId,
+      )!;
       let scoreValueSnapshot: number | null = null;
 
       if (answerDto.criterionOptionId) {

@@ -66,6 +66,15 @@
 - Quais ações administrativas exigem confirmação adicional?
 - Haverá trilha de auditoria visível para RH?
 
+## Decisões de arquitetura em aberto
+
+- Como escalar o motor de elegibilidade para organizações com > 10.000 colaboradores.
+- Se o motor de regras será exposto ao frontend ou rodará 100% no servidor.
+- Limitações do Motor de Aplicabilidade (Applicability Engine):
+  - **Deteção de Liderança:** Apenas verificamos se o colaborador (evaluatee) possui outros colaboradores ativos que reportam a ele (`subordinates` com `status: ACTIVE`). Se o status de liderança estiver embutido apenas em nomeações ou títulos (ex: "Scrum Master") sem que haja colaboradores vinculados ao `managerId`, a liderança não é detetada de forma genérica no momento.
+  - **Rank Hierárquico:** Presumimos que números maiores em `rank` representam posições mais altas na hierarquia (ex: 6 = Diretor, 1 = Estagiário). Avaliações onde o avaliado está "acima" do avaliador ocorrem quando `evaluatee.rank > evaluator.rank`. Se um dos utilizadores não tiver nível hierárquico, esta verificação é ignorada.
+- Qual a estratégia de caching para o motor de elegibilidade.
+
 ## Decisões de produto
 
 - Nome final do sistema.
