@@ -121,6 +121,7 @@ model Criterion {
   dimension          Dimension           @relation(fields: [dimensionId], references: [id])
   options            CriterionOption[]
   applicabilityRules ApplicabilityRule[]
+  answers            EvaluationAnswer[]
 
   @@map("criteria")
 }
@@ -135,6 +136,7 @@ model CriterionOption {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   criterion Criterion @relation(fields: [criterionId], references: [id], onDelete: Cascade)
+  answers   EvaluationAnswer[]
 
   @@map("criterion_options")
 }
@@ -241,7 +243,41 @@ model EvaluationAssignment {
   cycle            Cycle            @relation(fields: [cycleId], references: [id], onDelete: Cascade)
   evaluator        User             @relation("EvaluatorAssignments", fields: [evaluatorId], references: [id], onDelete: Cascade)
   evaluatee        User             @relation("EvaluateeAssignments", fields: [evaluateeId], references: [id], onDelete: Cascade)
+  submission       EvaluationSubmission?
 
   @@unique([cycleId, evaluatorId, evaluateeId])
   @@map("evaluation_assignments")
+}
+
+model EvaluationSubmission {
+  id            String    @id @default(uuid())
+  assignmentId  String    @unique @map("assignment_id")
+  finalComment  String?   @map("final_comment")
+  submittedAt   DateTime? @map("submitted_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  assignment    EvaluationAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  answers       EvaluationAnswer[]
+
+  @@map("evaluation_submissions")
+}
+
+model EvaluationAnswer {
+  id                 String    @id @default(uuid())
+  submissionId       String    @map("submission_id")
+  criterionId        String    @map("criterion_id")
+  criterionOptionId  String?   @map("criterion_option_id")
+  scoreValueSnapshot Float?    @map("score_value_snapshot")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  submission         EvaluationSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  criterion          Criterion            @relation(fields: [criterionId], references: [id])
+  criterionOption    CriterionOption?     @relation(fields: [criterionOptionId], references: [id])
+
+  @@unique([submissionId, criterionId])
+  @@index([criterionId])
+  @@index([criterionOptionId])
+  @@map("evaluation_answers")
 }
