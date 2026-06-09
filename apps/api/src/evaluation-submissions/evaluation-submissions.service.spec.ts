@@ -2,9 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EvaluationSubmissionsService } from './evaluation-submissions.service';
 import { PrismaService } from '../database/prisma.service';
 import { BadRequestException, ConflictException } from '@nestjs/common';
+import { ApplicabilityEngineService } from '../applicability-engine/applicability-engine.service';
 
 describe('EvaluationSubmissionsService', () => {
   let service: EvaluationSubmissionsService;
+
+  const mockApplicabilityEngine = {
+    getApplicableCriteria: jest.fn(),
+  };
 
   const mockPrismaService = {
     evaluationAssignment: {
@@ -36,6 +41,10 @@ describe('EvaluationSubmissionsService', () => {
       providers: [
         EvaluationSubmissionsService,
         { provide: PrismaService, useValue: mockPrismaService },
+        {
+          provide: ApplicabilityEngineService,
+          useValue: mockApplicabilityEngine,
+        },
       ],
     }).compile();
 
@@ -93,11 +102,9 @@ describe('EvaluationSubmissionsService', () => {
       mockPrismaService.evaluationSubmission.findUnique.mockResolvedValue(
         validSubmission,
       );
-      mockPrismaService.criterion.findMany.mockResolvedValue([
+      mockApplicabilityEngine.getApplicableCriteria.mockResolvedValue([
         {
           id: 'c1',
-          active: true,
-          dimension: { active: true },
           options: [{ id: 'o1', scoreValue: 5 }],
         },
       ]);
@@ -132,9 +139,7 @@ describe('EvaluationSubmissionsService', () => {
       mockPrismaService.evaluationSubmission.findUnique.mockResolvedValue(
         validSubmission,
       );
-      mockPrismaService.criterion.findMany.mockResolvedValue([
-        { id: 'c1', active: false, dimension: { active: true }, options: [] },
-      ]);
+      mockApplicabilityEngine.getApplicableCriteria.mockResolvedValue([]);
 
       await expect(
         service.upsertAnswers('s1', {
@@ -147,11 +152,9 @@ describe('EvaluationSubmissionsService', () => {
       mockPrismaService.evaluationSubmission.findUnique.mockResolvedValue(
         validSubmission,
       );
-      mockPrismaService.criterion.findMany.mockResolvedValue([
+      mockApplicabilityEngine.getApplicableCriteria.mockResolvedValue([
         {
           id: 'c1',
-          active: true,
-          dimension: { active: true },
           options: [{ id: 'o1', scoreValue: 5 }],
         },
       ]);
