@@ -13,11 +13,13 @@ import { EvaluationSubmissionsModule } from './evaluation-submissions/evaluation
 import { ApplicabilityEngineModule } from './applicability-engine/applicability-engine.module';
 import { ScoringModule } from './scoring/scoring.module';
 import { ResultsVisibilityModule } from './results-visibility/results-visibility.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     DatabaseModule,
     HealthModule,
+    AuthModule,
     DepartmentsModule,
     HierarchyLevelsModule,
     RolesModule,

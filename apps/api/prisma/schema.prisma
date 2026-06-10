@@ -14,6 +14,11 @@ enum UserStatus {
   REMOVED
 }
 
+enum AppRole {
+  ADMIN
+  EMPLOYEE
+}
+
 enum DimensionType {
   corporate
   departmental
@@ -30,6 +35,7 @@ model User {
   hierarchyLevelId String?         @map("hierarchy_level_id")
   managerId        String?         @map("manager_id")
   status           UserStatus      @default(ACTIVE)
+  appRole          AppRole         @default(EMPLOYEE) @map("app_role")
   createdAt        DateTime        @default(now()) @map("created_at")
   updatedAt        DateTime        @updatedAt @map("updated_at")
 

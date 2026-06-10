@@ -1,10 +1,23 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiHeader,
+} from '@nestjs/swagger';
 import { ResultsVisibilityService } from './results-visibility.service';
 import {
   AdminResultViewDto,
   EmployeeResultViewDto,
 } from './dto/results-visibility.dto';
+import {
+  AuthGuard,
+  AppRoleGuard,
+  EvaluateeAccessGuard,
+  RequireAppRole,
+} from '../auth';
+import { AppRole } from '@prisma/client';
 
 @ApiTags('Results Visibility')
 @Controller('cycles/:cycleId/evaluatees/:evaluateeId/results')
@@ -14,10 +27,16 @@ export class ResultsVisibilityController {
   ) {}
 
   @Get('admin')
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({
+    name: 'x-user-id',
+    description: 'Temporary authentication header containing User UUID',
+    required: true,
+  })
   @ApiOperation({
     summary: 'Get admin result view',
-    description:
-      'Returns a detailed scoring projection. Note: Endpoint access control is deferred to issue #12.',
+    description: 'Returns a detailed scoring projection. Requires ADMIN role.',
   })
   @ApiParam({ name: 'cycleId', format: 'uuid' })
   @ApiParam({ name: 'evaluateeId', format: 'uuid' })
@@ -37,10 +56,16 @@ export class ResultsVisibilityController {
   }
 
   @Get('employee')
+  @UseGuards(AuthGuard, EvaluateeAccessGuard)
+  @ApiHeader({
+    name: 'x-user-id',
+    description: 'Temporary authentication header containing User UUID',
+    required: true,
+  })
   @ApiOperation({
     summary: 'Get evaluated employee result view',
     description:
-      'Returns an anonymized aggregate scoring projection or an insufficient responses status. Note: Endpoint access control is deferred to issue #12.',
+      'Returns an anonymized aggregate scoring projection or an insufficient responses status. Requires ADMIN role or the evaluated employee.',
   })
   @ApiParam({ name: 'cycleId', format: 'uuid' })
   @ApiParam({ name: 'evaluateeId', format: 'uuid' })

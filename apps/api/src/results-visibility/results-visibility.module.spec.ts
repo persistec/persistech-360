@@ -1,21 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ResultsVisibilityModule } from './results-visibility.module';
 import { ResultsVisibilityService } from './results-visibility.service';
-import { ScoringModule } from '../scoring/scoring.module';
-import { PrismaService } from '../database/prisma.service';
 
 describe('ResultsVisibilityModule', () => {
   let module: TestingModule;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [ResultsVisibilityModule, ScoringModule],
-      providers: [
-        {
-          provide: PrismaService,
-          useValue: {},
-        },
-      ],
+      imports: [ResultsVisibilityModule],
     }).compile();
   });
 

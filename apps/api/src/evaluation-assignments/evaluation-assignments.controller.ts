@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -16,7 +17,10 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiHeader,
 } from '@nestjs/swagger';
+import { AppRole } from '@prisma/client';
+import { AuthGuard, AppRoleGuard, RequireAppRole } from '../auth';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { UpdateAssignmentDto } from './dto/update-assignment.dto';
 import { AssignmentResponseDto } from './dto/assignment-response.dto';
@@ -56,6 +60,9 @@ export class EvaluationAssignmentsController {
   }
 
   @Post()
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Create a manual evaluation assignment' })
   @ApiCreatedResponse({ type: AssignmentResponseDto })
   @ApiBadRequestResponse({
@@ -67,6 +74,9 @@ export class EvaluationAssignmentsController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Update an evaluation assignment' })
   @ApiOkResponse({ type: AssignmentResponseDto })
   @ApiBadRequestResponse({
@@ -82,6 +92,9 @@ export class EvaluationAssignmentsController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Delete an evaluation assignment' })
   @ApiOkResponse({ type: AssignmentResponseDto })
   @ApiNotFoundResponse({ description: 'Evaluation assignment not found' })

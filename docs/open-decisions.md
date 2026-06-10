@@ -79,7 +79,7 @@
   - A visibilidade e anonimização dos resultados foram parcialmente implementadas na Fase de Result Visibility (Issue #11) gerando duas views (`admin` e `employee`).
 - **Limitações da Visualização de Resultados (Results Visibility):**
   - **Comentários**: Exclusão temporária e completa dos comentários finais na Employee View e Admin View para prevenir de-anonimização não intencional até que haja design explícito para a visibilidade de comentários abertos.
-  - **Autorização**: A segurança de acesso real baseada no perfil do utilizador para os endpoints `/admin` e `/employee` está diferida para as implementações de Autenticação/Autorização (Issue #12). Estes endpoints operam atualmente sem proteção de sessão.
+  - **Autorização**: A segurança de acesso real baseada no perfil do utilizador para os endpoints `/admin` e `/employee` está agora protegida (Issue #12) usando o header `x-user-id` e validação do avaliado e papel. Mutações administrativas estruturais (ex: `/users`, `/departments`) também estão protegidas para `AppRole.ADMIN`. Contudo, a autorização de proteção por `Submission` (EvaluationSubmissionsController) foi adiada porque requer validações mais complexas com a base de dados em cada request (validar que o evaluatorId do Assignment corresponde ao utilizador autenticado). Fica pendente para uma fase posterior que possa introduzir Guards ou Interceptors mais granulares por recurso.
 
 ## Decisões de produto
 

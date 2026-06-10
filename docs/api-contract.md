@@ -84,8 +84,9 @@ POST /api/v1/cycles/:id/generate-assignments
 ## Endpoints administrativos base
 
 Durante a fundação do MVP, o backend expõe CRUD administrativo para dados
-estruturais do domínio. Estes endpoints não implementam autenticação nem
-autorização ainda; antes de produção devem ser protegidos no backend.
+estruturais do domínio. Estes endpoints agora exigem autenticação via cabeçalho
+`x-user-id` e validação do papel do utilizador. As operações de escrita (POST, PATCH, DELETE)
+exigem que o utilizador autenticado possua a `AppRole` configurada como `ADMIN`.
 
 ```text
 GET    /api/v1/departments

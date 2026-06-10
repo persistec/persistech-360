@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -16,7 +17,10 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiHeader,
 } from '@nestjs/swagger';
+import { AppRole } from '@prisma/client';
+import { AuthGuard, AppRoleGuard, RequireAppRole } from '../auth';
 import { DepartmentsService } from './departments.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { DepartmentResponseDto } from './dto/department-response.dto';
@@ -43,6 +47,9 @@ export class DepartmentsController {
   }
 
   @Post()
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Create a department' })
   @ApiCreatedResponse({ type: DepartmentResponseDto })
   @ApiBadRequestResponse({ description: 'Invalid parent department' })
@@ -52,6 +59,9 @@ export class DepartmentsController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Update a department' })
   @ApiOkResponse({ type: DepartmentResponseDto })
   @ApiBadRequestResponse({ description: 'Invalid parent department' })
@@ -65,6 +75,9 @@ export class DepartmentsController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Delete a department' })
   @ApiOkResponse({ type: DepartmentResponseDto })
   @ApiBadRequestResponse({ description: 'Department still has relations' })
