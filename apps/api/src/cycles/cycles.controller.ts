@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -15,7 +16,10 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiHeader,
 } from '@nestjs/swagger';
+import { AppRole } from '@prisma/client';
+import { AuthGuard, AppRoleGuard, RequireAppRole } from '../auth';
 import { CreateCycleDto } from './dto/create-cycle.dto';
 import { UpdateCycleDto } from './dto/update-cycle.dto';
 import { CycleResponseDto } from './dto/cycle-response.dto';
@@ -42,6 +46,9 @@ export class CyclesController {
   }
 
   @Post()
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Create a cycle' })
   @ApiCreatedResponse({ type: CycleResponseDto })
   @ApiBadRequestResponse({
@@ -52,6 +59,9 @@ export class CyclesController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Update a cycle' })
   @ApiOkResponse({ type: CycleResponseDto })
   @ApiBadRequestResponse({
@@ -63,6 +73,9 @@ export class CyclesController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Delete a cycle' })
   @ApiOkResponse({ type: CycleResponseDto })
   @ApiBadRequestResponse({
@@ -74,6 +87,9 @@ export class CyclesController {
   }
 
   @Post(':id/open')
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Open a cycle' })
   @ApiOkResponse({ type: CycleResponseDto })
   @ApiBadRequestResponse({
@@ -85,6 +101,9 @@ export class CyclesController {
   }
 
   @Post(':id/close')
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Close a cycle' })
   @ApiOkResponse({ type: CycleResponseDto })
   @ApiBadRequestResponse({
@@ -96,6 +115,9 @@ export class CyclesController {
   }
 
   @Post(':id/generate-assignments')
+  @UseGuards(AuthGuard, AppRoleGuard)
+  @RequireAppRole(AppRole.ADMIN)
+  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({
     summary: 'Generate automatic evaluation assignments for a cycle',
   })

@@ -25,6 +25,7 @@ department_id
 role_id
 hierarchy_level_id
 manager_id
+app_role
 status
 created_at
 updated_at
@@ -36,6 +37,7 @@ Notas:
 - `workspace_email` deve corresponder ao email corporativo.
 - `manager_id` aponta para outro `User`.
 - `status` pode indicar se o colaborador está ativo, inativo, suspenso ou removido.
+- `app_role` indica o nível de acesso da aplicação (ADMIN ou EMPLOYEE).
 - A API administrativa aceita `google_sub` para preparação de integração, mas não deve expor este campo nas respostas públicas.
 
 ### Department

@@ -24,9 +24,9 @@ O sistema não é uma plataforma de votação.
 ## Cadastros administrativos base
 
 Os cadastros administrativos de departamentos, níveis hierárquicos, cargos e
-utilizadores são mantidos pelo backend como fundação do domínio. Estes endpoints
-não implementam autenticação ou autorização ainda, mas já devem validar dados e
-relações no servidor.
+utilizadores são mantidos pelo backend como fundação do domínio.
+
+A partir de agora, estes endpoints (mutações e consultas administrativas) exigem autenticação via header `x-user-id` e validação de permissões baseada no campo `AppRole` (ADMIN ou EMPLOYEE). Mutações estruturais estão restritas ao nível ADMIN.
 
 Regras:
 
