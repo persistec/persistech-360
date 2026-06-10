@@ -13,6 +13,7 @@ async function bootstrap() {
       ? process.env.WEB_APP_URL.split(',')
       : 'http://localhost:3000',
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'x-user-id'],
   });
 
   app.useGlobalPipes(
