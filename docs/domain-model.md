@@ -576,3 +576,8 @@ As saídas incluem:
 - `naAnswerCount`: Respostas não aplicáveis (`null`) ou em branco, ignoradas nas médias.
 - `validSubmissionCount`: Número de submissões concluídas que continham pelo menos uma resposta com pontuação real.
 - `minimumResponseThresholdMet`: Um boolean (baseado em validSubmissionCount >= 3) que indicará a elegibilidade de visibilidade na fase posterior.
+
+### Results Visibility Contexts
+A pontuação detalhada gerada pelo `ScoringService` não pode ser retornada indiscriminadamente. O sistema expõe duas visões de resultado com regras restritas de anonimização:
+- **Admin View**: Expõe detalhes da pontuação, métricas e breakdown por tipo de relação (`relationships`). Não inclui identificadores diretos de avaliadores caso não estejam no payload, mantendo a visão como uma projeção gerencial e não um audit trail bruto.
+- **Evaluated Employee View**: Estritamente anonimizada. Nunca expõe identificadores diretos de avaliadores (`evaluatorId`), submissões, atribuições (`assignmentId`) ou breakdown por tipo de relação. Apenas expõe os agregados (score geral, pontuações de dimensão e critério) se o limite mínimo de respostas (`minimumResponseThresholdMet = true`) for cumprido; caso contrário, devolve estatuto de `insufficient_responses`, score nulo e nenhum detalhe dimensional ou por critério. Os comentários finais também são removidos desta view.

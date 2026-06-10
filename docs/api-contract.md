@@ -231,4 +231,5 @@ Exemplo:
 ### Scoring and Results
 
 - `GET /api/v1/cycles/:id/results`: Retorna os resultados agregados de um ciclo de avaliação (apenas inclui métricas, sem quebrar políticas de visibilidade, aguardando issue #11).
-- `GET /api/v1/cycles/:cycleId/evaluatees/:evaluateeId/results`: Retorna os resultados agregados para um avaliado num ciclo específico. Inclui contagens de respostas não aplicáveis e status do threshold mínimo de resposta.
+- `GET /api/v1/cycles/:cycleId/evaluatees/:evaluateeId/results/admin`: Retorna os resultados detalhados num ciclo específico para fins de visualização administrativa. (Nota: autenticação adiada).
+- `GET /api/v1/cycles/:cycleId/evaluatees/:evaluateeId/results/employee`: Retorna uma versão anonimizada dos resultados, removendo dados não seguros (como relationships) e retornando agregados com estado de status (`insufficient_responses` vs `published`). Se insuficientes, oculta o detalhe. (Nota: autenticação adiada).

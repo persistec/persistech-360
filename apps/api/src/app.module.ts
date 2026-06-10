@@ -12,6 +12,7 @@ import { EvaluationAssignmentsModule } from './evaluation-assignments/evaluation
 import { EvaluationSubmissionsModule } from './evaluation-submissions/evaluation-submissions.module';
 import { ApplicabilityEngineModule } from './applicability-engine/applicability-engine.module';
 import { ScoringModule } from './scoring/scoring.module';
+import { ResultsVisibilityModule } from './results-visibility/results-visibility.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ScoringModule } from './scoring/scoring.module';
     EvaluationSubmissionsModule,
     ApplicabilityEngineModule,
     ScoringModule,
+    ResultsVisibilityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -76,7 +76,10 @@
 - Qual a estratégia de caching para o motor de elegibilidade.
 - **Limitações do Motor de Pontuação (Scoring):**
   - O campo `categoryWeight` do modelo `WeightRule` foi propositadamente ignorado por falta de clareza sobre qual "categoria" (dimensão, tipo, etc.) se refere. Fica pendente de decisão e especificação formal antes de ser integrado na fórmula.
-  - A visibilidade e anonimização dos resultados foram deliberadamente deixadas para a Fase de Result Visibility (Issue #11), sendo aqui exposta apenas a métrica agregada.
+  - A visibilidade e anonimização dos resultados foram parcialmente implementadas na Fase de Result Visibility (Issue #11) gerando duas views (`admin` e `employee`).
+- **Limitações da Visualização de Resultados (Results Visibility):**
+  - **Comentários**: Exclusão temporária e completa dos comentários finais na Employee View e Admin View para prevenir de-anonimização não intencional até que haja design explícito para a visibilidade de comentários abertos.
+  - **Autorização**: A segurança de acesso real baseada no perfil do utilizador para os endpoints `/admin` e `/employee` está diferida para as implementações de Autenticação/Autorização (Issue #12). Estes endpoints operam atualmente sem proteção de sessão.
 
 ## Decisões de produto
 
