@@ -123,7 +123,7 @@ Regras:
 
 ## Mínimo de respostas
 
-Se um avaliado receber menos de três avaliações válidas, resultados detalhados não devem ser publicados para esse avaliado.
+Se um avaliado receber menos de três avaliações válidas, resultados detalhados não devem ser publicados para esse avaliado. Na visão do colaborador (Evaluated Employee View), isto traduz-se no retorno de um status `insufficient_responses`, com pontuação nula (`score: null`), ocultação total de métricas de dimensões e critérios (arrays vazios) e ocultação de comentários.
 
 Mensagem recomendada:
 
@@ -131,7 +131,13 @@ Mensagem recomendada:
 Dados insuficientes para consolidação.
 ```
 
-Administradores autorizados continuam a poder consultar os registos internos.
+Administradores autorizados continuam a poder consultar os registos internos através da Admin View, que não anonimiza o detalhe (embora não exponha identificadores brutos).
+
+## Anonimização
+
+- Avaliados não podem ver a identidade dos avaliadores.
+- Não devem ser expostos em endpoints direcionados aos colaboradores o `evaluatorId`, `assignmentId`, `submissionId` nem `relationships` (pontuações agrupadas por relação/departamento, por poderem facilitar a dedução de quem avaliou o quê).
+- Comentários finais estão, de momento, omitidos das visualizações como mecanismo de precaução até haver implementação robusta contra quebras de anonimato.
 
 ## Cálculo ponderado
 
