@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Alert, LoadingSpinner } from '@/components/ui';
+import { PageHeader, Table, TableRow, TableCell, Alert, LoadingSpinner, EmptyState, StatusBadge } from '@/components/ui';
 
 interface Submission {
   id: string;
@@ -48,18 +48,16 @@ export default function SubmissionsPage() {
 
       <Table headers={['Submission ID', 'Assignment ID', 'Status', 'Submitted At', 'Created At']}>
         {submissions.length === 0 ? (
-          <TableRow>
-            <TableCell className="text-center text-gray-500" colSpan={5}>No submissions found.</TableCell>
-          </TableRow>
+          <EmptyState colSpan={5}>No submissions found.</EmptyState>
         ) : (
           submissions.map((sub) => (
             <TableRow key={sub.id}>
               <TableCell className="font-mono text-xs">{sub.id}</TableCell>
-              <TableCell className="font-mono text-xs text-gray-500">{sub.assignmentId}</TableCell>
+              <TableCell className="font-mono text-xs text-slate-400">{sub.assignmentId}</TableCell>
               <TableCell>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${sub.status === 'SUBMITTED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                <StatusBadge tone={sub.status === 'SUBMITTED' ? 'success' : 'warning'}>
                   {sub.status}
-                </span>
+                </StatusBadge>
               </TableCell>
               <TableCell>{sub.submittedAt ? new Date(sub.submittedAt).toLocaleString() : '-'}</TableCell>
               <TableCell>{new Date(sub.createdAt).toLocaleString()}</TableCell>

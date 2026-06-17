@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Label, LoadingSpinner } from '@/components/ui';
+import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Label, LoadingSpinner, FormPanel, EmptyState, StatusBadge } from '@/components/ui';
 
 interface Cycle {
   id: string;
@@ -102,6 +102,7 @@ export default function CyclesPage() {
     <div>
       <PageHeader 
         title="Evaluation Cycles" 
+        description="Configure evaluation windows and trigger cycle actions without changing backend rules."
         action={
           view === 'list' && (
             <Button onClick={() => {
@@ -129,20 +130,18 @@ export default function CyclesPage() {
       {view === 'list' ? (
         <Table headers={['Name', 'Status', 'Start / End', 'Actions']}>
           {cycles.length === 0 ? (
-            <TableRow>
-              <TableCell className="text-center text-gray-500" colSpan={4}>No cycles found.</TableCell>
-            </TableRow>
+            <EmptyState colSpan={4}>No cycles found.</EmptyState>
           ) : (
             cycles.map((cycle) => (
               <TableRow key={cycle.id}>
                 <TableCell>
                   <div className="font-medium">{cycle.name}</div>
-                  <div className="text-xs text-gray-500">{cycle.description}</div>
+                  <div className="text-xs text-slate-400">{cycle.description}</div>
                 </TableCell>
                 <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium bg-gray-100`}>
+                  <StatusBadge tone={cycle.status === 'open' ? 'success' : cycle.status === 'closed' ? 'danger' : 'neutral'}>
                     {cycle.status}
-                  </span>
+                  </StatusBadge>
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
@@ -193,8 +192,7 @@ export default function CyclesPage() {
           )}
         </Table>
       ) : (
-        <div className="bg-white p-6 rounded-lg border border-gray-200 max-w-xl">
-          <h2 className="text-lg font-medium mb-4">{view === 'create' ? 'Create New Cycle' : 'Edit Cycle'}</h2>
+        <FormPanel title={view === 'create' ? 'Create New Cycle' : 'Edit Cycle'} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label>Name</Label>
@@ -212,7 +210,7 @@ export default function CyclesPage() {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <Label>Start Date</Label>
                 <Input 
@@ -243,7 +241,7 @@ export default function CyclesPage() {
               </Button>
             </div>
           </form>
-        </div>
+        </FormPanel>
       )}
     </div>
   );

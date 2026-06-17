@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Label, LoadingSpinner } from '@/components/ui';
+import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Label, LoadingSpinner, FormPanel, EmptyState } from '@/components/ui';
 
 interface HierarchyLevel {
   id: string;
@@ -76,6 +76,7 @@ export default function HierarchyLevelsPage() {
     <div>
       <PageHeader 
         title="Hierarchy Levels" 
+        description="Define rank ordering used by backend eligibility and hierarchy rules."
         action={
           view === 'list' && (
             <Button onClick={() => {
@@ -93,9 +94,7 @@ export default function HierarchyLevelsPage() {
       {view === 'list' ? (
         <Table headers={['Name', 'Rank', 'Created At', 'Actions']}>
           {levels.length === 0 ? (
-            <TableRow>
-              <TableCell className="text-center text-gray-500" colSpan={4}>No hierarchy levels found.</TableCell>
-            </TableRow>
+            <EmptyState colSpan={4}>No hierarchy levels found.</EmptyState>
           ) : (
             levels.map((level) => (
               <TableRow key={level.id}>
@@ -120,8 +119,7 @@ export default function HierarchyLevelsPage() {
           )}
         </Table>
       ) : (
-        <div className="bg-white p-6 rounded-lg border border-gray-200 max-w-xl">
-          <h2 className="text-lg font-medium mb-4">{view === 'create' ? 'Create New Level' : 'Edit Level'}</h2>
+        <FormPanel title={view === 'create' ? 'Create New Level' : 'Edit Level'} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label>Name</Label>
@@ -152,7 +150,7 @@ export default function HierarchyLevelsPage() {
               </Button>
             </div>
           </form>
-        </div>
+        </FormPanel>
       )}
     </div>
   );
