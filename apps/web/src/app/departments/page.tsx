@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Label, LoadingSpinner } from '@/components/ui';
+import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Select, Label, LoadingSpinner, FormPanel, EmptyState } from '@/components/ui';
 
 interface Department {
   id: string;
@@ -74,6 +74,7 @@ export default function DepartmentsPage() {
     <div>
       <PageHeader 
         title="Departments" 
+        description="Maintain organization departments used by users, roles, and evaluation reporting."
         action={
           view === 'list' && (
             <Button onClick={() => {
@@ -91,9 +92,7 @@ export default function DepartmentsPage() {
       {view === 'list' ? (
         <Table headers={['Name', 'Parent ID', 'Created At', 'Actions']}>
           {departments.length === 0 ? (
-            <TableRow>
-              <TableCell className="text-center text-gray-500" colSpan={4}>No departments found.</TableCell>
-            </TableRow>
+            <EmptyState colSpan={4}>No departments found.</EmptyState>
           ) : (
             departments.map((dept) => (
               <TableRow key={dept.id}>
@@ -118,8 +117,7 @@ export default function DepartmentsPage() {
           )}
         </Table>
       ) : (
-        <div className="bg-white p-6 rounded-lg border border-gray-200 max-w-xl">
-          <h2 className="text-lg font-medium mb-4">{view === 'create' ? 'Create New Department' : 'Edit Department'}</h2>
+        <FormPanel title={view === 'create' ? 'Create New Department' : 'Edit Department'} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label>Name</Label>
@@ -132,8 +130,7 @@ export default function DepartmentsPage() {
             </div>
             <div>
               <Label>Parent Department (Optional)</Label>
-              <select
-                className="flex h-10 w-full items-center justify-between rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Select
                 value={formData.parentId}
                 onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
               >
@@ -144,7 +141,7 @@ export default function DepartmentsPage() {
                     <option key={d.id} value={d.id}>{d.name}</option>
                   ))
                 }
-              </select>
+              </Select>
             </div>
             <div className="flex gap-2 pt-4">
               <Button type="submit">Save</Button>
@@ -156,7 +153,7 @@ export default function DepartmentsPage() {
               </Button>
             </div>
           </form>
-        </div>
+        </FormPanel>
       )}
     </div>
   );

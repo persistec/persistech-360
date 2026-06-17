@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Label, LoadingSpinner } from '@/components/ui';
+import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Select, Label, LoadingSpinner, FormPanel, EmptyState, StatusBadge } from '@/components/ui';
 
 interface User {
   id: string;
@@ -110,6 +110,7 @@ export default function UsersPage() {
     <div>
       <PageHeader 
         title="Users" 
+        description="Create and maintain employee records used by assignment and results workflows."
         action={
           view === 'list' && (
             <Button onClick={() => {
@@ -130,21 +131,19 @@ export default function UsersPage() {
       {view === 'list' ? (
         <Table headers={['Name', 'Email', 'Status', 'Dept/Role/Level', 'Actions']}>
           {users.length === 0 ? (
-            <TableRow>
-              <TableCell className="text-center text-gray-500" colSpan={5}>No users found.</TableCell>
-            </TableRow>
+            <EmptyState colSpan={5}>No users found.</EmptyState>
           ) : (
             users.map((user) => (
               <TableRow key={user.id}>
                 <TableCell className="font-medium">{user.name}</TableCell>
                 <TableCell>{user.workspaceEmail}</TableCell>
                 <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  <StatusBadge tone={user.status === 'ACTIVE' ? 'success' : 'danger'}>
                     {user.status}
-                  </span>
+                  </StatusBadge>
                 </TableCell>
                 <TableCell>
-                  <div className="text-xs text-gray-500 space-y-1">
+                  <div className="space-y-1 text-xs text-slate-400">
                     <div>Dept: {departments.find(d => d.id === user.departmentId)?.name || '-'}</div>
                     <div>Role: {roles.find(r => r.id === user.roleId)?.name || '-'}</div>
                     <div>Level: {hierarchyLevels.find(l => l.id === user.hierarchyLevelId)?.name || '-'}</div>
@@ -177,10 +176,9 @@ export default function UsersPage() {
           )}
         </Table>
       ) : (
-        <div className="bg-white p-6 rounded-lg border border-gray-200 max-w-2xl">
-          <h2 className="text-lg font-medium mb-4">{view === 'create' ? 'Create New User' : 'Edit User'}</h2>
+        <FormPanel title={view === 'create' ? 'Create New User' : 'Edit User'}>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <Label>Name</Label>
                 <Input 
@@ -200,23 +198,21 @@ export default function UsersPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <Label>Status</Label>
-                <select
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <Select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                 >
                   <option value="ACTIVE">Active</option>
                   <option value="SUSPENDED">Suspended</option>
                   <option value="ARCHIVED">Archived</option>
-                </select>
+                </Select>
               </div>
               <div>
                 <Label>Manager (Optional)</Label>
-                <select
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <Select
                   value={formData.managerId}
                   onChange={(e) => setFormData({ ...formData, managerId: e.target.value })}
                 >
@@ -226,43 +222,40 @@ export default function UsersPage() {
                     .map(u => (
                     <option key={u.id} value={u.id}>{u.name}</option>
                   ))}
-                </select>
+                </Select>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid gap-4 sm:grid-cols-3">
               <div>
                 <Label>Department</Label>
-                <select
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <Select
                   value={formData.departmentId}
                   onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}
                 >
                   <option value="">None</option>
                   {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                </select>
+                </Select>
               </div>
               <div>
                 <Label>Role</Label>
-                <select
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <Select
                   value={formData.roleId}
                   onChange={(e) => setFormData({ ...formData, roleId: e.target.value })}
                 >
                   <option value="">None</option>
                   {roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-                </select>
+                </Select>
               </div>
               <div>
                 <Label>Hierarchy Level</Label>
-                <select
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <Select
                   value={formData.hierarchyLevelId}
                   onChange={(e) => setFormData({ ...formData, hierarchyLevelId: e.target.value })}
                 >
                   <option value="">None</option>
                   {hierarchyLevels.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
-                </select>
+                </Select>
               </div>
             </div>
 
@@ -276,11 +269,11 @@ export default function UsersPage() {
               </Button>
             </div>
             
-            <p className="text-xs text-gray-500 mt-4">
+            <p className="mt-4 text-xs leading-5 text-slate-400">
               Note: System app roles (e.g. ADMIN) are not currently exposed in the API contract and cannot be modified here.
             </p>
           </form>
-        </div>
+        </FormPanel>
       )}
     </div>
   );

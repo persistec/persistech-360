@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Label, LoadingSpinner } from '@/components/ui';
+import { PageHeader, Table, TableRow, TableCell, Button, Alert, Select, Label, LoadingSpinner, FormPanel, EmptyState, StatusBadge } from '@/components/ui';
 
 interface Assignment {
   id: string;
@@ -101,6 +101,7 @@ export default function AssignmentsPage() {
     <div>
       <PageHeader 
         title="Assignments" 
+        description="Inspect generated assignments and create manual assignments through the existing API contract."
         action={
           view === 'list' && (
             <Button onClick={() => setView('create')}>
@@ -115,9 +116,7 @@ export default function AssignmentsPage() {
       {view === 'list' ? (
         <Table headers={['Cycle', 'Evaluator', 'Evaluatee', 'Relation', 'Status', 'Required', 'Actions']}>
           {assignments.length === 0 ? (
-            <TableRow>
-              <TableCell className="text-center text-gray-500" colSpan={7}>No assignments found.</TableCell>
-            </TableRow>
+            <EmptyState colSpan={7}>No assignments found.</EmptyState>
           ) : (
             assignments.map((assignment) => (
               <TableRow key={assignment.id}>
@@ -126,9 +125,9 @@ export default function AssignmentsPage() {
                 <TableCell>{getUserName(assignment.evaluateeId)}</TableCell>
                 <TableCell>{assignment.relationshipType}</TableCell>
                 <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium bg-gray-100`}>
+                  <StatusBadge tone={assignment.status === 'completed' ? 'success' : 'neutral'}>
                     {assignment.status}
-                  </span>
+                  </StatusBadge>
                 </TableCell>
                 <TableCell>{assignment.isRequired ? 'Yes' : 'No'}</TableCell>
                 <TableCell>
@@ -141,49 +140,46 @@ export default function AssignmentsPage() {
           )}
         </Table>
       ) : (
-        <div className="bg-white p-6 rounded-lg border border-gray-200 max-w-xl">
-          <h2 className="text-lg font-medium mb-4">Create Manual Assignment</h2>
+        <FormPanel title="Create Manual Assignment" className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label>Cycle</Label>
-              <select
+              <Select
                 required
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.cycleId}
                 onChange={(e) => setFormData({ ...formData, cycleId: e.target.value })}
               >
                 <option value="">Select Cycle</option>
                 {cycles.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
+              </Select>
             </div>
             <div>
               <Label>Evaluator</Label>
-              <select
+              <Select
                 required
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.evaluatorId}
                 onChange={(e) => setFormData({ ...formData, evaluatorId: e.target.value })}
               >
                 <option value="">Select Evaluator</option>
                 {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-              </select>
+              </Select>
             </div>
             <div>
               <Label>Evaluatee</Label>
-              <select
+              <Select
                 required
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.evaluateeId}
                 onChange={(e) => setFormData({ ...formData, evaluateeId: e.target.value })}
               >
                 <option value="">Select Evaluatee</option>
                 {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-              </select>
+              </Select>
             </div>
             <div className="flex items-center gap-2">
               <input 
                 type="checkbox" 
                 id="isRequired"
+                className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-cyan-400 focus:ring-cyan-300"
                 checked={formData.isRequired}
                 onChange={(e) => setFormData({ ...formData, isRequired: e.target.checked })}
               />
@@ -199,7 +195,7 @@ export default function AssignmentsPage() {
               </Button>
             </div>
           </form>
-        </div>
+        </FormPanel>
       )}
     </div>
   );

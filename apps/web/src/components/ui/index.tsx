@@ -10,13 +10,13 @@ export function Button({
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
 }) {
-  const baseStyles = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background';
+  const baseStyles = 'inline-flex items-center justify-center rounded-md font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 disabled:pointer-events-none disabled:opacity-45';
   
   const variants = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700',
-    secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
-    danger: 'bg-red-600 text-white hover:bg-red-700',
-    ghost: 'hover:bg-gray-100 hover:text-gray-900',
+    primary: 'bg-cyan-500 text-slate-950 shadow-[0_0_24px_rgba(34,211,238,0.22)] hover:bg-cyan-300',
+    secondary: 'border border-slate-600/80 bg-slate-900/80 text-slate-100 hover:border-cyan-400/70 hover:bg-slate-800',
+    danger: 'bg-red-500 text-white hover:bg-red-400',
+    ghost: 'text-slate-300 hover:bg-slate-800/80 hover:text-white',
   };
 
   const sizes = {
@@ -41,7 +41,7 @@ export function Input({
 }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className={`flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`flex h-10 w-full rounded-md border border-slate-600/80 bg-slate-950/70 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 shadow-inner shadow-black/20 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400/35 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       {...props}
     />
   );
@@ -54,7 +54,7 @@ export function Select({
 }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
-      className={`flex h-10 w-full items-center justify-between rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`flex h-10 w-full items-center justify-between rounded-md border border-slate-600/80 bg-slate-950/70 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 shadow-inner shadow-black/20 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400/35 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       {...props}
     >
       {children}
@@ -69,7 +69,7 @@ export function Label({
 }: React.LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
-      className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}
+      className={`mb-2 block text-sm font-medium leading-none text-slate-200 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}
       {...props}
     >
       {children}
@@ -82,18 +82,19 @@ export function Alert({
   children,
   className = '',
 }: {
-  variant?: 'error' | 'success' | 'info';
+  variant?: 'error' | 'success' | 'warning' | 'info';
   children: React.ReactNode;
   className?: string;
 }) {
   const styles = {
-    error: 'bg-red-50 border-red-200 text-red-800',
-    success: 'bg-green-50 border-green-200 text-green-800',
-    info: 'bg-blue-50 border-blue-200 text-blue-800',
+    error: 'border-red-400/40 bg-red-950/55 text-red-100',
+    success: 'border-emerald-400/40 bg-emerald-950/45 text-emerald-100',
+    warning: 'border-amber-300/45 bg-amber-950/45 text-amber-100',
+    info: 'border-cyan-300/40 bg-cyan-950/45 text-cyan-100',
   };
 
   return (
-    <div className={`rounded-md border p-4 text-sm ${styles[variant]} ${className}`}>
+    <div className={`rounded-md border p-4 text-sm leading-6 shadow-sm ${styles[variant]} ${className}`}>
       {children}
     </div>
   );
@@ -109,20 +110,21 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">{title}</h1>
-        {description && <p className="text-sm text-gray-500 mt-1">{description}</p>}
+    <div className="mb-8 flex flex-col gap-4 border-b border-cyan-400/15 pb-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="max-w-3xl">
+        <div className="mb-2 h-1 w-12 rounded-full bg-cyan-400 shadow-[0_0_18px_rgba(34,211,238,0.45)]" />
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-50">{title}</h1>
+        {description && <p className="mt-2 text-sm leading-6 text-slate-400">{description}</p>}
       </div>
-      {action && <div>{action}</div>}
+      {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
     </div>
   );
 }
 
 export function LoadingSpinner() {
   return (
-    <div className="flex justify-center items-center p-8">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    <div className="flex min-h-48 items-center justify-center p-8">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-300/20 border-b-cyan-300"></div>
     </div>
   );
 }
@@ -135,12 +137,12 @@ export function Table({
   children: React.ReactNode;
 }) {
   return (
-    <div className="w-full overflow-auto rounded-md border border-gray-200">
+    <div className="w-full overflow-auto rounded-lg border border-slate-700/70 bg-slate-900/70 shadow-2xl shadow-black/20">
       <table className="w-full caption-bottom text-sm text-left">
-        <thead className="bg-gray-50 border-b border-gray-200">
+        <thead className="border-b border-slate-700/80 bg-slate-950/80">
           <tr>
             {headers.map((h, i) => (
-              <th key={i} className="h-12 px-4 text-left align-middle font-medium text-gray-500">
+              <th key={i} className="h-12 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-slate-400">
                 {h}
               </th>
             ))}
@@ -155,9 +157,98 @@ export function Table({
 }
 
 export function TableRow({ children, className = '' }: { children: React.ReactNode, className?: string }) {
-  return <tr className={`border-b transition-colors hover:bg-gray-50 ${className}`}>{children}</tr>;
+  return <tr className={`border-b border-slate-800/90 text-slate-200 transition-colors hover:bg-cyan-400/5 ${className}`}>{children}</tr>;
 }
 
 export function TableCell({ children, className = '', colSpan }: { children: React.ReactNode, className?: string, colSpan?: number }) {
   return <td className={`p-4 align-middle ${className}`} colSpan={colSpan}>{children}</td>;
+}
+
+export function Card({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`rounded-lg border border-slate-700/70 bg-slate-900/70 p-6 shadow-2xl shadow-black/20 ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+export function DashboardCard({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="group rounded-lg border border-slate-700/70 bg-slate-900/70 p-6 shadow-2xl shadow-black/20 transition hover:border-cyan-400/45 hover:bg-slate-900">
+      <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-md border border-cyan-300/25 bg-cyan-400/10 text-cyan-200 shadow-[0_0_22px_rgba(34,211,238,0.12)]">
+        <span className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.8)]" />
+      </div>
+      <h3 className="text-lg font-semibold text-slate-50">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-slate-400">{description}</p>
+    </div>
+  );
+}
+
+export function FormPanel({
+  title,
+  children,
+  className = '',
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <Card className={`max-w-2xl ${className}`}>
+      <h2 className="mb-5 text-lg font-semibold text-slate-50">{title}</h2>
+      {children}
+    </Card>
+  );
+}
+
+export function EmptyState({
+  colSpan,
+  children,
+}: {
+  colSpan: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <TableRow className="hover:bg-transparent">
+      <TableCell className="py-12 text-center text-slate-400" colSpan={colSpan}>
+        <div className="mx-auto max-w-sm rounded-md border border-dashed border-slate-700 bg-slate-950/40 px-5 py-6">
+          {children}
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+export function StatusBadge({
+  tone = 'neutral',
+  children,
+}: {
+  tone?: 'neutral' | 'success' | 'warning' | 'danger' | 'info';
+  children: React.ReactNode;
+}) {
+  const tones = {
+    neutral: 'border-slate-500/40 bg-slate-800 text-slate-200',
+    success: 'border-emerald-400/35 bg-emerald-400/10 text-emerald-200',
+    warning: 'border-amber-300/35 bg-amber-300/10 text-amber-100',
+    danger: 'border-red-400/35 bg-red-400/10 text-red-100',
+    info: 'border-cyan-300/35 bg-cyan-300/10 text-cyan-100',
+  };
+
+  return (
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${tones[tone]}`}>
+      {children}
+    </span>
+  );
 }

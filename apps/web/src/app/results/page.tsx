@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Button, Alert, Label, LoadingSpinner } from '@/components/ui';
+import { PageHeader, Button, Alert, Select, Label, LoadingSpinner, Card } from '@/components/ui';
 
 interface Cycle { id: string; name: string; }
 interface User { id: string; name: string; }
@@ -103,47 +103,47 @@ export default function ResultsPage() {
 
     return (
       <div className="space-y-6">
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <h3 className="text-sm font-medium text-gray-500 uppercase">Overall Score</h3>
-          <p className="text-4xl font-bold text-gray-900 mt-2">
+        <Card>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-400">Overall Score</h3>
+          <p className="mt-2 text-4xl font-bold text-cyan-100">
             {data.overallScore !== null ? data.overallScore.toFixed(2) : 'N/A'}
           </p>
-        </div>
+        </Card>
 
         {isAdmin && 'relationships' in data && data.relationships && data.relationships.length > 0 && (
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <h3 className="text-sm font-medium text-gray-500 uppercase mb-4">Relationship Breakdown (Admin Only)</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card>
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">Relationship Breakdown (Admin Only)</h3>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
               {data.relationships.map((rel, idx) => (
-                <div key={idx} className="p-4 bg-gray-50 rounded border border-gray-100">
-                  <div className="text-sm font-medium">{rel.relationshipType}</div>
-                  <div className="text-xl font-semibold mt-1">{rel.score.toFixed(2)}</div>
-                  <div className="text-xs text-gray-500 mt-1">Weight: {rel.weight}</div>
+                <div key={idx} className="rounded-md border border-slate-700 bg-slate-950/45 p-4">
+                  <div className="text-sm font-medium text-slate-200">{rel.relationshipType}</div>
+                  <div className="mt-1 text-xl font-semibold text-cyan-100">{rel.score.toFixed(2)}</div>
+                  <div className="mt-1 text-xs text-slate-400">Weight: {rel.weight}</div>
                 </div>
               ))}
             </div>
-          </div>
+          </Card>
         )}
 
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <h3 className="text-sm font-medium text-gray-500 uppercase mb-4">Dimensions & Criteria</h3>
+        <Card>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">Dimensions & Criteria</h3>
           {data.dimensions.map((dim) => (
             <div key={dim.domainId} className="mb-6 last:mb-0">
-              <div className="flex justify-between items-center border-b pb-2 mb-3">
-                <h4 className="font-semibold text-lg">{dim.domainName} <span className="text-sm font-normal text-gray-500">(Weight: {dim.weight})</span></h4>
-                <span className="font-bold text-lg bg-blue-50 text-blue-800 px-3 py-1 rounded">{dim.score.toFixed(2)}</span>
+              <div className="mb-3 flex items-center justify-between border-b border-slate-800 pb-2">
+                <h4 className="text-lg font-semibold text-slate-100">{dim.domainName} <span className="text-sm font-normal text-slate-400">(Weight: {dim.weight})</span></h4>
+                <span className="rounded border border-cyan-300/35 bg-cyan-300/10 px-3 py-1 text-lg font-bold text-cyan-100">{dim.score.toFixed(2)}</span>
               </div>
               <ul className="space-y-2">
                 {dim.criteria.map(crit => (
-                  <li key={crit.criterionId} className="flex justify-between items-center text-sm pl-4">
-                    <span className="text-gray-700">{crit.criterionName}</span>
-                    <span className="font-medium">{crit.score.toFixed(2)}</span>
+                  <li key={crit.criterionId} className="flex items-center justify-between pl-4 text-sm">
+                    <span className="text-slate-300">{crit.criterionName}</span>
+                    <span className="font-medium text-slate-100">{crit.score.toFixed(2)}</span>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
-        </div>
+        </Card>
       </div>
     );
   };
@@ -157,58 +157,56 @@ export default function ResultsPage() {
         description="Select a cycle and evaluatee to compare the Admin vs Employee result views."
       />
 
-      <div className="bg-white p-6 rounded-lg border border-gray-200 mb-8">
-        <form onSubmit={handleFetchResults} className="flex items-end gap-4">
+      <Card className="mb-8">
+        <form onSubmit={handleFetchResults} className="grid items-end gap-4 md:grid-cols-[1fr_1fr_auto]">
           <div className="flex-1">
             <Label>Cycle</Label>
-            <select
+            <Select
               required
-              className="flex h-10 w-full mt-1 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={selectedCycle}
               onChange={(e) => setSelectedCycle(e.target.value)}
             >
               <option value="">Select Cycle</option>
               {cycles.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            </Select>
           </div>
           <div className="flex-1">
             <Label>Evaluatee</Label>
-            <select
+            <Select
               required
-              className="flex h-10 w-full mt-1 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={selectedEvaluatee}
               onChange={(e) => setSelectedEvaluatee(e.target.value)}
             >
               <option value="">Select User</option>
               {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-            </select>
+            </Select>
           </div>
           <Button type="submit" disabled={loadingResults}>
             {loadingResults ? 'Loading...' : 'View Results'}
           </Button>
         </form>
-      </div>
+      </Card>
 
       {error && <Alert className="mb-6">{error}</Alert>}
 
       {(adminResult || employeeResult) && (
         <div>
-          <div className="flex border-b border-gray-200 mb-6">
+          <div className="mb-6 flex border-b border-slate-800">
             <button
-              className={`px-4 py-2 font-medium text-sm border-b-2 ${activeTab === 'admin' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+              className={`border-b-2 px-4 py-2 text-sm font-medium ${activeTab === 'admin' ? 'border-cyan-300 text-cyan-100' : 'border-transparent text-slate-400 hover:text-slate-100'}`}
               onClick={() => setActiveTab('admin')}
             >
               Admin View
             </button>
             <button
-              className={`px-4 py-2 font-medium text-sm border-b-2 ${activeTab === 'employee' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+              className={`border-b-2 px-4 py-2 text-sm font-medium ${activeTab === 'employee' ? 'border-cyan-300 text-cyan-100' : 'border-transparent text-slate-400 hover:text-slate-100'}`}
               onClick={() => setActiveTab('employee')}
             >
               Employee View
             </button>
           </div>
 
-          <div className="bg-gray-50 p-6 rounded-lg">
+          <div className="rounded-lg bg-slate-950/30 p-1 sm:p-3">
             {activeTab === 'admin' ? renderResult(adminResult, true) : renderResult(employeeResult, false)}
           </div>
         </div>
