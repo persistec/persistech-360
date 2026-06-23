@@ -4,12 +4,43 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
 import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Select, Label, LoadingSpinner, FormPanel, EmptyState } from '@/components/ui';
 
+interface DepartmentApiItem {
+  id: string;
+  name: string;
+  parentDepartmentId: string | null;
+  createdAt: string;
+}
+
 interface Department {
   id: string;
   name: string;
   parentId: string | null;
   createdAt: string;
 }
+
+interface DepartmentPayload {
+  name: string;
+  parentDepartmentId?: string | null;
+}
+
+const mapDepartmentFromApi = (department: DepartmentApiItem): Department => ({
+  id: department.id,
+  name: department.name,
+  parentId: department.parentDepartmentId,
+  createdAt: department.createdAt,
+});
+
+const buildDepartmentPayload = (formData: { name: string; parentId: string }): DepartmentPayload => {
+  const payload: DepartmentPayload = {
+    name: formData.name.trim(),
+  };
+
+  if (formData.parentId) {
+    payload.parentDepartmentId = formData.parentId;
+  }
+
+  return payload;
+};
 
 export default function DepartmentsPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -22,8 +53,8 @@ export default function DepartmentsPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<{ data: Department[] }>('/departments');
-      setDepartments(response.data || []);
+      const response = await apiClient.get<{ data: DepartmentApiItem[] }>('/departments');
+      setDepartments((response.data || []).map(mapDepartmentFromApi));
     } catch (err: any) {
       setError(err.message || 'Failed to fetch departments');
     } finally {
@@ -39,10 +70,7 @@ export default function DepartmentsPage() {
     e.preventDefault();
     setError(null);
     try {
-      const payload = {
-        name: formData.name,
-        parentId: formData.parentId || null,
-      };
+      const payload = buildDepartmentPayload(formData);
 
       if (view === 'create') {
         await apiClient.post('/departments', payload);
