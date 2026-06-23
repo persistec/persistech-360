@@ -5,7 +5,7 @@ The `apps/web` application requires the following environment variables to run l
 ## Required Variables
 
 ### `NEXT_PUBLIC_API_BASE_URL`
-The base URL for the Persistech 360 API. 
+The base URL for the Persistech 360 API.
 - **Local:** `http://localhost:4000/api/v1`
 - **Render Staging:** `https://persistech-360-api.onrender.com/api/v1`
 
@@ -14,10 +14,16 @@ The base URL for the Persistech 360 API.
 ### `NEXT_PUBLIC_ADMIN_USER_ID`
 > [!WARNING]
 > This is a temporary mechanism for the MVP to authenticate API requests via the `x-user-id` header.
-> This value is exposed in the browser bundle and is **not secure for production use**. 
+> This value is exposed in the browser bundle and is **not secure for production use**.
 > Treat the deployed frontend/API as a private staging environment until a proper authentication provider (like Google Workspace + JWT) is integrated.
 
 Provide a valid user UUID from your database that has the `app_role` set to `ADMIN`.
+
+### `RENDER_API_HEALTH_URL`
+Server-side only URL used by the Vercel Cron keep-alive route to check the Render API health endpoint.
+- **Render Staging:** `https://persistech-360-api.onrender.com/api/v1/health`
+
+Do not prefix this variable with `NEXT_PUBLIC_`; it is only read by the Next.js API route at `/api/keep-render-awake`.
 
 ## Setup
 

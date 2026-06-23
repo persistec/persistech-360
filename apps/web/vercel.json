@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/keep-render-awake",
+      "schedule": "*/10 * * * *"
+    }
+  ]
+}
