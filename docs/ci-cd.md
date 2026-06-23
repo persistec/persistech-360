@@ -108,11 +108,12 @@ A Vercel Cron foi removida do caminho de deploy porque contas Hobby/free só sup
 
 O agendamento recorrente agora é feito por GitHub Actions com `schedule` e `workflow_dispatch`.
 
-Secrets necessários:
+Variáveis e Secrets necessários para o agendamento:
 
 ```text
-SCHEDULED_TASK_URL
-SCHEDULED_TASK_SECRET
+SCHEDULED_TASK_URL (GitHub: deve apontar para https://persistech-360.vercel.app/api/keep-render-awake)
+SCHEDULED_TASK_SECRET (GitHub e Vercel: o mesmo secret para autenticação)
+RENDER_API_HEALTH_URL (Vercel: deve apontar para o health check do Render, ex: https://persistech-360-api.onrender.com/api/v1/health)
 ```
 
 Nota: workflows agendados no GitHub só executam a partir da branch default depois de o ficheiro existir nessa branch.
