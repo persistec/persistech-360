@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ThemeSwitcher } from './ThemeSwitcher';
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -28,6 +27,12 @@ export function Sidebar() {
         { href: '/assignments', label: 'Atribuições' },
         { href: '/submissions', label: 'Submissões' },
         { href: '/results', label: 'Resultados' },
+      ],
+    },
+    {
+      title: 'Sistema',
+      items: [
+        { href: '/settings', label: 'Definições' },
       ],
     },
   ];
@@ -62,9 +67,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <div className="mt-3">
-        <ThemeSwitcher />
-      </div>
     </div>
     <aside className="hidden h-dvh w-72 shrink-0 flex-col border-r border-border bg-surface/90 text-foreground shadow-2xl shadow-black/10 backdrop-blur md:flex">
       <div className="border-b border-border px-6 py-6">
@@ -108,7 +110,6 @@ export function Sidebar() {
         ))}
       </nav>
       <div className="shrink-0 border-t border-border p-5 space-y-4">
-        <ThemeSwitcher />
         <div className="rounded-lg border border-border bg-surface-muted p-4">
           <div className="flex items-center justify-between text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <span>MVP</span>

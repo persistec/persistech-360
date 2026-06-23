@@ -9,7 +9,7 @@ export function ThemeSwitcher() {
 
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor="theme-switcher" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+      <label htmlFor="theme-switcher" className="sr-only">
         Aparência
       </label>
       <Select 
