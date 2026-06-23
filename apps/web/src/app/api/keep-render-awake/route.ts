@@ -30,6 +30,12 @@ const readSmallBody = async (response: Response) => {
     : text;
 };
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 2000;
+const FETCH_TIMEOUT_MS = 10000;
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export async function GET(request: Request) {
   if (!isAllowedCaller(request)) {
     return NextResponse.json(
@@ -71,39 +77,72 @@ export async function GET(request: Request) {
   }
 
   const startedAt = Date.now();
+  let lastStatus = 0;
+  let lastBody: string | undefined;
+  let lastErrorMsg = "";
 
-  try {
-    const response = await fetch(healthUrl, {
-      cache: "no-store",
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "persistech-360-keepalive/1.0",
-      },
-      signal: AbortSignal.timeout(10_000),
-    });
-    const durationMs = Date.now() - startedAt;
-    const body = await readSmallBody(response);
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await fetch(healthUrl, {
+        cache: "no-store",
+        headers: {
+          Accept: "application/json",
+          "User-Agent": "persistech-360-keepalive/1.0",
+        },
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      });
 
-    return NextResponse.json(
-      {
-        ok: response.ok,
-        status: response.status,
-        checkedAt,
-        durationMs,
-        ...(body ? { upstreamBody: body } : {}),
-      },
-      { status: response.ok ? 200 : 502 },
-    );
-  } catch (error) {
-    return NextResponse.json(
-      {
-        ok: false,
-        status: 0,
-        checkedAt,
-        durationMs: Date.now() - startedAt,
-        error: error instanceof Error ? error.message : "Render health check failed",
-      },
-      { status: 502 },
-    );
+      lastStatus = response.status;
+      lastBody = await readSmallBody(response);
+
+      if (response.ok) {
+        return NextResponse.json(
+          {
+            ok: true,
+            target: "render-api",
+            status: 200,
+            checkedAt,
+            durationMs: Date.now() - startedAt,
+            ...(lastBody ? { upstreamBody: lastBody } : {}),
+          },
+          { status: 200 }
+        );
+      }
+
+      if (response.status === 404) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "Render API health check failed (404 Not Found)",
+            status: 502,
+            checkedAt,
+            durationMs: Date.now() - startedAt,
+          },
+          { status: 502 }
+        );
+      }
+
+      lastErrorMsg = `Upstream returned ${response.status}`;
+    } catch (error) {
+      lastErrorMsg = error instanceof Error ? error.message : "Fetch failed";
+      lastStatus = 0;
+    }
+
+    if (attempt < MAX_RETRIES) {
+      await delay(RETRY_DELAY_MS);
+    }
   }
+
+  return NextResponse.json(
+    {
+      ok: false,
+      error: "Render API health check failed",
+      status: 502,
+      checkedAt,
+      durationMs: Date.now() - startedAt,
+      lastErrorMsg,
+      lastStatus
+    },
+    { status: 502 }
+  );
 }
