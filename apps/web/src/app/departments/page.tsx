@@ -20,7 +20,7 @@ interface Department {
 
 interface DepartmentPayload {
   name: string;
-  parentDepartmentId?: string | null;
+  parentDepartmentId: string | null;
 }
 
 const mapDepartmentFromApi = (department: DepartmentApiItem): Department => ({
@@ -31,15 +31,10 @@ const mapDepartmentFromApi = (department: DepartmentApiItem): Department => ({
 });
 
 const buildDepartmentPayload = (formData: { name: string; parentId: string }): DepartmentPayload => {
-  const payload: DepartmentPayload = {
+  return {
     name: formData.name.trim(),
+    parentDepartmentId: formData.parentId || null,
   };
-
-  if (formData.parentId) {
-    payload.parentDepartmentId = formData.parentId;
-  }
-
-  return payload;
 };
 
 export default function DepartmentsPage() {
