@@ -3,8 +3,8 @@ import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 
 export const metadata: Metadata = {
-  title: "Persistech 360 - Admin MVP",
-  description: "Internal Admin MVP for Persistech 360",
+  title: "Persistech 360 - MVP de Administração",
+  description: "MVP de Administração Interna para Persistech 360",
 };
 
 export default function RootLayout({

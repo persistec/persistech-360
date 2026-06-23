@@ -8,25 +8,25 @@ export function Sidebar() {
 
   const navSections = [
     {
-      title: 'Overview',
-      items: [{ href: '/', label: 'Dashboard' }],
+      title: 'Visão Geral',
+      items: [{ href: '/', label: 'Painel' }],
     },
     {
-      title: 'Organization',
+      title: 'Organização',
       items: [
-        { href: '/departments', label: 'Departments' },
-        { href: '/hierarchy-levels', label: 'Hierarchy Levels' },
-        { href: '/roles', label: 'Roles' },
-        { href: '/users', label: 'Users' },
+        { href: '/departments', label: 'Departamentos' },
+        { href: '/hierarchy-levels', label: 'Níveis Hierárquicos' },
+        { href: '/roles', label: 'Funções' },
+        { href: '/users', label: 'Utilizadores' },
       ],
     },
     {
-      title: 'Evaluations',
+      title: 'Avaliações',
       items: [
-        { href: '/cycles', label: 'Evaluation Cycles' },
-        { href: '/assignments', label: 'Assignments' },
-        { href: '/submissions', label: 'Submissions' },
-        { href: '/results', label: 'Results' },
+        { href: '/cycles', label: 'Ciclos de Avaliação' },
+        { href: '/assignments', label: 'Atribuições' },
+        { href: '/submissions', label: 'Submissões' },
+        { href: '/results', label: 'Resultados' },
       ],
     },
   ];
@@ -40,7 +40,7 @@ export function Sidebar() {
         </div>
         <div>
           <span className="block text-base font-semibold text-slate-50">Persistech 360</span>
-          <span className="text-xs uppercase tracking-wide text-cyan-200/80">Admin Control</span>
+          <span className="text-xs uppercase tracking-wide text-cyan-200/80">Controlo de Administração</span>
         </div>
       </div>
       <nav className="flex gap-2 overflow-x-auto pb-1">
@@ -70,7 +70,7 @@ export function Sidebar() {
           </div>
           <div>
             <span className="block text-lg font-semibold tracking-tight text-slate-50">Persistech 360</span>
-            <span className="text-xs font-medium uppercase tracking-wide text-cyan-200/80">Admin Control</span>
+            <span className="text-xs font-medium uppercase tracking-wide text-cyan-200/80">Controlo de Administração</span>
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@ export function Sidebar() {
             <span>MVP</span>
             <span className="text-emerald-300">Online</span>
           </div>
-          <p className="mt-2 text-sm text-slate-300">Internal admin interface</p>
+          <p className="mt-2 text-sm text-slate-300">Interface interna de administração</p>
         </div>
       </div>
     </aside>

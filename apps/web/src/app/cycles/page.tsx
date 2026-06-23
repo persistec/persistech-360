@@ -35,7 +35,7 @@ export default function CyclesPage() {
       const response = await apiClient.get<{ data: Cycle[] }>('/cycles');
       setCycles(response.data || []);
     } catch (err: any) {
-      setError(err.message || 'Failed to fetch cycles');
+      setError(err.message || 'Falha ao obter ciclos');
     } finally {
       setLoading(false);
     }
@@ -65,18 +65,18 @@ export default function CyclesPage() {
       setView('list');
       fetchCycles();
     } catch (err: any) {
-      setError(err.message || 'Failed to save cycle');
+      setError(err.message || 'Falha ao guardar ciclo');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this draft cycle?')) return;
+    if (!confirm('Tem a certeza que deseja eliminar este rascunho de ciclo?')) return;
     setError(null);
     try {
       await apiClient.delete(`/cycles/${id}`);
       fetchCycles();
     } catch (err: any) {
-      setError(err.message || 'Failed to delete cycle');
+      setError(err.message || 'Falha ao eliminar ciclo');
     }
   };
 
@@ -86,7 +86,7 @@ export default function CyclesPage() {
       await apiClient.post(`/cycles/${id}/${action}`);
       fetchCycles();
     } catch (err: any) {
-      setError(err.message || `Failed to ${action.replace('-', ' ')} cycle`);
+      setError(err.message || `Falha ao ${action.replace('-', ' ')} ciclo`);
     }
   };
 
@@ -101,8 +101,8 @@ export default function CyclesPage() {
   return (
     <div>
       <PageHeader 
-        title="Evaluation Cycles" 
-        description="Configure evaluation windows and trigger cycle actions without changing backend rules."
+        title="Ciclos de Avaliação"
+        description="Configurar períodos de avaliação e accionar acções do ciclo sem alterar as regras de backend."
         action={
           view === 'list' && (
             <Button onClick={() => {
@@ -119,7 +119,7 @@ export default function CyclesPage() {
               });
               setView('create');
             }}>
-              Create Cycle
+              Criar Ciclo
             </Button>
           )
         }
@@ -128,9 +128,9 @@ export default function CyclesPage() {
       {error && <Alert className="mb-6">{error}</Alert>}
 
       {view === 'list' ? (
-        <Table headers={['Name', 'Status', 'Start / End', 'Actions']}>
+        <Table headers={['Nome', 'Estado', 'Início / Fim', 'Acções']}>
           {cycles.length === 0 ? (
-            <EmptyState colSpan={4}>No cycles found.</EmptyState>
+            <EmptyState colSpan={4}>Nenhum ciclo encontrado.</EmptyState>
           ) : (
             cycles.map((cycle) => (
               <TableRow key={cycle.id}>
@@ -161,11 +161,11 @@ export default function CyclesPage() {
                           endAt: formatForInput(cycle.endAt),
                         });
                         setView('edit');
-                      }}>Edit</Button>
+                      }}>Editar</Button>
                       
                       {cycle.status === 'draft' && (
                         <Button size="sm" variant="danger" onClick={() => handleDelete(cycle.id)}>
-                          Delete
+                          Eliminar
                         </Button>
                       )}
                     </div>
@@ -173,16 +173,16 @@ export default function CyclesPage() {
                     <div className="flex flex-wrap gap-2">
                       {(cycle.status === 'draft' || cycle.status === 'scheduled') && (
                         <Button size="sm" variant="primary" onClick={() => handleAction(cycle.id, 'open')}>
-                          Open
+                          Abrir
                         </Button>
                       )}
                       {(cycle.status === 'open' || cycle.status === 'closing_soon') && (
                         <Button size="sm" variant="danger" onClick={() => handleAction(cycle.id, 'close')}>
-                          Close
+                          Fechar
                         </Button>
                       )}
                       <Button size="sm" variant="secondary" onClick={() => handleAction(cycle.id, 'generate-assignments')}>
-                        Generate Assignments
+                        Gerar Atribuições
                       </Button>
                     </div>
                   </div>
@@ -192,19 +192,19 @@ export default function CyclesPage() {
           )}
         </Table>
       ) : (
-        <FormPanel title={view === 'create' ? 'Create New Cycle' : 'Edit Cycle'} className="max-w-xl">
+        <FormPanel title={view === 'create' ? 'Criar Novo Ciclo' : 'Editar Ciclo'} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label>Name</Label>
+              <Label>Nome</Label>
               <Input 
                 required 
                 value={formData.name} 
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
-                placeholder="2026 Q1 Evaluation"
+                placeholder="Avaliação do 1.º trimestre de 2026"
               />
             </div>
             <div>
-              <Label>Description (Optional)</Label>
+              <Label>Descrição (Opcional)</Label>
               <Input 
                 value={formData.description} 
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
@@ -212,7 +212,7 @@ export default function CyclesPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <Label>Start Date</Label>
+                <Label>Data de Início</Label>
                 <Input 
                   type="datetime-local"
                   required 
@@ -221,7 +221,7 @@ export default function CyclesPage() {
                 />
               </div>
               <div>
-                <Label>End Date</Label>
+                <Label>Data de Fim</Label>
                 <Input 
                   type="datetime-local"
                   required 
@@ -232,12 +232,12 @@ export default function CyclesPage() {
             </div>
             
             <div className="flex gap-2 pt-4">
-              <Button type="submit">Save</Button>
+              <Button type="submit">Guardar</Button>
               <Button type="button" variant="ghost" onClick={() => {
                 setView('list');
                 setError(null);
               }}>
-                Cancel
+                Cancelar
               </Button>
             </div>
           </form>

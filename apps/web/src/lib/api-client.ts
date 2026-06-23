@@ -55,7 +55,7 @@ const formatApiErrorMessage = (status: number, error: ApiError, raw?: unknown) =
   const details = explicitDetails.length > 0 ? explicitDetails : stringifyDetails(rawDetails);
 
   if (details.length > 0) {
-    parts.push(`Details: ${details.join('; ')}`);
+    parts.push(`Detalhes: ${details.join('; ')}`);
   }
 
   return parts.join(' - ');
@@ -100,12 +100,12 @@ async function handleResponse<T>(response: Response): Promise<T> {
     const message = Array.isArray(rawMessage)
       ? typeof errorRecord.error === 'string'
         ? errorRecord.error
-        : `HTTP Error: ${response.status} ${response.statusText}`
+        : `Erro HTTP: ${response.status} ${response.statusText}`
       : typeof rawMessage === 'string'
         ? rawMessage
         : typeof nestedError?.message === 'string'
           ? nestedError.message
-          : `HTTP Error: ${response.status} ${response.statusText}`;
+          : `Erro HTTP: ${response.status} ${response.statusText}`;
 
     const code = typeof nestedError?.code === 'string'
       ? nestedError.code
