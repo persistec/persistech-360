@@ -1,4 +1,5 @@
 'use client';
+import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
@@ -118,8 +119,7 @@ export default function CyclesPage() {
                 endAt: nextMonth.toISOString().slice(0, 16) 
               });
               setView('create');
-            }}>
-              Criar Ciclo
+            }}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Ciclo
             </Button>
           )
         }
@@ -161,12 +161,10 @@ export default function CyclesPage() {
                           endAt: formatForInput(cycle.endAt),
                         });
                         setView('edit');
-                      }}>Editar</Button>
+                      }}><FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar</Button>
                       
                       {cycle.status === 'draft' && (
-                        <Button size="sm" variant="danger" onClick={() => handleDelete(cycle.id)}>
-                          Eliminar
-                        </Button>
+                        <Button size="sm" variant="danger" onClick={() => handleDelete(cycle.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
                       )}
                     </div>
                     
@@ -232,7 +230,7 @@ export default function CyclesPage() {
             </div>
             
             <div className="flex gap-2 pt-4">
-              <Button type="submit">Guardar</Button>
+              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
               <Button type="button" variant="ghost" onClick={() => {
                 setView('list');
                 setError(null);

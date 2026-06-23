@@ -2,6 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { 
+  FiGrid, 
+  FiFolder, 
+  FiLayers, 
+  FiBriefcase, 
+  FiUsers, 
+  FiCalendar, 
+  FiClipboard, 
+  FiCheckSquare, 
+  FiTrendingUp, 
+  FiSettings,
+  FiBox 
+} from 'react-icons/fi';
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -9,30 +22,30 @@ export function Sidebar() {
   const navSections = [
     {
       title: 'Visão Geral',
-      items: [{ href: '/', label: 'Painel' }],
+      items: [{ href: '/', label: 'Painel', icon: FiGrid }],
     },
     {
       title: 'Organização',
       items: [
-        { href: '/departments', label: 'Departamentos' },
-        { href: '/hierarchy-levels', label: 'Níveis Hierárquicos' },
-        { href: '/roles', label: 'Funções' },
-        { href: '/users', label: 'Utilizadores' },
+        { href: '/departments', label: 'Departamentos', icon: FiFolder },
+        { href: '/hierarchy-levels', label: 'Níveis Hierárquicos', icon: FiLayers },
+        { href: '/roles', label: 'Funções', icon: FiBriefcase },
+        { href: '/users', label: 'Utilizadores', icon: FiUsers },
       ],
     },
     {
       title: 'Avaliações',
       items: [
-        { href: '/cycles', label: 'Ciclos de Avaliação' },
-        { href: '/assignments', label: 'Atribuições' },
-        { href: '/submissions', label: 'Submissões' },
-        { href: '/results', label: 'Resultados' },
+        { href: '/cycles', label: 'Ciclos de Avaliação', icon: FiCalendar },
+        { href: '/assignments', label: 'Atribuições', icon: FiClipboard },
+        { href: '/submissions', label: 'Submissões', icon: FiCheckSquare },
+        { href: '/results', label: 'Resultados', icon: FiTrendingUp },
       ],
     },
     {
       title: 'Sistema',
       items: [
-        { href: '/settings', label: 'Definições' },
+        { href: '/settings', label: 'Definições', icon: FiSettings },
       ],
     },
   ];
@@ -42,7 +55,7 @@ export function Sidebar() {
     <div className="border-b border-border bg-surface/95 p-4 md:hidden">
       <div className="mb-3 flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-primary/30 bg-primary/10">
-          <span className="h-2.5 w-2.5 rounded-full bg-primary" />
+          <FiBox className="h-5 w-5 text-primary" aria-hidden="true" />
         </div>
         <div>
           <span className="block text-base font-semibold text-foreground">Persistech 360</span>
@@ -52,16 +65,18 @@ export function Sidebar() {
       <nav className="flex gap-2 overflow-x-auto pb-1">
         {navSections.flatMap((section) => section.items).map((item) => {
           const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
+          const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`shrink-0 rounded-md border px-3 py-2 text-xs font-medium ${
+              className={`flex shrink-0 items-center gap-2 rounded-md border px-3 py-2 text-xs font-medium ${
                 isActive
                   ? 'border-primary/50 bg-primary/15 text-primary'
                   : 'border-border bg-surface-muted text-muted-foreground hover:text-foreground'
               }`}
             >
+              <Icon className="h-3.5 w-3.5" aria-hidden="true" />
               {item.label}
             </Link>
           );
@@ -72,7 +87,7 @@ export function Sidebar() {
       <div className="border-b border-border px-6 py-6">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-primary/30 bg-primary/10 shadow-[0_0_28px_var(--color-primary)]">
-            <span className="h-3 w-3 rounded-full bg-primary shadow-[0_0_18px_var(--color-primary)]" />
+            <FiBox className="h-5 w-5 text-primary drop-shadow-[0_0_8px_var(--color-primary)]" aria-hidden="true" />
           </div>
           <div>
             <span className="block text-lg font-semibold tracking-tight text-foreground">Persistech 360</span>
@@ -89,6 +104,7 @@ export function Sidebar() {
             <ul className="space-y-1">
               {section.items.map((item) => {
                 const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
+                const Icon = item.icon;
                 return (
                   <li key={item.href}>
                     <Link
@@ -99,7 +115,12 @@ export function Sidebar() {
                           : 'text-muted-foreground hover:bg-surface-elevated hover:text-foreground'
                       }`}
                     >
-                      <span className={`mr-3 h-1.5 w-1.5 rounded-full ${isActive ? 'bg-primary shadow-[0_0_14px_var(--color-primary)]' : 'bg-muted-foreground group-hover:bg-primary/70'}`} />
+                      <Icon 
+                        className={`mr-3 h-4 w-4 shrink-0 transition-colors ${
+                          isActive ? 'text-primary drop-shadow-[0_0_8px_var(--color-primary)]' : 'text-muted-foreground group-hover:text-primary/80'
+                        }`} 
+                        aria-hidden="true" 
+                      />
                       {item.label}
                     </Link>
                   </li>

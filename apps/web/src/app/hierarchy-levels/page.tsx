@@ -1,4 +1,5 @@
 'use client';
+import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
@@ -82,8 +83,7 @@ export default function HierarchyLevelsPage() {
             <Button onClick={() => {
               setFormData({ id: '', name: '', rank: levels.length > 0 ? levels[levels.length - 1].rank + 1 : 1 });
               setView('create');
-            }}>
-              Criar Nível
+            }}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Nível
             </Button>
           )
         }
@@ -106,12 +106,8 @@ export default function HierarchyLevelsPage() {
                     <Button size="sm" variant="secondary" onClick={() => {
                       setFormData({ id: level.id, name: level.name, rank: level.rank });
                       setView('edit');
-                    }}>
-                      Editar
-                    </Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(level.id)}>
-                      Eliminar
-                    </Button>
+                    }}><FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar</Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(level.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -141,7 +137,7 @@ export default function HierarchyLevelsPage() {
               />
             </div>
             <div className="flex gap-2 pt-4">
-              <Button type="submit">Guardar</Button>
+              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
               <Button type="button" variant="ghost" onClick={() => {
                 setView('list');
                 setError(null);

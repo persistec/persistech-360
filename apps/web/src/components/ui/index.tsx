@@ -1,4 +1,5 @@
 import React from 'react';
+import { FiAlertCircle, FiCheckCircle, FiAlertTriangle, FiInfo, FiInbox } from 'react-icons/fi';
 
 export function Button({
   children,
@@ -93,9 +94,18 @@ export function Alert({
     info: 'border-primary/40 bg-primary/10 text-primary',
   };
 
+  const icons = {
+    error: FiAlertCircle,
+    success: FiCheckCircle,
+    warning: FiAlertTriangle,
+    info: FiInfo,
+  };
+  const Icon = icons[variant];
+
   return (
-    <div className={`rounded-md border p-4 text-sm leading-6 shadow-sm ${styles[variant]} ${className}`}>
-      {children}
+    <div className={`flex gap-3 rounded-md border p-4 text-sm leading-6 shadow-sm ${styles[variant]} ${className}`}>
+      <Icon className="mt-0.5 h-5 w-5 shrink-0" />
+      <div>{children}</div>
     </div>
   );
 }
@@ -181,14 +191,16 @@ export function Card({
 export function DashboardCard({
   title,
   description,
+  icon: Icon,
 }: {
   title: string;
   description: string;
+  icon?: React.ElementType;
 }) {
   return (
     <div className="group rounded-lg border border-border bg-surface p-6 shadow-2xl shadow-black/5 transition hover:border-primary/45 hover:bg-surface-elevated">
       <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-md border border-primary/25 bg-primary/10 text-primary shadow-[0_0_22px_var(--color-primary)]">
-        <span className="h-2 w-2 rounded-full bg-primary shadow-[0_0_18px_var(--color-primary)]" />
+        {Icon ? <Icon className="h-5 w-5" aria-hidden="true" /> : <span className="h-2 w-2 rounded-full bg-primary shadow-[0_0_18px_var(--color-primary)]" />}
       </div>
       <h3 className="text-lg font-semibold text-foreground">{title}</h3>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
@@ -223,7 +235,8 @@ export function EmptyState({
   return (
     <TableRow className="hover:bg-transparent">
       <TableCell className="py-12 text-center text-muted-foreground" colSpan={colSpan}>
-        <div className="mx-auto max-w-sm rounded-md border border-dashed border-border bg-surface-muted px-5 py-6">
+        <div className="mx-auto flex max-w-sm flex-col items-center justify-center rounded-md border border-dashed border-border bg-surface-muted px-5 py-6">
+          <FiInbox className="mb-3 h-8 w-8 text-muted-foreground/60" aria-hidden="true" />
           {children}
         </div>
       </TableCell>
