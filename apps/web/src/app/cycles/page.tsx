@@ -136,7 +136,7 @@ export default function CyclesPage() {
               <TableRow key={cycle.id}>
                 <TableCell>
                   <div className="font-medium">{cycle.name}</div>
-                  <div className="text-xs text-slate-400">{cycle.description}</div>
+                  <div className="text-xs text-muted-foreground">{cycle.description}</div>
                 </TableCell>
                 <TableCell>
                   <StatusBadge tone={cycle.status === 'open' ? 'success' : cycle.status === 'closed' ? 'danger' : 'neutral'}>

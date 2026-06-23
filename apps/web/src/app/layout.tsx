@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 
+import { ThemeProvider } from "@/components/ThemeProvider";
+
 export const metadata: Metadata = {
   title: "Persistech 360 - MVP de Administração",
   description: "MVP de Administração Interna para Persistech 360",
@@ -13,16 +15,38 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="bg-slate-950 font-sans text-slate-100 antialiased">
-        <div className="flex min-h-screen flex-col bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#020812_0%,#071426_45%,#020812_100%)] md:flex-row">
-          <Sidebar />
-          <main className="flex-1 overflow-auto p-5 sm:p-8">
-            <div className="mx-auto w-full max-w-7xl">
-              {children}
-            </div>
-          </main>
-        </div>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var stored = localStorage.getItem('persistech-360-theme-mode');
+                  var mode = stored || 'system';
+                  var resolved = mode;
+                  if (mode === 'system') {
+                    resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  }
+                  document.documentElement.dataset.theme = resolved;
+                  document.documentElement.style.colorScheme = resolved;
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="bg-background font-sans text-foreground antialiased">
+        <ThemeProvider>
+          <div className="flex h-dvh overflow-hidden flex-col md:flex-row">
+            <Sidebar />
+            <main className="min-w-0 flex-1 overflow-y-auto p-5 sm:p-8">
+              <div className="mx-auto w-full max-w-7xl">
+                {children}
+              </div>
+            </main>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -104,21 +104,21 @@ export default function ResultsPage() {
     return (
       <div className="space-y-6">
         <Card>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-400">Pontuação Global</h3>
-          <p className="mt-2 text-4xl font-bold text-cyan-100">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Pontuação Global</h3>
+          <p className="mt-2 text-4xl font-bold text-primary">
             {data.overallScore !== null ? data.overallScore.toFixed(2) : 'N/A'}
           </p>
         </Card>
 
         {isAdmin && 'relationships' in data && data.relationships && data.relationships.length > 0 && (
           <Card>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">Análise por Relação (Apenas Administração)</h3>
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Análise por Relação (Apenas Administração)</h3>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
               {data.relationships.map((rel, idx) => (
-                <div key={idx} className="rounded-md border border-slate-700 bg-slate-950/45 p-4">
-                  <div className="text-sm font-medium text-slate-200">{rel.relationshipType}</div>
-                  <div className="mt-1 text-xl font-semibold text-cyan-100">{rel.score.toFixed(2)}</div>
-                  <div className="mt-1 text-xs text-slate-400">Peso: {rel.weight}</div>
+                <div key={idx} className="rounded-md border border-border bg-surface-muted p-4">
+                  <div className="text-sm font-medium text-foreground">{rel.relationshipType}</div>
+                  <div className="mt-1 text-xl font-semibold text-primary">{rel.score.toFixed(2)}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">Peso: {rel.weight}</div>
                 </div>
               ))}
             </div>
@@ -126,18 +126,18 @@ export default function ResultsPage() {
         )}
 
         <Card>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">Dimensões e Critérios</h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Dimensões e Critérios</h3>
           {data.dimensions.map((dim) => (
             <div key={dim.domainId} className="mb-6 last:mb-0">
-              <div className="mb-3 flex items-center justify-between border-b border-slate-800 pb-2">
-                <h4 className="text-lg font-semibold text-slate-100">{dim.domainName} <span className="text-sm font-normal text-slate-400">(Peso: {dim.weight})</span></h4>
-                <span className="rounded border border-cyan-300/35 bg-cyan-300/10 px-3 py-1 text-lg font-bold text-cyan-100">{dim.score.toFixed(2)}</span>
+              <div className="mb-3 flex items-center justify-between border-b border-border pb-2">
+                <h4 className="text-lg font-semibold text-foreground">{dim.domainName} <span className="text-sm font-normal text-muted-foreground">(Peso: {dim.weight})</span></h4>
+                <span className="rounded border border-primary/35 bg-primary/10 px-3 py-1 text-lg font-bold text-primary">{dim.score.toFixed(2)}</span>
               </div>
               <ul className="space-y-2">
                 {dim.criteria.map(crit => (
                   <li key={crit.criterionId} className="flex items-center justify-between pl-4 text-sm">
-                    <span className="text-slate-300">{crit.criterionName}</span>
-                    <span className="font-medium text-slate-100">{crit.score.toFixed(2)}</span>
+                    <span className="text-muted-foreground">{crit.criterionName}</span>
+                    <span className="font-medium text-foreground">{crit.score.toFixed(2)}</span>
                   </li>
                 ))}
               </ul>
@@ -191,22 +191,22 @@ export default function ResultsPage() {
 
       {(adminResult || employeeResult) && (
         <div>
-          <div className="mb-6 flex border-b border-slate-800">
+          <div className="mb-6 flex border-b border-border">
             <button
-              className={`border-b-2 px-4 py-2 text-sm font-medium ${activeTab === 'admin' ? 'border-cyan-300 text-cyan-100' : 'border-transparent text-slate-400 hover:text-slate-100'}`}
+              className={`border-b-2 px-4 py-2 text-sm font-medium ${activeTab === 'admin' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
               onClick={() => setActiveTab('admin')}
             >
               Vista de Administração
             </button>
             <button
-              className={`border-b-2 px-4 py-2 text-sm font-medium ${activeTab === 'employee' ? 'border-cyan-300 text-cyan-100' : 'border-transparent text-slate-400 hover:text-slate-100'}`}
+              className={`border-b-2 px-4 py-2 text-sm font-medium ${activeTab === 'employee' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
               onClick={() => setActiveTab('employee')}
             >
               Vista de Colaborador
             </button>
           </div>
 
-          <div className="rounded-lg bg-slate-950/30 p-1 sm:p-3">
+          <div className="rounded-lg bg-background/30 p-1 sm:p-3">
             {activeTab === 'admin' ? renderResult(adminResult, true) : renderResult(employeeResult, false)}
           </div>
         </div>

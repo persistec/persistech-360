@@ -179,7 +179,7 @@ export default function AssignmentsPage() {
               <input 
                 type="checkbox" 
                 id="isRequired"
-                className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-cyan-400 focus:ring-cyan-300"
+                className="h-4 w-4 rounded border-border bg-input/20 text-primary focus:ring-primary/80"
                 checked={formData.isRequired}
                 onChange={(e) => setFormData({ ...formData, isRequired: e.target.checked })}
               />
