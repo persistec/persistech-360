@@ -1,18 +1,65 @@
 export interface ApiError {
   code: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown> | string[] | string;
 }
 
 export class ApiException extends Error {
   constructor(
     public status: number,
     public error: ApiError,
+    public raw?: unknown,
   ) {
-    super(error.message || 'API Error');
+    super(formatApiErrorMessage(status, error, raw));
     this.name = 'ApiException';
   }
 }
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const stringifyDetails = (details: unknown): string[] => {
+  if (!details) return [];
+  if (Array.isArray(details)) return details.map((item) => String(item));
+  if (typeof details === 'string') return [details];
+  if (isRecord(details)) {
+    return Object.entries(details).map(([key, value]) => {
+      const rendered = Array.isArray(value) ? value.join(', ') : String(value);
+      return `${key}: ${rendered}`;
+    });
+  }
+  return [String(details)];
+};
+
+const normalizeDetails = (details: unknown): ApiError['details'] => {
+  if (typeof details === 'string') return details;
+  if (Array.isArray(details)) return details.map(String);
+  if (isRecord(details)) return details;
+  return undefined;
+};
+
+const formatApiErrorMessage = (status: number, error: ApiError, raw?: unknown) => {
+  const parts: string[] = [`HTTP ${status}`];
+
+  if (error.code && error.code !== 'UNKNOWN_ERROR') {
+    parts.push(error.code);
+  }
+
+  if (error.message) {
+    parts.push(error.message);
+  }
+
+  const rawMessage = isRecord(raw) ? raw.message : undefined;
+  const rawDetails = Array.isArray(rawMessage) ? rawMessage : undefined;
+  const explicitDetails = stringifyDetails(error.details);
+  const details = explicitDetails.length > 0 ? explicitDetails : stringifyDetails(rawDetails);
+
+  if (details.length > 0) {
+    parts.push(`Details: ${details.join('; ')}`);
+  }
+
+  return parts.join(' - ');
+};
 
 const getBaseUrl = () => {
   const url = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -40,19 +87,42 @@ const getHeaders = () => {
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    let errorData: any = null;
+    let errorData: unknown = null;
     try {
       errorData = await response.json();
     } catch {
       // Ignore if parsing fails
     }
 
-    const apiError: ApiError = errorData?.error || errorData || {
-      code: 'UNKNOWN_ERROR',
-      message: `HTTP Error: ${response.status} ${response.statusText}`,
+    const errorRecord = isRecord(errorData) ? errorData : {};
+    const nestedError = isRecord(errorRecord.error) ? errorRecord.error : null;
+    const rawMessage = errorRecord.message;
+    const message = Array.isArray(rawMessage)
+      ? typeof errorRecord.error === 'string'
+        ? errorRecord.error
+        : `HTTP Error: ${response.status} ${response.statusText}`
+      : typeof rawMessage === 'string'
+        ? rawMessage
+        : typeof nestedError?.message === 'string'
+          ? nestedError.message
+          : `HTTP Error: ${response.status} ${response.statusText}`;
+
+    const code = typeof nestedError?.code === 'string'
+      ? nestedError.code
+      : typeof errorRecord.error === 'string'
+        ? errorRecord.error
+        : 'UNKNOWN_ERROR';
+
+    const details = normalizeDetails(nestedError?.details ?? errorRecord.details ?? (Array.isArray(rawMessage) ? rawMessage : undefined));
+
+    const apiError: ApiError = {
+      ...(nestedError || {}),
+      code,
+      message,
+      details,
     };
 
-    throw new ApiException(response.status, apiError);
+    throw new ApiException(response.status, apiError, errorData);
   }
 
   // Handle 204 No Content

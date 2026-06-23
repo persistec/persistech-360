@@ -102,6 +102,21 @@ vercel deploy --prebuilt
 
 Cada aplicação usa o seu próprio `VERCEL_PROJECT_ID`.
 
+## Tarefas agendadas
+
+A Vercel Cron foi removida do caminho de deploy porque contas Hobby/free só suportam jobs diários.
+
+O agendamento recorrente agora é feito por GitHub Actions com `schedule` e `workflow_dispatch`.
+
+Secrets necessários:
+
+```text
+SCHEDULED_TASK_URL
+SCHEDULED_TASK_SECRET
+```
+
+Nota: workflows agendados no GitHub só executam a partir da branch default depois de o ficheiro existir nessa branch.
+
 ## Secrets necessários
 
 ```text

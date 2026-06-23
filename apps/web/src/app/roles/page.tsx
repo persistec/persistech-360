@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Label, LoadingSpinner } from '@/components/ui';
+import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Select, Label, LoadingSpinner, FormPanel, EmptyState } from '@/components/ui';
 
 interface Role {
   id: string;
@@ -95,6 +95,7 @@ export default function RolesPage() {
     <div>
       <PageHeader 
         title="Roles" 
+        description="Manage organizational roles and their optional department or hierarchy associations."
         action={
           view === 'list' && (
             <Button onClick={() => {
@@ -112,9 +113,7 @@ export default function RolesPage() {
       {view === 'list' ? (
         <Table headers={['Name', 'Department ID', 'Hierarchy Level ID', 'Created At', 'Actions']}>
           {roles.length === 0 ? (
-            <TableRow>
-              <TableCell className="text-center text-gray-500" colSpan={5}>No roles found.</TableCell>
-            </TableRow>
+            <EmptyState colSpan={5}>No roles found.</EmptyState>
           ) : (
             roles.map((role) => (
               <TableRow key={role.id}>
@@ -145,8 +144,7 @@ export default function RolesPage() {
           )}
         </Table>
       ) : (
-        <div className="bg-white p-6 rounded-lg border border-gray-200 max-w-xl">
-          <h2 className="text-lg font-medium mb-4">{view === 'create' ? 'Create New Role' : 'Edit Role'}</h2>
+        <FormPanel title={view === 'create' ? 'Create New Role' : 'Edit Role'} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label>Name</Label>
@@ -159,8 +157,7 @@ export default function RolesPage() {
             </div>
             <div>
               <Label>Department (Optional)</Label>
-              <select
-                className="flex h-10 w-full items-center justify-between rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Select
                 value={formData.departmentId}
                 onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}
               >
@@ -168,12 +165,11 @@ export default function RolesPage() {
                 {departments.map(d => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div>
               <Label>Hierarchy Level (Optional)</Label>
-              <select
-                className="flex h-10 w-full items-center justify-between rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Select
                 value={formData.hierarchyLevelId}
                 onChange={(e) => setFormData({ ...formData, hierarchyLevelId: e.target.value })}
               >
@@ -181,7 +177,7 @@ export default function RolesPage() {
                 {hierarchyLevels.map(l => (
                   <option key={l.id} value={l.id}>{l.name}</option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div className="flex gap-2 pt-4">
               <Button type="submit">Save</Button>
@@ -193,7 +189,7 @@ export default function RolesPage() {
               </Button>
             </div>
           </form>
-        </div>
+        </FormPanel>
       )}
     </div>
   );
