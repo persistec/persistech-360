@@ -1,21 +1,28 @@
 name: Web CI
 
 on:
-  workflow_dispatch:
   pull_request:
+    branches:
+      - dev
+      - main
     paths:
       - 'apps/web/**'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/web-ci.yml'
   push:
     branches:
-      - main
       - dev
+      - main
     paths:
       - 'apps/web/**'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/web-ci.yml'
+  workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
