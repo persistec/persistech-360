@@ -3,14 +3,20 @@ import { NextResponse } from "next/server";
 const MAX_UPSTREAM_BODY_LENGTH = 500;
 
 const getHealthUrl = () => process.env.RENDER_API_HEALTH_URL?.trim();
+const getScheduledTaskSecret = () => process.env.SCHEDULED_TASK_SECRET?.trim();
 
 const isAllowedCaller = (request: Request) => {
   if (process.env.NODE_ENV !== "production") {
     return true;
   }
 
-  const userAgent = request.headers.get("user-agent") || "";
-  return userAgent.includes("vercel-cron/1.0");
+  const secret = getScheduledTaskSecret();
+  if (!secret) {
+    return false;
+  }
+
+  const authorization = request.headers.get("authorization") || "";
+  return authorization === `Bearer ${secret}`;
 };
 
 const readSmallBody = async (response: Response) => {
@@ -47,6 +53,18 @@ export async function GET(request: Request) {
         status: 500,
         checkedAt,
         error: "Missing RENDER_API_HEALTH_URL",
+      },
+      { status: 500 },
+    );
+  }
+
+  if (process.env.NODE_ENV === "production" && !getScheduledTaskSecret()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        status: 500,
+        checkedAt,
+        error: "Missing SCHEDULED_TASK_SECRET",
       },
       { status: 500 },
     );
