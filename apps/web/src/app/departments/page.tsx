@@ -1,4 +1,5 @@
 'use client';
+import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
@@ -103,8 +104,7 @@ export default function DepartmentsPage() {
             <Button onClick={() => {
               setFormData({ id: '', name: '', parentId: '' });
               setView('create');
-            }}>
-              Criar Departamento
+            }}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Departamento
             </Button>
           )
         }
@@ -127,12 +127,8 @@ export default function DepartmentsPage() {
                     <Button size="sm" variant="secondary" onClick={() => {
                       setFormData({ id: dept.id, name: dept.name, parentId: dept.parentId || '' });
                       setView('edit');
-                    }}>
-                      Editar
-                    </Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(dept.id)}>
-                      Eliminar
-                    </Button>
+                    }}><FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar</Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(dept.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -167,7 +163,7 @@ export default function DepartmentsPage() {
               </Select>
             </div>
             <div className="flex gap-2 pt-4">
-              <Button type="submit">Guardar</Button>
+              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
               <Button type="button" variant="ghost" onClick={() => {
                 setView('list');
                 setError(null);

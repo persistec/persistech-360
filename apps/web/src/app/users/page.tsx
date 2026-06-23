@@ -1,4 +1,5 @@
 'use client';
+import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
@@ -119,8 +120,7 @@ export default function UsersPage() {
                 departmentId: '', roleId: '', hierarchyLevelId: '', managerId: '' 
               });
               setView('create');
-            }}>
-              Criar Utilizador
+            }}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Utilizador
             </Button>
           )
         }
@@ -163,12 +163,8 @@ export default function UsersPage() {
                         managerId: user.managerId || '',
                       });
                       setView('edit');
-                    }}>
-                      Editar
-                    </Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(user.id)}>
-                      Eliminar
-                    </Button>
+                    }}><FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar</Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(user.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -260,7 +256,7 @@ export default function UsersPage() {
             </div>
 
             <div className="flex gap-2 pt-4">
-              <Button type="submit">Guardar</Button>
+              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
               <Button type="button" variant="ghost" onClick={() => {
                 setView('list');
                 setError(null);

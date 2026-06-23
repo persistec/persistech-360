@@ -36,9 +36,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Handle initial load and mode changes
   useEffect(() => {
-    const stored = localStorage.getItem('persistech-360-theme-mode') as ThemeMode;
-    const initialMode = stored || 'system';
+    const stored = localStorage.getItem('persistech-360-theme-mode');
+    
+    // Normalize legacy/invalid values
+    let initialMode: ThemeMode = 'system';
+    if (stored) {
+      const lower = stored.toLowerCase();
+      if (lower === 'claro' || lower === 'light') initialMode = 'light';
+      else if (lower === 'escuro' || lower === 'dark') initialMode = 'dark';
+      // else it remains 'system'
+    }
+    
     setModeState(initialMode);
+    localStorage.setItem('persistech-360-theme-mode', initialMode); // fix legacy storage immediately
 
     const applyTheme = (currentMode: ThemeMode) => {
       let resolved: ResolvedTheme;

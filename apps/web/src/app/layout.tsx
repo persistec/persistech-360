@@ -23,7 +23,13 @@ export default function RootLayout({
               (function() {
                 try {
                   var stored = localStorage.getItem('persistech-360-theme-mode');
-                  var mode = stored || 'system';
+                  var mode = 'system';
+                  if (stored) {
+                    var lower = stored.toLowerCase();
+                    if (lower === 'claro' || lower === 'light') mode = 'light';
+                    else if (lower === 'escuro' || lower === 'dark') mode = 'dark';
+                  }
+                  
                   var resolved = mode;
                   if (mode === 'system') {
                     resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

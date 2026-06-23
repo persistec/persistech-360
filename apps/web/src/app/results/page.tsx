@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
 import { PageHeader, Button, Alert, Select, Label, LoadingSpinner, Card } from '@/components/ui';
+import { FiTrendingUp } from 'react-icons/fi';
 
 interface Cycle { id: string; name: string; }
 interface User { id: string; name: string; }
@@ -182,6 +183,7 @@ export default function ResultsPage() {
             </Select>
           </div>
           <Button type="submit" disabled={loadingResults}>
+            <FiTrendingUp className="mr-2 h-4 w-4" aria-hidden="true" />
             {loadingResults ? 'A carregar...' : 'Ver Resultados'}
           </Button>
         </form>

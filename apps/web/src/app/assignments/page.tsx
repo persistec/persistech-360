@@ -1,4 +1,5 @@
 'use client';
+import { FiPlus, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
@@ -104,8 +105,7 @@ export default function AssignmentsPage() {
         description="Inspeccionar atribuições geradas e criar atribuições manuais através do contrato de API existente."
         action={
           view === 'list' && (
-            <Button onClick={() => setView('create')}>
-              Criar Atribuição Manual
+            <Button onClick={() => setView('create')}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Atribuição Manual
             </Button>
           )
         }
@@ -131,9 +131,7 @@ export default function AssignmentsPage() {
                 </TableCell>
                 <TableCell>{assignment.isRequired ? 'Sim' : 'Não'}</TableCell>
                 <TableCell>
-                  <Button size="sm" variant="danger" onClick={() => handleDelete(assignment.id)}>
-                    Eliminar
-                  </Button>
+                  <Button size="sm" variant="danger" onClick={() => handleDelete(assignment.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
                 </TableCell>
               </TableRow>
             ))
@@ -186,7 +184,7 @@ export default function AssignmentsPage() {
               <Label htmlFor="isRequired">É Obrigatório</Label>
             </div>
             <div className="flex gap-2 pt-4">
-              <Button type="submit">Guardar</Button>
+              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
               <Button type="button" variant="ghost" onClick={() => {
                 setView('list');
                 setError(null);

@@ -1,4 +1,5 @@
 import { DashboardCard, PageHeader } from "@/components/ui";
+import { FiFolder, FiUsers, FiCalendar } from 'react-icons/fi';
 
 export default function Home() {
   return (
@@ -12,14 +13,17 @@ export default function Home() {
         <DashboardCard
           title="Organização"
           description="Gerir Departamentos, Níveis Hierárquicos e Funções antes de adicionar utilizadores."
+          icon={FiFolder}
         />
         <DashboardCard
           title="Utilizadores"
           description="Criar utilizadores e atribuí-los a departamentos e funções."
+          icon={FiUsers}
         />
         <DashboardCard
           title="Ciclos e Resultados"
           description="Configurar ciclos de avaliação, gerar atribuições e monitorizar resultados."
+          icon={FiCalendar}
         />
       </div>
     </div>
