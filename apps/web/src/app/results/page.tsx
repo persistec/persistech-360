@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
 import { PageHeader, Button, Alert, Select, Label, LoadingSpinner, Card } from '@/components/ui';
+import { FiTrendingUp } from 'react-icons/fi';
 
 interface Cycle { id: string; name: string; }
 interface User { id: string; name: string; }
@@ -58,7 +59,7 @@ export default function ResultsPage() {
         setUsers(usersRes.data || []);
       } catch (err) {
         console.error('Error fetching options:', err);
-        setError('Failed to load cycles or users.');
+        setError('Falha ao carregar ciclos ou utilizadores.');
       } finally {
         setLoadingOptions(false);
       }
@@ -83,7 +84,7 @@ export default function ResultsPage() {
       setAdminResult(adminRes);
       setEmployeeResult(empRes);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to fetch results. Ensure cycle is scored or assignments exist.';
+      const msg = err instanceof Error ? err.message : 'Falha ao obter resultados. Certifique-se de que o ciclo foi pontuado ou que existem atribuições.';
       setError(msg);
     } finally {
       setLoadingResults(false);
@@ -96,7 +97,7 @@ export default function ResultsPage() {
     if (data.status === 'insufficient_responses') {
       return (
         <Alert variant="info">
-          This result has insufficient responses and cannot be fully displayed to protect anonymity.
+          Este resultado tem respostas insuficientes e não pode ser totalmente exibido para proteger o anonimato.
         </Alert>
       );
     }
@@ -104,21 +105,21 @@ export default function ResultsPage() {
     return (
       <div className="space-y-6">
         <Card>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-400">Overall Score</h3>
-          <p className="mt-2 text-4xl font-bold text-cyan-100">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Pontuação Global</h3>
+          <p className="mt-2 text-4xl font-bold text-primary">
             {data.overallScore !== null ? data.overallScore.toFixed(2) : 'N/A'}
           </p>
         </Card>
 
         {isAdmin && 'relationships' in data && data.relationships && data.relationships.length > 0 && (
           <Card>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">Relationship Breakdown (Admin Only)</h3>
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Análise por Relação (Apenas Administração)</h3>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
               {data.relationships.map((rel, idx) => (
-                <div key={idx} className="rounded-md border border-slate-700 bg-slate-950/45 p-4">
-                  <div className="text-sm font-medium text-slate-200">{rel.relationshipType}</div>
-                  <div className="mt-1 text-xl font-semibold text-cyan-100">{rel.score.toFixed(2)}</div>
-                  <div className="mt-1 text-xs text-slate-400">Weight: {rel.weight}</div>
+                <div key={idx} className="rounded-md border border-border bg-surface-muted p-4">
+                  <div className="text-sm font-medium text-foreground">{rel.relationshipType}</div>
+                  <div className="mt-1 text-xl font-semibold text-primary">{rel.score.toFixed(2)}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">Peso: {rel.weight}</div>
                 </div>
               ))}
             </div>
@@ -126,18 +127,18 @@ export default function ResultsPage() {
         )}
 
         <Card>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">Dimensions & Criteria</h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Dimensões e Critérios</h3>
           {data.dimensions.map((dim) => (
             <div key={dim.domainId} className="mb-6 last:mb-0">
-              <div className="mb-3 flex items-center justify-between border-b border-slate-800 pb-2">
-                <h4 className="text-lg font-semibold text-slate-100">{dim.domainName} <span className="text-sm font-normal text-slate-400">(Weight: {dim.weight})</span></h4>
-                <span className="rounded border border-cyan-300/35 bg-cyan-300/10 px-3 py-1 text-lg font-bold text-cyan-100">{dim.score.toFixed(2)}</span>
+              <div className="mb-3 flex items-center justify-between border-b border-border pb-2">
+                <h4 className="text-lg font-semibold text-foreground">{dim.domainName} <span className="text-sm font-normal text-muted-foreground">(Peso: {dim.weight})</span></h4>
+                <span className="rounded border border-primary/35 bg-primary/10 px-3 py-1 text-lg font-bold text-primary">{dim.score.toFixed(2)}</span>
               </div>
               <ul className="space-y-2">
                 {dim.criteria.map(crit => (
                   <li key={crit.criterionId} className="flex items-center justify-between pl-4 text-sm">
-                    <span className="text-slate-300">{crit.criterionName}</span>
-                    <span className="font-medium text-slate-100">{crit.score.toFixed(2)}</span>
+                    <span className="text-muted-foreground">{crit.criterionName}</span>
+                    <span className="font-medium text-foreground">{crit.score.toFixed(2)}</span>
                   </li>
                 ))}
               </ul>
@@ -153,36 +154,37 @@ export default function ResultsPage() {
   return (
     <div>
       <PageHeader 
-        title="Results Projection" 
-        description="Select a cycle and evaluatee to compare the Admin vs Employee result views."
+        title="Projecção de Resultados"
+        description="Seleccione um ciclo e um avaliado para comparar as vistas de resultados entre Administração e Colaborador."
       />
 
       <Card className="mb-8">
         <form onSubmit={handleFetchResults} className="grid items-end gap-4 md:grid-cols-[1fr_1fr_auto]">
           <div className="flex-1">
-            <Label>Cycle</Label>
+            <Label>Ciclo</Label>
             <Select
               required
               value={selectedCycle}
               onChange={(e) => setSelectedCycle(e.target.value)}
             >
-              <option value="">Select Cycle</option>
+              <option value="">Seleccionar Ciclo</option>
               {cycles.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </Select>
           </div>
           <div className="flex-1">
-            <Label>Evaluatee</Label>
+            <Label>Avaliado</Label>
             <Select
               required
               value={selectedEvaluatee}
               onChange={(e) => setSelectedEvaluatee(e.target.value)}
             >
-              <option value="">Select User</option>
+              <option value="">Seleccionar Utilizador</option>
               {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
             </Select>
           </div>
           <Button type="submit" disabled={loadingResults}>
-            {loadingResults ? 'Loading...' : 'View Results'}
+            <FiTrendingUp className="mr-2 h-4 w-4" aria-hidden="true" />
+            {loadingResults ? 'A carregar...' : 'Ver Resultados'}
           </Button>
         </form>
       </Card>
@@ -191,22 +193,22 @@ export default function ResultsPage() {
 
       {(adminResult || employeeResult) && (
         <div>
-          <div className="mb-6 flex border-b border-slate-800">
+          <div className="mb-6 flex border-b border-border">
             <button
-              className={`border-b-2 px-4 py-2 text-sm font-medium ${activeTab === 'admin' ? 'border-cyan-300 text-cyan-100' : 'border-transparent text-slate-400 hover:text-slate-100'}`}
+              className={`border-b-2 px-4 py-2 text-sm font-medium ${activeTab === 'admin' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
               onClick={() => setActiveTab('admin')}
             >
-              Admin View
+              Vista de Administração
             </button>
             <button
-              className={`border-b-2 px-4 py-2 text-sm font-medium ${activeTab === 'employee' ? 'border-cyan-300 text-cyan-100' : 'border-transparent text-slate-400 hover:text-slate-100'}`}
+              className={`border-b-2 px-4 py-2 text-sm font-medium ${activeTab === 'employee' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
               onClick={() => setActiveTab('employee')}
             >
-              Employee View
+              Vista de Colaborador
             </button>
           </div>
 
-          <div className="rounded-lg bg-slate-950/30 p-1 sm:p-3">
+          <div className="rounded-lg bg-background/30 p-1 sm:p-3">
             {activeTab === 'admin' ? renderResult(adminResult, true) : renderResult(employeeResult, false)}
           </div>
         </div>

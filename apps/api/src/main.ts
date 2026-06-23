@@ -8,12 +8,47 @@ async function bootstrap() {
 
   const port = Number(process.env.PORT ?? 4000);
 
+  const rawOrigins = [
+    ...(process.env.CORS_ALLOWED_ORIGINS?.split(',') || []),
+    ...(process.env.WEB_APP_URL?.split(',') || []),
+  ]
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+  const exactOrigins = new Set(rawOrigins);
+
   app.enableCors({
-    origin: process.env.WEB_APP_URL
-      ? process.env.WEB_APP_URL.split(',')
-      : 'http://localhost:3000',
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (exactOrigins.has(origin)) {
+        return callback(null, true);
+      }
+
+      if (/^https:\/\/[a-zA-Z0-9-]+\.vercel\.app$/.test(origin)) {
+        return callback(null, true);
+      }
+
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        origin === 'http://localhost:3000'
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(null, false);
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'x-user-id'],
+    allowedHeaders: [
+      'Content-Type',
+      'Accept',
+      'Authorization',
+      'x-user-id',
+      'x-requested-with',
+    ],
   });
 
   app.useGlobalPipes(

@@ -1,4 +1,5 @@
 'use client';
+import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
@@ -45,7 +46,7 @@ export default function RolesPage() {
       setDepartments(depsRes.data || []);
       setHierarchyLevels(levelsRes.data || []);
     } catch (err: any) {
-      setError(err.message || 'Failed to fetch roles data');
+      setError(err.message || 'Falha ao obter dados das funções');
     } finally {
       setLoading(false);
     }
@@ -74,18 +75,18 @@ export default function RolesPage() {
       setView('list');
       fetchData();
     } catch (err: any) {
-      setError(err.message || 'Failed to save role');
+      setError(err.message || 'Falha ao guardar função');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this role?')) return;
+    if (!confirm('Tem a certeza que deseja eliminar esta função?')) return;
     setError(null);
     try {
       await apiClient.delete(`/roles/${id}`);
       fetchData();
     } catch (err: any) {
-      setError(err.message || 'Failed to delete role');
+      setError(err.message || 'Falha ao eliminar função');
     }
   };
 
@@ -94,15 +95,14 @@ export default function RolesPage() {
   return (
     <div>
       <PageHeader 
-        title="Roles" 
-        description="Manage organizational roles and their optional department or hierarchy associations."
+        title="Funções"
+        description="Gerir funções organizacionais e as suas associações opcionais de departamento ou hierarquia."
         action={
           view === 'list' && (
             <Button onClick={() => {
               setFormData({ id: '', name: '', departmentId: '', hierarchyLevelId: '' });
               setView('create');
-            }}>
-              Create Role
+            }}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Função
             </Button>
           )
         }
@@ -111,9 +111,9 @@ export default function RolesPage() {
       {error && <Alert className="mb-6">{error}</Alert>}
 
       {view === 'list' ? (
-        <Table headers={['Name', 'Department ID', 'Hierarchy Level ID', 'Created At', 'Actions']}>
+        <Table headers={['Nome', 'ID do Departamento', 'ID do Nível Hierárquico', 'Data de Criação', 'Acções']}>
           {roles.length === 0 ? (
-            <EmptyState colSpan={5}>No roles found.</EmptyState>
+            <EmptyState colSpan={5}>Nenhuma função encontrada.</EmptyState>
           ) : (
             roles.map((role) => (
               <TableRow key={role.id}>
@@ -131,12 +131,8 @@ export default function RolesPage() {
                         hierarchyLevelId: role.hierarchyLevelId || '',
                       });
                       setView('edit');
-                    }}>
-                      Edit
-                    </Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(role.id)}>
-                      Delete
-                    </Button>
+                    }}><FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar</Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(role.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -144,48 +140,48 @@ export default function RolesPage() {
           )}
         </Table>
       ) : (
-        <FormPanel title={view === 'create' ? 'Create New Role' : 'Edit Role'} className="max-w-xl">
+        <FormPanel title={view === 'create' ? 'Criar Nova Função' : 'Editar Função'} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label>Name</Label>
+              <Label>Nome</Label>
               <Input 
                 required 
                 value={formData.name} 
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
-                placeholder="Software Engineer, Product Manager..."
+                placeholder="Engenheiro de Software, Gestor de Produto..."
               />
             </div>
             <div>
-              <Label>Department (Optional)</Label>
+              <Label>Departamento (Opcional)</Label>
               <Select
                 value={formData.departmentId}
                 onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}
               >
-                <option value="">None</option>
+                <option value="">Nenhum</option>
                 {departments.map(d => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
               </Select>
             </div>
             <div>
-              <Label>Hierarchy Level (Optional)</Label>
+              <Label>Nível Hierárquico (Opcional)</Label>
               <Select
                 value={formData.hierarchyLevelId}
                 onChange={(e) => setFormData({ ...formData, hierarchyLevelId: e.target.value })}
               >
-                <option value="">None</option>
+                <option value="">Nenhum</option>
                 {hierarchyLevels.map(l => (
                   <option key={l.id} value={l.id}>{l.name}</option>
                 ))}
               </Select>
             </div>
             <div className="flex gap-2 pt-4">
-              <Button type="submit">Save</Button>
+              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
               <Button type="button" variant="ghost" onClick={() => {
                 setView('list');
                 setError(null);
               }}>
-                Cancel
+                Cancelar
               </Button>
             </div>
           </form>

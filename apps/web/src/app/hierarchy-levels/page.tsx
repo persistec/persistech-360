@@ -1,4 +1,5 @@
 'use client';
+import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
@@ -27,7 +28,7 @@ export default function HierarchyLevelsPage() {
       const sorted = (response.data || []).sort((a, b) => a.rank - b.rank);
       setLevels(sorted);
     } catch (err: any) {
-      setError(err.message || 'Failed to fetch hierarchy levels');
+      setError(err.message || 'Falha ao obter níveis hierárquicos');
     } finally {
       setLoading(false);
     }
@@ -55,18 +56,18 @@ export default function HierarchyLevelsPage() {
       setView('list');
       fetchLevels();
     } catch (err: any) {
-      setError(err.message || 'Failed to save hierarchy level');
+      setError(err.message || 'Falha ao guardar nível hierárquico');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this hierarchy level?')) return;
+    if (!confirm('Tem a certeza que deseja eliminar este nível hierárquico?')) return;
     setError(null);
     try {
       await apiClient.delete(`/hierarchy-levels/${id}`);
       fetchLevels();
     } catch (err: any) {
-      setError(err.message || 'Failed to delete hierarchy level');
+      setError(err.message || 'Falha ao eliminar nível hierárquico');
     }
   };
 
@@ -75,15 +76,14 @@ export default function HierarchyLevelsPage() {
   return (
     <div>
       <PageHeader 
-        title="Hierarchy Levels" 
-        description="Define rank ordering used by backend eligibility and hierarchy rules."
+        title="Níveis Hierárquicos"
+        description="Definir ordenação usada por regras de elegibilidade e hierarquia no backend."
         action={
           view === 'list' && (
             <Button onClick={() => {
               setFormData({ id: '', name: '', rank: levels.length > 0 ? levels[levels.length - 1].rank + 1 : 1 });
               setView('create');
-            }}>
-              Create Level
+            }}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Nível
             </Button>
           )
         }
@@ -92,9 +92,9 @@ export default function HierarchyLevelsPage() {
       {error && <Alert className="mb-6">{error}</Alert>}
 
       {view === 'list' ? (
-        <Table headers={['Name', 'Rank', 'Created At', 'Actions']}>
+        <Table headers={['Nome', 'Grau', 'Data de Criação', 'Acções']}>
           {levels.length === 0 ? (
-            <EmptyState colSpan={4}>No hierarchy levels found.</EmptyState>
+            <EmptyState colSpan={4}>Nenhum nível hierárquico encontrado.</EmptyState>
           ) : (
             levels.map((level) => (
               <TableRow key={level.id}>
@@ -106,12 +106,8 @@ export default function HierarchyLevelsPage() {
                     <Button size="sm" variant="secondary" onClick={() => {
                       setFormData({ id: level.id, name: level.name, rank: level.rank });
                       setView('edit');
-                    }}>
-                      Edit
-                    </Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(level.id)}>
-                      Delete
-                    </Button>
+                    }}><FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar</Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(level.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -119,19 +115,19 @@ export default function HierarchyLevelsPage() {
           )}
         </Table>
       ) : (
-        <FormPanel title={view === 'create' ? 'Create New Level' : 'Edit Level'} className="max-w-xl">
+        <FormPanel title={view === 'create' ? 'Criar Novo Nível' : 'Editar Nível'} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label>Name</Label>
+              <Label>Nome</Label>
               <Input 
                 required 
                 value={formData.name} 
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
-                placeholder="Senior, Junior, Director..."
+                placeholder="Sénior, Júnior, Director..."
               />
             </div>
             <div>
-              <Label>Rank (Higher number = higher rank)</Label>
+              <Label>Grau (Número mais alto = grau mais alto)</Label>
               <Input 
                 required 
                 type="number"
@@ -141,12 +137,12 @@ export default function HierarchyLevelsPage() {
               />
             </div>
             <div className="flex gap-2 pt-4">
-              <Button type="submit">Save</Button>
+              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
               <Button type="button" variant="ghost" onClick={() => {
                 setView('list');
                 setError(null);
               }}>
-                Cancel
+                Cancelar
               </Button>
             </div>
           </form>

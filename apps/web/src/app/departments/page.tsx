@@ -1,4 +1,5 @@
 'use client';
+import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
@@ -51,7 +52,7 @@ export default function DepartmentsPage() {
       const response = await apiClient.get<{ data: DepartmentApiItem[] }>('/departments');
       setDepartments((response.data || []).map(mapDepartmentFromApi));
     } catch (err: any) {
-      setError(err.message || 'Failed to fetch departments');
+      setError(err.message || 'Falha ao obter departamentos');
     } finally {
       setLoading(false);
     }
@@ -76,18 +77,18 @@ export default function DepartmentsPage() {
       setView('list');
       fetchDepartments();
     } catch (err: any) {
-      setError(err.message || 'Failed to save department');
+      setError(err.message || 'Falha ao guardar departamento');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this department?')) return;
+    if (!confirm('Tem a certeza que deseja eliminar este departamento?')) return;
     setError(null);
     try {
       await apiClient.delete(`/departments/${id}`);
       fetchDepartments();
     } catch (err: any) {
-      setError(err.message || 'Failed to delete department');
+      setError(err.message || 'Falha ao eliminar departamento');
     }
   };
 
@@ -96,15 +97,14 @@ export default function DepartmentsPage() {
   return (
     <div>
       <PageHeader 
-        title="Departments" 
-        description="Maintain organization departments used by users, roles, and evaluation reporting."
+        title="Departamentos"
+        description="Manter departamentos da organização usados por utilizadores, funções e relatórios de avaliação."
         action={
           view === 'list' && (
             <Button onClick={() => {
               setFormData({ id: '', name: '', parentId: '' });
               setView('create');
-            }}>
-              Create Department
+            }}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Departamento
             </Button>
           )
         }
@@ -113,9 +113,9 @@ export default function DepartmentsPage() {
       {error && <Alert className="mb-6">{error}</Alert>}
 
       {view === 'list' ? (
-        <Table headers={['Name', 'Parent ID', 'Created At', 'Actions']}>
+        <Table headers={['Nome', 'ID Ascendente', 'Data de Criação', 'Acções']}>
           {departments.length === 0 ? (
-            <EmptyState colSpan={4}>No departments found.</EmptyState>
+            <EmptyState colSpan={4}>Nenhum departamento encontrado.</EmptyState>
           ) : (
             departments.map((dept) => (
               <TableRow key={dept.id}>
@@ -127,12 +127,8 @@ export default function DepartmentsPage() {
                     <Button size="sm" variant="secondary" onClick={() => {
                       setFormData({ id: dept.id, name: dept.name, parentId: dept.parentId || '' });
                       setView('edit');
-                    }}>
-                      Edit
-                    </Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(dept.id)}>
-                      Delete
-                    </Button>
+                    }}><FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar</Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(dept.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -140,24 +136,24 @@ export default function DepartmentsPage() {
           )}
         </Table>
       ) : (
-        <FormPanel title={view === 'create' ? 'Create New Department' : 'Edit Department'} className="max-w-xl">
+        <FormPanel title={view === 'create' ? 'Criar Novo Departamento' : 'Editar Departamento'} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label>Name</Label>
+              <Label>Nome</Label>
               <Input 
                 required 
                 value={formData.name} 
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
-                placeholder="Engineering"
+                placeholder="Engenharia"
               />
             </div>
             <div>
-              <Label>Parent Department (Optional)</Label>
+              <Label>Departamento Ascendente (Opcional)</Label>
               <Select
                 value={formData.parentId}
                 onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
               >
-                <option value="">None</option>
+                <option value="">Nenhum</option>
                 {departments
                   .filter(d => d.id !== formData.id) // Cannot be own parent
                   .map(d => (
@@ -167,12 +163,12 @@ export default function DepartmentsPage() {
               </Select>
             </div>
             <div className="flex gap-2 pt-4">
-              <Button type="submit">Save</Button>
+              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
               <Button type="button" variant="ghost" onClick={() => {
                 setView('list');
                 setError(null);
               }}>
-                Cancel
+                Cancelar
               </Button>
             </div>
           </form>

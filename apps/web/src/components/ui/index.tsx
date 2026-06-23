@@ -1,4 +1,5 @@
 import React from 'react';
+import { FiAlertCircle, FiCheckCircle, FiAlertTriangle, FiInfo, FiInbox } from 'react-icons/fi';
 
 export function Button({
   children,
@@ -10,13 +11,13 @@ export function Button({
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
 }) {
-  const baseStyles = 'inline-flex items-center justify-center rounded-md font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 disabled:pointer-events-none disabled:opacity-45';
+  const baseStyles = 'inline-flex items-center justify-center rounded-md font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-45';
   
   const variants = {
-    primary: 'bg-cyan-500 text-slate-950 shadow-[0_0_24px_rgba(34,211,238,0.22)] hover:bg-cyan-300',
-    secondary: 'border border-slate-600/80 bg-slate-900/80 text-slate-100 hover:border-cyan-400/70 hover:bg-slate-800',
-    danger: 'bg-red-500 text-white hover:bg-red-400',
-    ghost: 'text-slate-300 hover:bg-slate-800/80 hover:text-white',
+    primary: 'bg-primary text-primary-foreground shadow-[0_0_24px_var(--color-primary)] hover:bg-primary/80',
+    secondary: 'border border-border bg-surface-muted text-foreground hover:border-primary/70 hover:bg-surface',
+    danger: 'bg-danger text-white hover:bg-danger/80',
+    ghost: 'text-muted-foreground hover:bg-surface-elevated hover:text-foreground',
   };
 
   const sizes = {
@@ -41,7 +42,7 @@ export function Input({
 }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className={`flex h-10 w-full rounded-md border border-slate-600/80 bg-slate-950/70 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 shadow-inner shadow-black/20 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400/35 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`flex h-10 w-full rounded-md border border-border bg-input/20 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground shadow-inner shadow-black/5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/35 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       {...props}
     />
   );
@@ -54,7 +55,7 @@ export function Select({
 }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
-      className={`flex h-10 w-full items-center justify-between rounded-md border border-slate-600/80 bg-slate-950/70 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 shadow-inner shadow-black/20 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400/35 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`flex h-10 w-full items-center justify-between rounded-md border border-border bg-input/20 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground shadow-inner shadow-black/5 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/35 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       {...props}
     >
       {children}
@@ -69,7 +70,7 @@ export function Label({
 }: React.LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
-      className={`mb-2 block text-sm font-medium leading-none text-slate-200 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}
+      className={`mb-2 block text-sm font-medium leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}
       {...props}
     >
       {children}
@@ -87,15 +88,24 @@ export function Alert({
   className?: string;
 }) {
   const styles = {
-    error: 'border-red-400/40 bg-red-950/55 text-red-100',
-    success: 'border-emerald-400/40 bg-emerald-950/45 text-emerald-100',
-    warning: 'border-amber-300/45 bg-amber-950/45 text-amber-100',
-    info: 'border-cyan-300/40 bg-cyan-950/45 text-cyan-100',
+    error: 'border-danger/40 bg-danger/10 text-danger',
+    success: 'border-success/40 bg-success/10 text-success',
+    warning: 'border-warning/40 bg-warning/10 text-warning',
+    info: 'border-primary/40 bg-primary/10 text-primary',
   };
 
+  const icons = {
+    error: FiAlertCircle,
+    success: FiCheckCircle,
+    warning: FiAlertTriangle,
+    info: FiInfo,
+  };
+  const Icon = icons[variant];
+
   return (
-    <div className={`rounded-md border p-4 text-sm leading-6 shadow-sm ${styles[variant]} ${className}`}>
-      {children}
+    <div className={`flex gap-3 rounded-md border p-4 text-sm leading-6 shadow-sm ${styles[variant]} ${className}`}>
+      <Icon className="mt-0.5 h-5 w-5 shrink-0" />
+      <div>{children}</div>
     </div>
   );
 }
@@ -110,11 +120,11 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-8 flex flex-col gap-4 border-b border-cyan-400/15 pb-5 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mb-8 flex flex-col gap-4 border-b border-primary/15 pb-5 sm:flex-row sm:items-end sm:justify-between">
       <div className="max-w-3xl">
-        <div className="mb-2 h-1 w-12 rounded-full bg-cyan-400 shadow-[0_0_18px_rgba(34,211,238,0.45)]" />
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-50">{title}</h1>
-        {description && <p className="mt-2 text-sm leading-6 text-slate-400">{description}</p>}
+        <div className="mb-2 h-1 w-12 rounded-full bg-primary shadow-[0_0_18px_var(--color-primary)]" />
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
+        {description && <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>}
       </div>
       {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
     </div>
@@ -124,7 +134,7 @@ export function PageHeader({
 export function LoadingSpinner() {
   return (
     <div className="flex min-h-48 items-center justify-center p-8">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-300/20 border-b-cyan-300"></div>
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary/20 border-b-primary"></div>
     </div>
   );
 }
@@ -137,12 +147,12 @@ export function Table({
   children: React.ReactNode;
 }) {
   return (
-    <div className="w-full overflow-auto rounded-lg border border-slate-700/70 bg-slate-900/70 shadow-2xl shadow-black/20">
+    <div className="w-full overflow-auto rounded-lg border border-border bg-surface shadow-2xl shadow-black/5">
       <table className="w-full caption-bottom text-sm text-left">
-        <thead className="border-b border-slate-700/80 bg-slate-950/80">
+        <thead className="border-b border-border bg-surface-elevated">
           <tr>
             {headers.map((h, i) => (
-              <th key={i} className="h-12 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <th key={i} className="h-12 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {h}
               </th>
             ))}
@@ -157,7 +167,7 @@ export function Table({
 }
 
 export function TableRow({ children, className = '' }: { children: React.ReactNode, className?: string }) {
-  return <tr className={`border-b border-slate-800/90 text-slate-200 transition-colors hover:bg-cyan-400/5 ${className}`}>{children}</tr>;
+  return <tr className={`border-b border-border text-foreground transition-colors hover:bg-primary/5 ${className}`}>{children}</tr>;
 }
 
 export function TableCell({ children, className = '', colSpan }: { children: React.ReactNode, className?: string, colSpan?: number }) {
@@ -172,7 +182,7 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-lg border border-slate-700/70 bg-slate-900/70 p-6 shadow-2xl shadow-black/20 ${className}`}>
+    <div className={`rounded-lg border border-border bg-surface p-6 shadow-2xl shadow-black/5 ${className}`}>
       {children}
     </div>
   );
@@ -181,17 +191,19 @@ export function Card({
 export function DashboardCard({
   title,
   description,
+  icon: Icon,
 }: {
   title: string;
   description: string;
+  icon?: React.ElementType;
 }) {
   return (
-    <div className="group rounded-lg border border-slate-700/70 bg-slate-900/70 p-6 shadow-2xl shadow-black/20 transition hover:border-cyan-400/45 hover:bg-slate-900">
-      <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-md border border-cyan-300/25 bg-cyan-400/10 text-cyan-200 shadow-[0_0_22px_rgba(34,211,238,0.12)]">
-        <span className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.8)]" />
+    <div className="group rounded-lg border border-border bg-surface p-6 shadow-2xl shadow-black/5 transition hover:border-primary/45 hover:bg-surface-elevated">
+      <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-md border border-primary/25 bg-primary/10 text-primary shadow-[0_0_22px_var(--color-primary)]">
+        {Icon ? <Icon className="h-5 w-5" aria-hidden="true" /> : <span className="h-2 w-2 rounded-full bg-primary shadow-[0_0_18px_var(--color-primary)]" />}
       </div>
-      <h3 className="text-lg font-semibold text-slate-50">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-slate-400">{description}</p>
+      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
     </div>
   );
 }
@@ -207,7 +219,7 @@ export function FormPanel({
 }) {
   return (
     <Card className={`max-w-2xl ${className}`}>
-      <h2 className="mb-5 text-lg font-semibold text-slate-50">{title}</h2>
+      <h2 className="mb-5 text-lg font-semibold text-foreground">{title}</h2>
       {children}
     </Card>
   );
@@ -222,8 +234,9 @@ export function EmptyState({
 }) {
   return (
     <TableRow className="hover:bg-transparent">
-      <TableCell className="py-12 text-center text-slate-400" colSpan={colSpan}>
-        <div className="mx-auto max-w-sm rounded-md border border-dashed border-slate-700 bg-slate-950/40 px-5 py-6">
+      <TableCell className="py-12 text-center text-muted-foreground" colSpan={colSpan}>
+        <div className="mx-auto flex max-w-sm flex-col items-center justify-center rounded-md border border-dashed border-border bg-surface-muted px-5 py-6">
+          <FiInbox className="mb-3 h-8 w-8 text-muted-foreground/60" aria-hidden="true" />
           {children}
         </div>
       </TableCell>
@@ -239,11 +252,11 @@ export function StatusBadge({
   children: React.ReactNode;
 }) {
   const tones = {
-    neutral: 'border-slate-500/40 bg-slate-800 text-slate-200',
-    success: 'border-emerald-400/35 bg-emerald-400/10 text-emerald-200',
-    warning: 'border-amber-300/35 bg-amber-300/10 text-amber-100',
-    danger: 'border-red-400/35 bg-red-400/10 text-red-100',
-    info: 'border-cyan-300/35 bg-cyan-300/10 text-cyan-100',
+    neutral: 'border-border bg-surface-muted text-foreground',
+    success: 'border-success/35 bg-success/10 text-success',
+    warning: 'border-warning/35 bg-warning/10 text-warning',
+    danger: 'border-danger/35 bg-danger/10 text-danger',
+    info: 'border-primary/35 bg-primary/10 text-primary',
   };
 
   return (

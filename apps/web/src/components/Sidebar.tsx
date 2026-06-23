@@ -2,98 +2,125 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  FiGrid,
+  FiFolder,
+  FiLayers,
+  FiBriefcase,
+  FiUsers,
+  FiCalendar,
+  FiClipboard,
+  FiCheckSquare,
+  FiTrendingUp,
+  FiSettings,
+  FiBox
+} from 'react-icons/fi';
 
 export function Sidebar() {
   const pathname = usePathname();
 
   const navSections = [
     {
-      title: 'Overview',
-      items: [{ href: '/', label: 'Dashboard' }],
+      title: 'Visão Geral',
+      items: [{ href: '/', label: 'Painel', icon: FiGrid }],
     },
     {
-      title: 'Organization',
+      title: 'Organização',
       items: [
-        { href: '/departments', label: 'Departments' },
-        { href: '/hierarchy-levels', label: 'Hierarchy Levels' },
-        { href: '/roles', label: 'Roles' },
-        { href: '/users', label: 'Users' },
+        { href: '/departments', label: 'Departamentos', icon: FiFolder },
+        { href: '/hierarchy-levels', label: 'Níveis Hierárquicos', icon: FiLayers },
+        { href: '/roles', label: 'Funções', icon: FiBriefcase },
+        { href: '/users', label: 'Utilizadores', icon: FiUsers },
       ],
     },
     {
-      title: 'Evaluations',
+      title: 'Avaliações',
       items: [
-        { href: '/cycles', label: 'Evaluation Cycles' },
-        { href: '/assignments', label: 'Assignments' },
-        { href: '/submissions', label: 'Submissions' },
-        { href: '/results', label: 'Results' },
+        { href: '/cycles', label: 'Ciclos de Avaliação', icon: FiCalendar },
+        { href: '/assignments', label: 'Atribuições', icon: FiClipboard },
+        { href: '/submissions', label: 'Submissões', icon: FiCheckSquare },
+        { href: '/results', label: 'Resultados', icon: FiTrendingUp },
+      ],
+    },
+    {
+      title: 'Sistema',
+      items: [
+        { href: '/settings', label: 'Definições', icon: FiSettings },
       ],
     },
   ];
 
   return (
     <>
-    <div className="border-b border-cyan-400/10 bg-slate-950/95 p-4 md:hidden">
+    <div className="border-b border-border bg-surface/95 p-4 md:hidden">
       <div className="mb-3 flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-300/30 bg-cyan-400/10">
-          <span className="h-2.5 w-2.5 rounded-full bg-cyan-300" />
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-primary/30 bg-primary/10">
+          <FiBox className="h-5 w-5 text-primary" aria-hidden="true" />
         </div>
         <div>
-          <span className="block text-base font-semibold text-slate-50">Persistech 360</span>
-          <span className="text-xs uppercase tracking-wide text-cyan-200/80">Admin Control</span>
+          <span className="block text-base font-semibold text-foreground">Persistech 360</span>
+          <span className="text-xs uppercase tracking-wide text-primary/80">Controlo de Administração</span>
         </div>
       </div>
       <nav className="flex gap-2 overflow-x-auto pb-1">
         {navSections.flatMap((section) => section.items).map((item) => {
           const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
+          const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`shrink-0 rounded-md border px-3 py-2 text-xs font-medium ${
+              className={`flex shrink-0 items-center gap-2 rounded-md border px-3 py-2 text-xs font-medium ${
                 isActive
-                  ? 'border-cyan-300/50 bg-cyan-400/15 text-cyan-100'
-                  : 'border-slate-700 bg-slate-900/80 text-slate-300'
+                  ? 'border-primary/50 bg-primary/15 text-primary'
+                  : 'border-border bg-surface-muted text-muted-foreground hover:text-foreground'
               }`}
             >
+              <Icon className="h-3.5 w-3.5" aria-hidden="true" />
               {item.label}
             </Link>
           );
         })}
       </nav>
     </div>
-    <aside className="hidden min-h-screen w-72 flex-shrink-0 flex-col border-r border-cyan-400/10 bg-slate-950/88 text-white shadow-2xl shadow-black/30 backdrop-blur md:flex">
-      <div className="border-b border-slate-800/90 px-6 py-6">
+    <aside className="hidden h-dvh w-72 shrink-0 flex-col border-r border-border bg-surface/90 text-foreground shadow-2xl shadow-black/10 backdrop-blur md:flex">
+      <div className="border-b border-border px-6 py-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-cyan-300/30 bg-cyan-400/10 shadow-[0_0_28px_rgba(34,211,238,0.18)]">
-            <span className="h-3 w-3 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.9)]" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-primary/30 bg-primary/10 shadow-[0_0_28px_var(--color-primary)]">
+            <FiBox className="h-5 w-5 text-primary drop-shadow-[0_0_8px_var(--color-primary)]" aria-hidden="true" />
           </div>
           <div>
-            <span className="block text-lg font-semibold tracking-tight text-slate-50">Persistech 360</span>
-            <span className="text-xs font-medium uppercase tracking-wide text-cyan-200/80">Admin Control</span>
+            <span className="block text-lg font-semibold tracking-tight text-foreground">Persistech 360</span>
+            <span className="text-xs font-medium uppercase tracking-wide text-primary/80">Controlo de Administração</span>
           </div>
         </div>
       </div>
-      <nav className="flex-1 space-y-7 px-4 py-6">
+      <nav className="min-h-0 flex-1 overflow-y-auto space-y-7 px-4 py-6">
         {navSections.map((section) => (
           <div key={section.title}>
-            <div className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <div className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               {section.title}
             </div>
             <ul className="space-y-1">
               {section.items.map((item) => {
                 const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
+                const Icon = item.icon;
                 return (
                   <li key={item.href}>
                     <Link
                       href={item.href}
                       className={`group relative flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition ${
                         isActive
-                          ? 'bg-cyan-400/12 text-cyan-100 shadow-[inset_3px_0_0_rgba(34,211,238,0.95)]'
-                          : 'text-slate-400 hover:bg-slate-800/75 hover:text-slate-100'
+                          ? 'bg-primary/15 text-primary shadow-[inset_3px_0_0_var(--color-primary)]'
+                          : 'text-muted-foreground hover:bg-surface-elevated hover:text-foreground'
                       }`}
                     >
-                      <span className={`mr-3 h-1.5 w-1.5 rounded-full ${isActive ? 'bg-cyan-300 shadow-[0_0_14px_rgba(34,211,238,0.9)]' : 'bg-slate-600 group-hover:bg-cyan-300/70'}`} />
+                      <Icon
+                        className={`mr-3 h-4 w-4 shrink-0 transition-colors ${
+                          isActive ? 'text-primary drop-shadow-[0_0_8px_var(--color-primary)]' : 'text-muted-foreground group-hover:text-primary/80'
+                        }`}
+                        aria-hidden="true"
+                      />
                       {item.label}
                     </Link>
                   </li>
@@ -103,13 +130,13 @@ export function Sidebar() {
           </div>
         ))}
       </nav>
-      <div className="border-t border-slate-800/90 p-5">
-        <div className="rounded-lg border border-cyan-400/15 bg-slate-900/80 p-4">
-          <div className="flex items-center justify-between text-xs font-medium uppercase tracking-wide text-slate-500">
+      <div className="shrink-0 border-t border-border p-5 space-y-4">
+        <div className="rounded-lg border border-border bg-surface-muted p-4">
+          <div className="flex items-center justify-between text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <span>MVP</span>
-            <span className="text-emerald-300">Online</span>
+            <span className="text-success">Online</span>
           </div>
-          <p className="mt-2 text-sm text-slate-300">Internal admin interface</p>
+          <p className="mt-2 text-sm text-foreground/80">Interface interna de administração</p>
         </div>
       </div>
     </aside>

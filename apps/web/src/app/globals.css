@@ -1,33 +1,88 @@
 @import "tailwindcss";
 
-:root {
+:root,
+[data-theme="light"] {
+  --background: #f8fafc;
+  --background-image: none;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-muted: #f1f5f9;
+  --surface-elevated: #ffffff;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --primary: #0ea5e9;
+  --primary-foreground: #ffffff;
+  --accent: #38bdf8;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --input: #e2e8f0;
+  --ring: #38bdf8;
+}
+
+[data-theme="dark"] {
   --background: #020812;
-  --foreground: #e5f3ff;
+  --background-image: radial-gradient(circle at top right, rgba(14, 165, 233, 0.16), transparent 34%), linear-gradient(135deg, #020812 0%, #071426 45%, #020812 100%);
+  --foreground: #f8fafc;
+  --surface: #0b1524;
+  --surface-muted: #132338;
+  --surface-elevated: #1e293b;
+  --border: #1e293b;
+  --border-strong: #334155;
+  --primary: #06b6d4;
+  --primary-foreground: #020812;
+  --accent: #22d3ee;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --muted: #0f172a;
+  --muted-foreground: #94a3b8;
+  --input: #1e293b;
+  --ring: #22d3ee;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
   --font-sans: Arial, Helvetica, sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image: var(--background-image);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
 
 ::selection {
   background: rgba(34, 211, 238, 0.32);
-  color: #f8fafc;
+  color: inherit;
 }
 
 select option {
-  background: #081523;
-  color: #e2e8f0;
+  background: var(--surface);
+  color: var(--foreground);
 }
 
 input[type="datetime-local"] {
-  color-scheme: dark;
+  color-scheme: light dark;
 }
