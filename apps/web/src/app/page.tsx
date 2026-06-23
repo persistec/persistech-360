@@ -4,22 +4,22 @@ export default function Home() {
   return (
     <div>
       <PageHeader
-        title="Dashboard"
-        description="Welcome to the Persistech 360 Admin MVP. Select an option from the sidebar to manage structural data and evaluation cycles."
+        title="Painel"
+        description="Bem-vindo ao MVP de Administração do Persistech 360. Seleccione uma opção na barra lateral para gerir dados estruturais e ciclos de avaliação."
       />
 
       <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
         <DashboardCard
-          title="Organization"
-          description="Manage Departments, Hierarchy Levels, and Roles before adding users."
+          title="Organização"
+          description="Gerir Departamentos, Níveis Hierárquicos e Funções antes de adicionar utilizadores."
         />
         <DashboardCard
-          title="Users"
-          description="Create users and assign them to departments and roles."
+          title="Utilizadores"
+          description="Criar utilizadores e atribuí-los a departamentos e funções."
         />
         <DashboardCard
-          title="Cycles & Results"
-          description="Configure evaluation cycles, generate assignments, and monitor results."
+          title="Ciclos e Resultados"
+          description="Configurar ciclos de avaliação, gerar atribuições e monitorizar resultados."
         />
       </div>
     </div>
