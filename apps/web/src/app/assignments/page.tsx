@@ -1,4 +1,5 @@
 'use client';
+import { FiPlus, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
@@ -52,7 +53,7 @@ export default function AssignmentsPage() {
       setUsers(usersRes.data || []);
       setCycles(cyclesRes.data || []);
     } catch (err: any) {
-      setError(err.message || 'Failed to fetch assignments');
+      setError(err.message || 'Falha ao obter atribuições');
     } finally {
       setLoading(false);
     }
@@ -77,18 +78,18 @@ export default function AssignmentsPage() {
       setView('list');
       fetchData();
     } catch (err: any) {
-      setError(err.message || 'Failed to create assignment');
+      setError(err.message || 'Falha ao criar atribuição');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this assignment?')) return;
+    if (!confirm('Tem a certeza que deseja eliminar esta atribuição?')) return;
     setError(null);
     try {
       await apiClient.delete(`/evaluation-assignments/${id}`);
       fetchData();
     } catch (err: any) {
-      setError(err.message || 'Failed to delete assignment');
+      setError(err.message || 'Falha ao eliminar atribuição');
     }
   };
 
@@ -100,12 +101,11 @@ export default function AssignmentsPage() {
   return (
     <div>
       <PageHeader 
-        title="Assignments" 
-        description="Inspect generated assignments and create manual assignments through the existing API contract."
+        title="Atribuições"
+        description="Inspeccionar atribuições geradas e criar atribuições manuais através do contrato de API existente."
         action={
           view === 'list' && (
-            <Button onClick={() => setView('create')}>
-              Create Manual Assignment
+            <Button onClick={() => setView('create')}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Atribuição Manual
             </Button>
           )
         }
@@ -114,9 +114,9 @@ export default function AssignmentsPage() {
       {error && <Alert className="mb-6">{error}</Alert>}
 
       {view === 'list' ? (
-        <Table headers={['Cycle', 'Evaluator', 'Evaluatee', 'Relation', 'Status', 'Required', 'Actions']}>
+        <Table headers={['Ciclo', 'Avaliador', 'Avaliado', 'Relação', 'Estado', 'Obrigatório', 'Acções']}>
           {assignments.length === 0 ? (
-            <EmptyState colSpan={7}>No assignments found.</EmptyState>
+            <EmptyState colSpan={7}>Nenhuma atribuição encontrada.</EmptyState>
           ) : (
             assignments.map((assignment) => (
               <TableRow key={assignment.id}>
@@ -129,49 +129,47 @@ export default function AssignmentsPage() {
                     {assignment.status}
                   </StatusBadge>
                 </TableCell>
-                <TableCell>{assignment.isRequired ? 'Yes' : 'No'}</TableCell>
+                <TableCell>{assignment.isRequired ? 'Sim' : 'Não'}</TableCell>
                 <TableCell>
-                  <Button size="sm" variant="danger" onClick={() => handleDelete(assignment.id)}>
-                    Delete
-                  </Button>
+                  <Button size="sm" variant="danger" onClick={() => handleDelete(assignment.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
                 </TableCell>
               </TableRow>
             ))
           )}
         </Table>
       ) : (
-        <FormPanel title="Create Manual Assignment" className="max-w-xl">
+        <FormPanel title="Criar Atribuição Manual" className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label>Cycle</Label>
+              <Label>Ciclo</Label>
               <Select
                 required
                 value={formData.cycleId}
                 onChange={(e) => setFormData({ ...formData, cycleId: e.target.value })}
               >
-                <option value="">Select Cycle</option>
+                <option value="">Seleccionar Ciclo</option>
                 {cycles.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </Select>
             </div>
             <div>
-              <Label>Evaluator</Label>
+              <Label>Avaliador</Label>
               <Select
                 required
                 value={formData.evaluatorId}
                 onChange={(e) => setFormData({ ...formData, evaluatorId: e.target.value })}
               >
-                <option value="">Select Evaluator</option>
+                <option value="">Seleccionar Avaliador</option>
                 {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
               </Select>
             </div>
             <div>
-              <Label>Evaluatee</Label>
+              <Label>Avaliado</Label>
               <Select
                 required
                 value={formData.evaluateeId}
                 onChange={(e) => setFormData({ ...formData, evaluateeId: e.target.value })}
               >
-                <option value="">Select Evaluatee</option>
+                <option value="">Seleccionar Avaliado</option>
                 {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
               </Select>
             </div>
@@ -179,19 +177,19 @@ export default function AssignmentsPage() {
               <input 
                 type="checkbox" 
                 id="isRequired"
-                className="h-4 w-4 rounded border-slate-600 bg-slate-950 text-cyan-400 focus:ring-cyan-300"
+                className="h-4 w-4 rounded border-border bg-input/20 text-primary focus:ring-primary/80"
                 checked={formData.isRequired}
                 onChange={(e) => setFormData({ ...formData, isRequired: e.target.checked })}
               />
-              <Label htmlFor="isRequired">Is Required</Label>
+              <Label htmlFor="isRequired">É Obrigatório</Label>
             </div>
             <div className="flex gap-2 pt-4">
-              <Button type="submit">Save</Button>
+              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
               <Button type="button" variant="ghost" onClick={() => {
                 setView('list');
                 setError(null);
               }}>
-                Cancel
+                Cancelar
               </Button>
             </div>
           </form>

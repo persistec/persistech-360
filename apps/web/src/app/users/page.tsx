@@ -1,4 +1,5 @@
 'use client';
+import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
@@ -56,7 +57,7 @@ export default function UsersPage() {
       setHierarchyLevels(levelsRes.data || []);
       setRoles(rolesRes.data || []);
     } catch (err: any) {
-      setError(err.message || 'Failed to fetch data');
+      setError(err.message || 'Falha ao obter dados');
     } finally {
       setLoading(false);
     }
@@ -89,18 +90,18 @@ export default function UsersPage() {
       setView('list');
       fetchData();
     } catch (err: any) {
-      setError(err.message || 'Failed to save user');
+      setError(err.message || 'Falha ao guardar utilizador');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this user?')) return;
+    if (!confirm('Tem a certeza que deseja eliminar este utilizador?')) return;
     setError(null);
     try {
       await apiClient.delete(`/users/${id}`);
       fetchData();
     } catch (err: any) {
-      setError(err.message || 'Failed to delete user');
+      setError(err.message || 'Falha ao eliminar utilizador');
     }
   };
 
@@ -109,8 +110,8 @@ export default function UsersPage() {
   return (
     <div>
       <PageHeader 
-        title="Users" 
-        description="Create and maintain employee records used by assignment and results workflows."
+        title="Utilizadores"
+        description="Criar e manter registos de colaboradores usados nos fluxos de atribuição e resultados."
         action={
           view === 'list' && (
             <Button onClick={() => {
@@ -119,8 +120,7 @@ export default function UsersPage() {
                 departmentId: '', roleId: '', hierarchyLevelId: '', managerId: '' 
               });
               setView('create');
-            }}>
-              Create User
+            }}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Utilizador
             </Button>
           )
         }
@@ -129,9 +129,9 @@ export default function UsersPage() {
       {error && <Alert className="mb-6">{error}</Alert>}
 
       {view === 'list' ? (
-        <Table headers={['Name', 'Email', 'Status', 'Dept/Role/Level', 'Actions']}>
+        <Table headers={['Nome', 'Email', 'Estado', 'Dep/Função/Nível', 'Acções']}>
           {users.length === 0 ? (
-            <EmptyState colSpan={5}>No users found.</EmptyState>
+            <EmptyState colSpan={5}>Nenhum utilizador encontrado.</EmptyState>
           ) : (
             users.map((user) => (
               <TableRow key={user.id}>
@@ -143,10 +143,10 @@ export default function UsersPage() {
                   </StatusBadge>
                 </TableCell>
                 <TableCell>
-                  <div className="space-y-1 text-xs text-slate-400">
-                    <div>Dept: {departments.find(d => d.id === user.departmentId)?.name || '-'}</div>
-                    <div>Role: {roles.find(r => r.id === user.roleId)?.name || '-'}</div>
-                    <div>Level: {hierarchyLevels.find(l => l.id === user.hierarchyLevelId)?.name || '-'}</div>
+                  <div className="space-y-1 text-xs text-muted-foreground">
+                    <div>Dep: {departments.find(d => d.id === user.departmentId)?.name || '-'}</div>
+                    <div>Função: {roles.find(r => r.id === user.roleId)?.name || '-'}</div>
+                    <div>Nível: {hierarchyLevels.find(l => l.id === user.hierarchyLevelId)?.name || '-'}</div>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -163,12 +163,8 @@ export default function UsersPage() {
                         managerId: user.managerId || '',
                       });
                       setView('edit');
-                    }}>
-                      Edit
-                    </Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(user.id)}>
-                      Delete
-                    </Button>
+                    }}><FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar</Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(user.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -176,11 +172,11 @@ export default function UsersPage() {
           )}
         </Table>
       ) : (
-        <FormPanel title={view === 'create' ? 'Create New User' : 'Edit User'}>
+        <FormPanel title={view === 'create' ? 'Criar Novo Utilizador' : 'Editar Utilizador'}>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <Label>Name</Label>
+                <Label>Nome</Label>
                 <Input 
                   required 
                   value={formData.name} 
@@ -200,23 +196,23 @@ export default function UsersPage() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <Label>Status</Label>
+                <Label>Estado</Label>
                 <Select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                 >
-                  <option value="ACTIVE">Active</option>
-                  <option value="SUSPENDED">Suspended</option>
-                  <option value="ARCHIVED">Archived</option>
+                  <option value="ACTIVE">Activo</option>
+                  <option value="SUSPENDED">Suspenso</option>
+                  <option value="ARCHIVED">Arquivado</option>
                 </Select>
               </div>
               <div>
-                <Label>Manager (Optional)</Label>
+                <Label>Responsável (Opcional)</Label>
                 <Select
                   value={formData.managerId}
                   onChange={(e) => setFormData({ ...formData, managerId: e.target.value })}
                 >
-                  <option value="">None</option>
+                  <option value="">Nenhum</option>
                   {users
                     .filter(u => u.id !== formData.id) // Can't manage self
                     .map(u => (
@@ -228,49 +224,49 @@ export default function UsersPage() {
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
-                <Label>Department</Label>
+                <Label>Departamento</Label>
                 <Select
                   value={formData.departmentId}
                   onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}
                 >
-                  <option value="">None</option>
+                  <option value="">Nenhum</option>
                   {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                 </Select>
               </div>
               <div>
-                <Label>Role</Label>
+                <Label>Função</Label>
                 <Select
                   value={formData.roleId}
                   onChange={(e) => setFormData({ ...formData, roleId: e.target.value })}
                 >
-                  <option value="">None</option>
+                  <option value="">Nenhum</option>
                   {roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                 </Select>
               </div>
               <div>
-                <Label>Hierarchy Level</Label>
+                <Label>Nível Hierárquico</Label>
                 <Select
                   value={formData.hierarchyLevelId}
                   onChange={(e) => setFormData({ ...formData, hierarchyLevelId: e.target.value })}
                 >
-                  <option value="">None</option>
+                  <option value="">Nenhum</option>
                   {hierarchyLevels.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                 </Select>
               </div>
             </div>
 
             <div className="flex gap-2 pt-4">
-              <Button type="submit">Save</Button>
+              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
               <Button type="button" variant="ghost" onClick={() => {
                 setView('list');
                 setError(null);
               }}>
-                Cancel
+                Cancelar
               </Button>
             </div>
             
-            <p className="mt-4 text-xs leading-5 text-slate-400">
-              Note: System app roles (e.g. ADMIN) are not currently exposed in the API contract and cannot be modified here.
+            <p className="mt-4 text-xs leading-5 text-muted-foreground">
+              Nota: Funções de sistema da aplicação (ex: ADMIN) não estão expostas actualmente no contrato de API e não podem ser modificadas aqui.
             </p>
           </form>
         </FormPanel>

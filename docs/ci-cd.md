@@ -113,6 +113,7 @@ Variáveis e Secrets necessários para o agendamento:
 ```text
 SCHEDULED_TASK_URL (GitHub: deve apontar para https://persistech-360.vercel.app/api/keep-render-awake)
 SCHEDULED_TASK_SECRET (GitHub e Vercel: o mesmo secret para autenticação)
+SCHEDULED_TASK_TIMEOUT_SECONDS (GitHub: controla o tempo máximo que o GitHub Actions aguarda pelo pedido HTTP agendado. Como o cold start do Render pode exceder 30s, o valor recomendado é 90)
 RENDER_API_HEALTH_URL (Vercel: deve apontar para o health check do Render, ex: https://persistech-360-api.onrender.com/api/v1/health)
 ```
 

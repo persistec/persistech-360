@@ -22,7 +22,8 @@ Define the following environment variables in your Render Web Service dashboard:
 
 - `NODE_ENV`: `production`
 - `DATABASE_URL`: Provide the connection string to your Render Managed PostgreSQL instance.
-- `WEB_APP_URL`: The URL of your deployed frontend (e.g., `https://persistech-360-web.onrender.com`). You can specify multiple origins as a comma-separated list.
+- `CORS_ALLOWED_ORIGINS`: Explicit origins allowed to call the API (e.g., `https://persistech-360.vercel.app`). For local development against remote API, append `,http://localhost:3000`. Note: Vercel preview environments (`https://*.vercel.app`) are automatically permitted by a safe regex.
+- `WEB_APP_URL`: (Optional) Fallback backwards compatibility for frontend URL.
 - `PORT`: *Automatically managed by Render (defaults to 10000, no need to manually set).*
 
 > [!IMPORTANT]
@@ -42,6 +43,10 @@ Once deployed, Render will start routing traffic to your instance.
 
 - **Health Endpoint:** You can verify the API is running by navigating to `https://<YOUR_RENDER_URL>/api/v1/health` (should return `UP`).
 - **Swagger Documentation:** Available at `https://<YOUR_RENDER_URL>/docs`.
+
+To prevent the Render instance from spinning down during periods of inactivity, a scheduled GitHub Actions workflow is used to hit a keep-alive endpoint. When configuring this workflow, ensure the following GitHub secret is set to handle potentially slow cold starts:
+
+- `SCHEDULED_TASK_TIMEOUT_SECONDS=90`
 
 ## 5. Next Steps for Production
 

@@ -24,7 +24,7 @@ export default function SubmissionsPage() {
       const response = await apiClient.get<{ data: Submission[] }>('/evaluation-submissions');
       setSubmissions(response.data || []);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to fetch submissions';
+      const msg = err instanceof Error ? err.message : 'Falha ao obter submissões';
       setError(msg);
     } finally {
       setLoading(false);
@@ -40,20 +40,20 @@ export default function SubmissionsPage() {
   return (
     <div>
       <PageHeader 
-        title="Submissions" 
-        description="View status of evaluation submissions. Answer editing is not available in the admin UI."
+        title="Submissões"
+        description="Ver estado das submissões de avaliação. A edição de respostas não está disponível na interface de administração."
       />
 
       {error && <Alert className="mb-6">{error}</Alert>}
 
-      <Table headers={['Submission ID', 'Assignment ID', 'Status', 'Submitted At', 'Created At']}>
+      <Table headers={['ID da Submissão', 'ID da Atribuição', 'Estado', 'Data de Submissão', 'Data de Criação']}>
         {submissions.length === 0 ? (
-          <EmptyState colSpan={5}>No submissions found.</EmptyState>
+          <EmptyState colSpan={5}>Nenhuma submissão encontrada.</EmptyState>
         ) : (
           submissions.map((sub) => (
             <TableRow key={sub.id}>
               <TableCell className="font-mono text-xs">{sub.id}</TableCell>
-              <TableCell className="font-mono text-xs text-slate-400">{sub.assignmentId}</TableCell>
+              <TableCell className="font-mono text-xs text-muted-foreground">{sub.assignmentId}</TableCell>
               <TableCell>
                 <StatusBadge tone={sub.status === 'SUBMITTED' ? 'success' : 'warning'}>
                   {sub.status}

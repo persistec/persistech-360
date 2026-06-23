@@ -21,6 +21,7 @@ jobs:
         env:
           SCHEDULED_TASK_URL: ${{ secrets.SCHEDULED_TASK_URL }}
           SCHEDULED_TASK_SECRET: ${{ secrets.SCHEDULED_TASK_SECRET }}
+          SCHEDULED_TASK_TIMEOUT_SECONDS: ${{ secrets.SCHEDULED_TASK_TIMEOUT_SECONDS }}
         run: |
           if [ -z "$SCHEDULED_TASK_URL" ]; then
             echo "SCHEDULED_TASK_URL is not configured"
@@ -32,7 +33,22 @@ jobs:
             exit 1
           fi
 
+          if [ -z "$SCHEDULED_TASK_TIMEOUT_SECONDS" ]; then
+            echo "SCHEDULED_TASK_TIMEOUT_SECONDS is not configured"
+            exit 1
+          fi
+
+          if ! echo "$SCHEDULED_TASK_TIMEOUT_SECONDS" | grep -Eq '^[0-9]+$'; then
+            echo "SCHEDULED_TASK_TIMEOUT_SECONDS must be a positive integer"
+            exit 1
+          fi
+
+          if [ "$SCHEDULED_TASK_TIMEOUT_SECONDS" -le 0 ]; then
+            echo "SCHEDULED_TASK_TIMEOUT_SECONDS must be greater than zero"
+            exit 1
+          fi
+
           curl --fail --show-error --silent \
-            --max-time 30 \
+            --max-time "$SCHEDULED_TASK_TIMEOUT_SECONDS" \
             -H "Authorization: Bearer ${SCHEDULED_TASK_SECRET}" \
             "$SCHEDULED_TASK_URL"
