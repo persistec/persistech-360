@@ -143,7 +143,7 @@ export default function UsersPage() {
                   </StatusBadge>
                 </TableCell>
                 <TableCell>
-                  <div className="space-y-1 text-xs text-slate-400">
+                  <div className="space-y-1 text-xs text-muted-foreground">
                     <div>Dep: {departments.find(d => d.id === user.departmentId)?.name || '-'}</div>
                     <div>Função: {roles.find(r => r.id === user.roleId)?.name || '-'}</div>
                     <div>Nível: {hierarchyLevels.find(l => l.id === user.hierarchyLevelId)?.name || '-'}</div>
@@ -269,7 +269,7 @@ export default function UsersPage() {
               </Button>
             </div>
             
-            <p className="mt-4 text-xs leading-5 text-slate-400">
+            <p className="mt-4 text-xs leading-5 text-muted-foreground">
               Nota: Funções de sistema da aplicação (ex: ADMIN) não estão expostas actualmente no contrato de API e não podem ser modificadas aqui.
             </p>
           </form>
