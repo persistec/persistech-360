@@ -20,10 +20,13 @@ The base URL for the Persistech 360 API.
 Provide a valid user UUID from your database that has the `app_role` set to `ADMIN`.
 
 ### `RENDER_API_HEALTH_URL`
-Server-side only URL used by the Vercel Cron keep-alive route to check the Render API health endpoint.
+Server-side only URL used by the keep-alive route to check the Render API health endpoint.
 - **Render Staging:** `https://persistech-360-api.onrender.com/api/v1/health`
 
 Do not prefix this variable with `NEXT_PUBLIC_`; it is only read by the Next.js API route at `/api/keep-render-awake`.
+
+### `SCHEDULED_TASK_SECRET`
+Secret used by the scheduled task endpoint to authorize GitHub Actions calls in production.
 
 ## Setup
 
