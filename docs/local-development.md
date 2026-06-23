@@ -123,6 +123,7 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
 NODE_ENV=development
 PORT=4000
 WEB_APP_URL=http://localhost:3000
+CORS_ALLOWED_ORIGINS=http://localhost:3000,https://persistech-360.vercel.app
 
 DATABASE_URL=postgresql://postgres:postgres@localhost:5433/persistech_360
 

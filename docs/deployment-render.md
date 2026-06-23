@@ -22,7 +22,8 @@ Define the following environment variables in your Render Web Service dashboard:
 
 - `NODE_ENV`: `production`
 - `DATABASE_URL`: Provide the connection string to your Render Managed PostgreSQL instance.
-- `WEB_APP_URL`: The URL of your deployed frontend (e.g., `https://persistech-360-web.onrender.com`). You can specify multiple origins as a comma-separated list.
+- `CORS_ALLOWED_ORIGINS`: Explicit origins allowed to call the API (e.g., `https://persistech-360.vercel.app`). For local development against remote API, append `,http://localhost:3000`. Note: Vercel preview environments (`https://*.vercel.app`) are automatically permitted by a safe regex.
+- `WEB_APP_URL`: (Optional) Fallback backwards compatibility for frontend URL.
 - `PORT`: *Automatically managed by Render (defaults to 10000, no need to manually set).*
 
 > [!IMPORTANT]
