@@ -12,12 +12,12 @@ As validações devem usar npm dentro da aplicação afetada, com `npm ci` basea
 
 ## Projetos de implantação
 
-Existem dois projetos Vercel:
+A API é implantada no Render via Webhook, e o Frontend na Vercel.
 
 ```text
-apps/web -> projeto frontend
-apps/api -> projeto backend
-````
+apps/web -> projeto frontend na Vercel
+apps/api -> projeto backend no Render
+```
 
 ## Comportamento por caminhos alterados
 
@@ -100,7 +100,7 @@ vercel build
 vercel deploy --prebuilt
 ```
 
-Cada aplicação usa o seu próprio `VERCEL_PROJECT_ID`.
+A aplicação web usa o seu `VERCEL_PROJECT_ID`. A aplicação API usa o webhook do Render.
 
 ## Tarefas agendadas
 
@@ -122,8 +122,8 @@ Nota: workflows agendados no GitHub só executam a partir da branch default depo
 ```text
 VERCEL_TOKEN
 VERCEL_ORG_ID
-VERCEL_PROJECT_ID_WEB
-VERCEL_PROJECT_ID_API
+VERCEL_PROJECT_ID
+RENDER_API_DEPLOY_HOOK_URL
 ```
 
 ## Política de branches recomendada

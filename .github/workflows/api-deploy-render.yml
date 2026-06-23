@@ -1,0 +1,40 @@
+name: Deploy API to Render
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/api/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/api-deploy-render.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-api:
+    name: Deploy API
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Trigger Render deploy
+        env:
+          RENDER_API_DEPLOY_HOOK_URL: ${{ secrets.RENDER_API_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$RENDER_API_DEPLOY_HOOK_URL" ]; then
+            echo "RENDER_API_DEPLOY_HOOK_URL is not configured"
+            exit 1
+          fi
+
+          curl --fail --show-error --silent \
+            --request POST \
+            --max-time 30 \
+            "$RENDER_API_DEPLOY_HOOK_URL"
