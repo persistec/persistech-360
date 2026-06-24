@@ -44,11 +44,14 @@ Once deployed, Render will start routing traffic to your instance.
 - **Health Endpoint:** You can verify the API is running by navigating to `https://<YOUR_RENDER_URL>/api/v1/health` (should return `UP`).
 - **Swagger Documentation:** Available at `https://<YOUR_RENDER_URL>/docs`.
 
-To prevent the Render instance from spinning down during periods of inactivity, a scheduled GitHub Actions workflow is used to hit a keep-alive endpoint. When configuring this workflow, ensure the following GitHub secret is set to handle potentially slow cold starts:
+## 5. Instance Hours and Free Tier
 
-- `SCHEDULED_TASK_TIMEOUT_SECONDS=90`
+Render Free/Hobby services are allowed to spin down after inactivity.
+The project does not use scheduled keep-alive pings to keep Render free services awake.
+For demos, run the manual Render wake check workflow shortly before testing.
+For production or 24/7 availability, upgrade the Render API service to a paid instance.
 
-## 5. Next Steps for Production
+## 6. Next Steps for Production
 
 Before considering this service fully production-ready for public internet access, the following must be implemented:
 - Full integration with Google Workspace or an Identity Provider.

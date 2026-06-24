@@ -106,18 +106,17 @@ A aplicação web usa o seu `VERCEL_PROJECT_ID`. A aplicação API usa o webhook
 
 A Vercel Cron foi removida do caminho de deploy porque contas Hobby/free só suportam jobs diários.
 
-O agendamento recorrente agora é feito por GitHub Actions com `schedule` e `workflow_dispatch`.
+Render Free/Hobby services are allowed to spin down after inactivity.
+The project does not use scheduled keep-alive pings to keep Render free services awake.
+For demos, run the manual Render wake check workflow shortly before testing.
+For production or 24/7 availability, upgrade the Render API service to a paid instance.
 
-Variáveis e Secrets necessários para o agendamento:
+Variáveis e Secrets necessários para o check manual:
 
 ```text
-SCHEDULED_TASK_URL (GitHub: deve apontar para https://persistech-360.vercel.app/api/keep-render-awake)
-SCHEDULED_TASK_SECRET (GitHub e Vercel: o mesmo secret para autenticação)
-SCHEDULED_TASK_TIMEOUT_SECONDS (GitHub: controla o tempo máximo que o GitHub Actions aguarda pelo pedido HTTP agendado. Como o cold start do Render pode exceder 30s, o valor recomendado é 90)
-RENDER_API_HEALTH_URL (Vercel: deve apontar para o health check do Render, ex: https://persistech-360-api.onrender.com/api/v1/health)
+RENDER_API_HEALTH_URL (GitHub: deve apontar para o health check do Render, ex: https://persistech-360-api.onrender.com/api/v1/health)
+SCHEDULED_TASK_TIMEOUT_SECONDS (GitHub: tempo limite para a chamada de wake up, ex: 30)
 ```
-
-Nota: workflows agendados no GitHub só executam a partir da branch default depois de o ficheiro existir nessa branch.
 
 ## Secrets necessários
 
