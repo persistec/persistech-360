@@ -1,10 +1,8 @@
-name: Scheduled Tasks
+name: Manual Render Wake Check
 
 # GitHub scheduled workflows only run from the default branch after this file exists there.
 
 on:
-  schedule:
-    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -12,27 +10,21 @@ permissions:
 
 jobs:
   run-scheduled-task:
-    name: Call scheduled endpoint
+    name: Manually call Render health endpoint
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
       - name: Call keep-render-awake endpoint
         env:
-          SCHEDULED_TASK_URL: ${{ secrets.SCHEDULED_TASK_URL }}
-          SCHEDULED_TASK_SECRET: ${{ secrets.SCHEDULED_TASK_SECRET }}
+          RENDER_API_HEALTH_URL: ${{ secrets.RENDER_API_HEALTH_URL }}
+          SCHEDULED_TASK_TIMEOUT_SECONDS: ${{ secrets.SCHEDULED_TASK_TIMEOUT_SECONDS || 30 }}
         run: |
-          if [ -z "$SCHEDULED_TASK_URL" ]; then
-            echo "SCHEDULED_TASK_URL is not configured"
-            exit 1
-          fi
-
-          if [ -z "$SCHEDULED_TASK_SECRET" ]; then
-            echo "SCHEDULED_TASK_SECRET is not configured"
+          if [ -z "$RENDER_API_HEALTH_URL" ]; then
+            echo "RENDER_API_HEALTH_URL is not configured"
             exit 1
           fi
 
           curl --fail --show-error --silent \
-            --max-time 30 \
-            -H "Authorization: Bearer ${SCHEDULED_TASK_SECRET}" \
-            "$SCHEDULED_TASK_URL"
+            --max-time "$SCHEDULED_TASK_TIMEOUT_SECONDS" \
+            "$RENDER_API_HEALTH_URL"
