@@ -50,3 +50,10 @@ Before considering this service fully production-ready for public internet acces
 - Full integration with Google Workspace or an Identity Provider.
 - Removal of the `x-user-id` bridging logic.
 - Potential adjustment of `CORS` rules depending on final domain architecture.
+
+## 6. Free Tier Sleep Behavior
+
+Os serviços Free/Hobby da Render podem entrar em repouso após um período de inactividade.
+O projecto não usa pings agendados para manter serviços gratuitos da Render sempre activos.
+Para demonstrações, execute manualmente o workflow "Manual Render Wake Check" pouco antes dos testes.
+Para produção ou disponibilidade 24/7, actualize o serviço da API na Render para uma instância paga.
