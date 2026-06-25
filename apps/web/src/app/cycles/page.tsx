@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Label, LoadingSpinner, FormPanel, EmptyState, StatusBadge } from '@/components/ui';
+import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, LoadingSpinner, FormPanel, EmptyState, StatusBadge, FormField, ActionBar } from '@/components/ui';
 
 interface Cycle {
   id: string;
@@ -20,13 +20,13 @@ export default function CyclesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list');
-  
-  const [formData, setFormData] = useState({ 
-    id: '', 
-    name: '', 
-    description: '', 
-    startAt: '', 
-    endAt: '' 
+
+  const [formData, setFormData] = useState({
+    id: '',
+    name: '',
+    description: '',
+    startAt: '',
+    endAt: '',
   });
 
   const fetchCycles = async () => {
@@ -62,7 +62,7 @@ export default function CyclesPage() {
       } else {
         await apiClient.patch(`/cycles/${formData.id}`, payload);
       }
-      
+
       setView('list');
       fetchCycles();
     } catch (err: any) {
@@ -91,7 +91,6 @@ export default function CyclesPage() {
     }
   };
 
-  // Helper to format datetime-local inputs
   const formatForInput = (dateString: string) => {
     if (!dateString) return '';
     return new Date(dateString).toISOString().slice(0, 16);
@@ -101,25 +100,28 @@ export default function CyclesPage() {
 
   return (
     <div>
-      <PageHeader 
+      <PageHeader
         title="Ciclos de Avaliação"
-        description="Configurar períodos de avaliação e accionar acções do ciclo sem alterar as regras de backend."
+        description="Configurar períodos de avaliação e accionar ações do ciclo sem alterar as regras de backend."
         action={
           view === 'list' && (
-            <Button onClick={() => {
-              const now = new Date();
-              const nextMonth = new Date();
-              nextMonth.setMonth(now.getMonth() + 1);
-              
-              setFormData({ 
-                id: '', 
-                name: '', 
-                description: '', 
-                startAt: now.toISOString().slice(0, 16), 
-                endAt: nextMonth.toISOString().slice(0, 16) 
-              });
-              setView('create');
-            }}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Ciclo
+            <Button
+              onClick={() => {
+                const now = new Date();
+                const nextMonth = new Date();
+                nextMonth.setMonth(now.getMonth() + 1);
+
+                setFormData({
+                  id: '',
+                  name: '',
+                  description: '',
+                  startAt: now.toISOString().slice(0, 16),
+                  endAt: nextMonth.toISOString().slice(0, 16),
+                });
+                setView('create');
+              }}
+            >
+              <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Ciclo
             </Button>
           )
         }
@@ -145,30 +147,38 @@ export default function CyclesPage() {
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
-                    {new Date(cycle.startAt).toLocaleDateString()} - <br/>
+                    {new Date(cycle.startAt).toLocaleDateString()} - <br />
                     {new Date(cycle.endAt).toLocaleDateString()}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex flex-col gap-2 w-48">
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="secondary" onClick={() => {
-                        setFormData({ 
-                          id: cycle.id, 
-                          name: cycle.name, 
-                          description: cycle.description || '',
-                          startAt: formatForInput(cycle.startAt),
-                          endAt: formatForInput(cycle.endAt),
-                        });
-                        setView('edit');
-                      }}><FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar</Button>
-                      
+                  <div className="flex w-48 flex-col gap-2">
+                    <ActionBar>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => {
+                          setFormData({
+                            id: cycle.id,
+                            name: cycle.name,
+                            description: cycle.description || '',
+                            startAt: formatForInput(cycle.startAt),
+                            endAt: formatForInput(cycle.endAt),
+                          });
+                          setView('edit');
+                        }}
+                      >
+                        <FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar
+                      </Button>
+
                       {cycle.status === 'draft' && (
-                        <Button size="sm" variant="danger" onClick={() => handleDelete(cycle.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
+                        <Button size="sm" variant="danger" onClick={() => handleDelete(cycle.id)}>
+                          <FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar
+                        </Button>
                       )}
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-2">
+                    </ActionBar>
+
+                    <ActionBar>
                       {(cycle.status === 'draft' || cycle.status === 'scheduled') && (
                         <Button size="sm" variant="primary" onClick={() => handleAction(cycle.id, 'open')}>
                           Abrir
@@ -182,7 +192,7 @@ export default function CyclesPage() {
                       <Button size="sm" variant="secondary" onClick={() => handleAction(cycle.id, 'generate-assignments')}>
                         Gerar Atribuições
                       </Button>
-                    </div>
+                    </ActionBar>
                   </div>
                 </TableCell>
               </TableRow>
@@ -192,52 +202,51 @@ export default function CyclesPage() {
       ) : (
         <FormPanel title={view === 'create' ? 'Criar Novo Ciclo' : 'Editar Ciclo'} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label>Nome</Label>
-              <Input 
-                required 
-                value={formData.name} 
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
+            <FormField label="Nome" required>
+              <Input
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Avaliação do 1.º trimestre de 2026"
               />
-            </div>
-            <div>
-              <Label>Descrição (Opcional)</Label>
-              <Input 
-                value={formData.description} 
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
-              />
-            </div>
+            </FormField>
+            <FormField label="Descrição (Opcional)">
+              <Input value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+            </FormField>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <Label>Data de Início</Label>
-                <Input 
+              <FormField label="Data de Início" required>
+                <Input
                   type="datetime-local"
-                  required 
-                  value={formData.startAt} 
-                  onChange={(e) => setFormData({ ...formData, startAt: e.target.value })} 
+                  required
+                  value={formData.startAt}
+                  onChange={(e) => setFormData({ ...formData, startAt: e.target.value })}
                 />
-              </div>
-              <div>
-                <Label>Data de Fim</Label>
-                <Input 
+              </FormField>
+              <FormField label="Data de Fim" required>
+                <Input
                   type="datetime-local"
-                  required 
-                  value={formData.endAt} 
-                  onChange={(e) => setFormData({ ...formData, endAt: e.target.value })} 
+                  required
+                  value={formData.endAt}
+                  onChange={(e) => setFormData({ ...formData, endAt: e.target.value })}
                 />
-              </div>
+              </FormField>
             </div>
-            
-            <div className="flex gap-2 pt-4">
-              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
-              <Button type="button" variant="ghost" onClick={() => {
-                setView('list');
-                setError(null);
-              }}>
+
+            <ActionBar className="pt-4">
+              <Button type="submit">
+                <FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setView('list');
+                  setError(null);
+                }}
+              >
                 Cancelar
               </Button>
-            </div>
+            </ActionBar>
           </form>
         </FormPanel>
       )}

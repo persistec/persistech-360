@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Select, Label, LoadingSpinner, FormPanel, EmptyState, StatusBadge } from '@/components/ui';
+import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Select, LoadingSpinner, FormPanel, EmptyState, StatusBadge, FormField, ActionBar } from '@/components/ui';
 
 interface User {
   id: string;
@@ -27,19 +27,19 @@ export default function UsersPage() {
   const [departments, setDepartments] = useState<BasicEntity[]>([]);
   const [hierarchyLevels, setHierarchyLevels] = useState<BasicEntity[]>([]);
   const [roles, setRoles] = useState<BasicEntity[]>([]);
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list');
-  const [formData, setFormData] = useState({ 
-    id: '', 
-    workspaceEmail: '', 
-    name: '', 
+  const [formData, setFormData] = useState({
+    id: '',
+    workspaceEmail: '',
+    name: '',
     status: 'ACTIVE',
     departmentId: '',
     roleId: '',
     hierarchyLevelId: '',
-    managerId: ''
+    managerId: '',
   });
 
   const fetchData = async () => {
@@ -86,7 +86,7 @@ export default function UsersPage() {
       } else {
         await apiClient.patch(`/users/${formData.id}`, payload);
       }
-      
+
       setView('list');
       fetchData();
     } catch (err: any) {
@@ -109,18 +109,27 @@ export default function UsersPage() {
 
   return (
     <div>
-      <PageHeader 
+      <PageHeader
         title="Utilizadores"
         description="Criar e manter registos de colaboradores usados nos fluxos de atribuição e resultados."
         action={
           view === 'list' && (
-            <Button onClick={() => {
-              setFormData({ 
-                id: '', workspaceEmail: '', name: '', status: 'ACTIVE', 
-                departmentId: '', roleId: '', hierarchyLevelId: '', managerId: '' 
-              });
-              setView('create');
-            }}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Utilizador
+            <Button
+              onClick={() => {
+                setFormData({
+                  id: '',
+                  workspaceEmail: '',
+                  name: '',
+                  status: 'ACTIVE',
+                  departmentId: '',
+                  roleId: '',
+                  hierarchyLevelId: '',
+                  managerId: '',
+                });
+                setView('create');
+              }}
+            >
+              <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Utilizador
             </Button>
           )
         }
@@ -138,34 +147,40 @@ export default function UsersPage() {
                 <TableCell className="font-medium">{user.name}</TableCell>
                 <TableCell>{user.workspaceEmail}</TableCell>
                 <TableCell>
-                  <StatusBadge tone={user.status === 'ACTIVE' ? 'success' : 'danger'}>
-                    {user.status}
-                  </StatusBadge>
+                  <StatusBadge tone={user.status === 'ACTIVE' ? 'success' : 'danger'}>{user.status}</StatusBadge>
                 </TableCell>
                 <TableCell>
                   <div className="space-y-1 text-xs text-muted-foreground">
-                    <div>Dep: {departments.find(d => d.id === user.departmentId)?.name || '-'}</div>
-                    <div>Função: {roles.find(r => r.id === user.roleId)?.name || '-'}</div>
-                    <div>Nível: {hierarchyLevels.find(l => l.id === user.hierarchyLevelId)?.name || '-'}</div>
+                    <div>Dep: {departments.find((d) => d.id === user.departmentId)?.name || '-'}</div>
+                    <div>Função: {roles.find((r) => r.id === user.roleId)?.name || '-'}</div>
+                    <div>Nível: {hierarchyLevels.find((l) => l.id === user.hierarchyLevelId)?.name || '-'}</div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="secondary" onClick={() => {
-                      setFormData({ 
-                        id: user.id, 
-                        workspaceEmail: user.workspaceEmail,
-                        name: user.name,
-                        status: user.status,
-                        departmentId: user.departmentId || '',
-                        roleId: user.roleId || '',
-                        hierarchyLevelId: user.hierarchyLevelId || '',
-                        managerId: user.managerId || '',
-                      });
-                      setView('edit');
-                    }}><FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar</Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(user.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
-                  </div>
+                  <ActionBar>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        setFormData({
+                          id: user.id,
+                          workspaceEmail: user.workspaceEmail,
+                          name: user.name,
+                          status: user.status,
+                          departmentId: user.departmentId || '',
+                          roleId: user.roleId || '',
+                          hierarchyLevelId: user.hierarchyLevelId || '',
+                          managerId: user.managerId || '',
+                        });
+                        setView('edit');
+                      }}
+                    >
+                      <FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar
+                    </Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(user.id)}>
+                      <FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar
+                    </Button>
+                  </ActionBar>
                 </TableCell>
               </TableRow>
             ))
@@ -175,96 +190,94 @@ export default function UsersPage() {
         <FormPanel title={view === 'create' ? 'Criar Novo Utilizador' : 'Editar Utilizador'}>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <Label>Nome</Label>
-                <Input 
-                  required 
-                  value={formData.name} 
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
+              <FormField label="Nome" required>
+                <Input
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
-              </div>
-              <div>
-                <Label>Email</Label>
-                <Input 
-                  required 
+              </FormField>
+              <FormField label="Email" required>
+                <Input
+                  required
                   type="email"
-                  value={formData.workspaceEmail} 
-                  onChange={(e) => setFormData({ ...formData, workspaceEmail: e.target.value })} 
+                  value={formData.workspaceEmail}
+                  onChange={(e) => setFormData({ ...formData, workspaceEmail: e.target.value })}
                 />
-              </div>
+              </FormField>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <Label>Estado</Label>
-                <Select
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                >
+              <FormField label="Estado" required>
+                <Select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
                   <option value="ACTIVE">Activo</option>
                   <option value="SUSPENDED">Suspenso</option>
                   <option value="ARCHIVED">Arquivado</option>
                 </Select>
-              </div>
-              <div>
-                <Label>Responsável (Opcional)</Label>
-                <Select
-                  value={formData.managerId}
-                  onChange={(e) => setFormData({ ...formData, managerId: e.target.value })}
-                >
+              </FormField>
+              <FormField label="Responsável (Opcional)">
+                <Select value={formData.managerId} onChange={(e) => setFormData({ ...formData, managerId: e.target.value })}>
                   <option value="">Nenhum</option>
                   {users
-                    .filter(u => u.id !== formData.id) // Can't manage self
-                    .map(u => (
-                    <option key={u.id} value={u.id}>{u.name}</option>
-                  ))}
+                    .filter((u) => u.id !== formData.id)
+                    .map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.name}
+                      </option>
+                    ))}
                 </Select>
-              </div>
+              </FormField>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <Label>Departamento</Label>
-                <Select
-                  value={formData.departmentId}
-                  onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}
-                >
+              <FormField label="Departamento">
+                <Select value={formData.departmentId} onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}>
                   <option value="">Nenhum</option>
-                  {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                  {departments.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
                 </Select>
-              </div>
-              <div>
-                <Label>Função</Label>
-                <Select
-                  value={formData.roleId}
-                  onChange={(e) => setFormData({ ...formData, roleId: e.target.value })}
-                >
+              </FormField>
+              <FormField label="Função">
+                <Select value={formData.roleId} onChange={(e) => setFormData({ ...formData, roleId: e.target.value })}>
                   <option value="">Nenhum</option>
-                  {roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                  {roles.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
                 </Select>
-              </div>
-              <div>
-                <Label>Nível Hierárquico</Label>
-                <Select
-                  value={formData.hierarchyLevelId}
-                  onChange={(e) => setFormData({ ...formData, hierarchyLevelId: e.target.value })}
-                >
+              </FormField>
+              <FormField label="Nível Hierárquico">
+                <Select value={formData.hierarchyLevelId} onChange={(e) => setFormData({ ...formData, hierarchyLevelId: e.target.value })}>
                   <option value="">Nenhum</option>
-                  {hierarchyLevels.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                  {hierarchyLevels.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.name}
+                    </option>
+                  ))}
                 </Select>
-              </div>
+              </FormField>
             </div>
 
-            <div className="flex gap-2 pt-4">
-              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
-              <Button type="button" variant="ghost" onClick={() => {
-                setView('list');
-                setError(null);
-              }}>
+            <ActionBar className="pt-4">
+              <Button type="submit">
+                <FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setView('list');
+                  setError(null);
+                }}
+              >
                 Cancelar
               </Button>
-            </div>
-            
+            </ActionBar>
+
             <p className="mt-4 text-xs leading-5 text-muted-foreground">
               Nota: Funções de sistema da aplicação (ex: ADMIN) não estão expostas actualmente no contrato de API e não podem ser modificadas aqui.
             </p>

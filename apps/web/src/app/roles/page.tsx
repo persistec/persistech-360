@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Select, Label, LoadingSpinner, FormPanel, EmptyState } from '@/components/ui';
+import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Select, LoadingSpinner, FormPanel, EmptyState, FormField, ActionBar } from '@/components/ui';
 
 interface Role {
   id: string;
@@ -27,7 +27,7 @@ export default function RolesPage() {
   const [roles, setRoles] = useState<Role[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [hierarchyLevels, setHierarchyLevels] = useState<HierarchyLevel[]>([]);
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list');
@@ -71,7 +71,7 @@ export default function RolesPage() {
       } else {
         await apiClient.patch(`/roles/${formData.id}`, payload);
       }
-      
+
       setView('list');
       fetchData();
     } catch (err: any) {
@@ -94,15 +94,18 @@ export default function RolesPage() {
 
   return (
     <div>
-      <PageHeader 
+      <PageHeader
         title="Funções"
         description="Gerir funções organizacionais e as suas associações opcionais de departamento ou hierarquia."
         action={
           view === 'list' && (
-            <Button onClick={() => {
-              setFormData({ id: '', name: '', departmentId: '', hierarchyLevelId: '' });
-              setView('create');
-            }}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Função
+            <Button
+              onClick={() => {
+                setFormData({ id: '', name: '', departmentId: '', hierarchyLevelId: '' });
+                setView('create');
+              }}
+            >
+              <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Função
             </Button>
           )
         }
@@ -122,18 +125,26 @@ export default function RolesPage() {
                 <TableCell>{role.hierarchyLevelId || '-'}</TableCell>
                 <TableCell>{new Date(role.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="secondary" onClick={() => {
-                      setFormData({ 
-                        id: role.id, 
-                        name: role.name, 
-                        departmentId: role.departmentId || '',
-                        hierarchyLevelId: role.hierarchyLevelId || '',
-                      });
-                      setView('edit');
-                    }}><FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar</Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(role.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
-                  </div>
+                  <ActionBar>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        setFormData({
+                          id: role.id,
+                          name: role.name,
+                          departmentId: role.departmentId || '',
+                          hierarchyLevelId: role.hierarchyLevelId || '',
+                        });
+                        setView('edit');
+                      }}
+                    >
+                      <FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar
+                    </Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(role.id)}>
+                      <FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar
+                    </Button>
+                  </ActionBar>
                 </TableCell>
               </TableRow>
             ))
@@ -142,48 +153,49 @@ export default function RolesPage() {
       ) : (
         <FormPanel title={view === 'create' ? 'Criar Nova Função' : 'Editar Função'} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label>Nome</Label>
-              <Input 
-                required 
-                value={formData.name} 
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
+            <FormField label="Nome" required>
+              <Input
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Engenheiro de Software, Gestor de Produto..."
               />
-            </div>
-            <div>
-              <Label>Departamento (Opcional)</Label>
-              <Select
-                value={formData.departmentId}
-                onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}
-              >
+            </FormField>
+            <FormField label="Departamento (Opcional)">
+              <Select value={formData.departmentId} onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}>
                 <option value="">Nenhum</option>
-                {departments.map(d => (
-                  <option key={d.id} value={d.id}>{d.name}</option>
+                {departments.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
                 ))}
               </Select>
-            </div>
-            <div>
-              <Label>Nível Hierárquico (Opcional)</Label>
-              <Select
-                value={formData.hierarchyLevelId}
-                onChange={(e) => setFormData({ ...formData, hierarchyLevelId: e.target.value })}
-              >
+            </FormField>
+            <FormField label="Nível Hierárquico (Opcional)">
+              <Select value={formData.hierarchyLevelId} onChange={(e) => setFormData({ ...formData, hierarchyLevelId: e.target.value })}>
                 <option value="">Nenhum</option>
-                {hierarchyLevels.map(l => (
-                  <option key={l.id} value={l.id}>{l.name}</option>
+                {hierarchyLevels.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name}
+                  </option>
                 ))}
               </Select>
-            </div>
-            <div className="flex gap-2 pt-4">
-              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
-              <Button type="button" variant="ghost" onClick={() => {
-                setView('list');
-                setError(null);
-              }}>
+            </FormField>
+            <ActionBar className="pt-4">
+              <Button type="submit">
+                <FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setView('list');
+                  setError(null);
+                }}
+              >
                 Cancelar
               </Button>
-            </div>
+            </ActionBar>
           </form>
         </FormPanel>
       )}
