@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FiTrendingUp } from 'react-icons/fi';
 
 import { apiClient } from '@/lib/api-client';
-import { ActionBar, Alert, Button, Card, FormField, LoadingSpinner, MetricCard, PageHeader, PageSection, ProgressCard, Select } from '@/components/ui';
+import { ActionBar, Alert, Button, Card, FormField, LoadingSpinner, PageHeader, PageSection, ProgressCard, Select } from '@/components/ui';
+import { Individual360Report } from '@/components/reports/Individual360Report';
 
 interface Cycle {
   id: string;
@@ -110,63 +110,16 @@ export default function ResultsPage() {
   const renderResult = (data: AdminResult | ResultBase | null, isAdmin: boolean) => {
     if (!data) return null;
 
-    if (data.status === 'insufficient_responses') {
-      return (
-        <Alert variant="info">
-          Este resultado tem respostas insuficientes e não pode ser totalmente exibido para proteger o anonimato.
-        </Alert>
-      );
-    }
+    const cycleName = cycles.find((c) => c.id === selectedCycle)?.name || 'Ciclo Desconhecido';
+    const evaluateeName = users.find((u) => u.id === selectedEvaluatee)?.name || 'Colaborador Desconhecido';
 
     return (
-      <div className="space-y-6">
-        <MetricCard
-          label="Pontuação global"
-          value={data.overallScore !== null ? data.overallScore.toFixed(2) : 'N/A'}
-          description="Resumo agregado disponível para este colaborador neste ciclo."
-          icon={FiTrendingUp}
-        />
-
-        {isAdmin && 'relationships' in data && data.relationships && data.relationships.length > 0 ? (
-          <PageSection title="Análise por relação" description="Vista disponível apenas para Administração.">
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {data.relationships.map((rel) => (
-                <MetricCard
-                  key={rel.relationshipType}
-                  label={rel.relationshipType}
-                  value={rel.score.toFixed(2)}
-                  description={`Peso: ${rel.weight}`}
-                />
-              ))}
-            </div>
-          </PageSection>
-        ) : null}
-
-        <PageSection title="Dimensões e critérios">
-          <Card className="space-y-6">
-            {data.dimensions.map((dim) => (
-              <div key={dim.domainId} className="last:mb-0">
-                <div className="mb-3 flex flex-col gap-2 border-b border-border pb-2 sm:flex-row sm:items-center sm:justify-between">
-                  <h4 className="text-lg font-semibold text-foreground">
-                    {dim.domainName} <span className="text-sm font-normal text-muted-foreground">(Peso: {dim.weight})</span>
-                  </h4>
-                  <span className="inline-flex items-center rounded-full border border-primary/35 bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                    {dim.score.toFixed(2)}
-                  </span>
-                </div>
-                <ul className="space-y-2">
-                  {dim.criteria.map((crit) => (
-                    <li key={crit.criterionId} className="flex items-center justify-between gap-4 pl-4 text-sm">
-                      <span className="text-muted-foreground">{crit.criterionName}</span>
-                      <span className="font-medium text-foreground">{crit.score.toFixed(2)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </Card>
-        </PageSection>
-      </div>
+      <Individual360Report
+        result={data}
+        isAdmin={isAdmin}
+        evaluateeName={evaluateeName}
+        cycleName={cycleName}
+      />
     );
   };
 
