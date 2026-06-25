@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -13,7 +13,7 @@ export function Sidebar() {
 
   return (
     <>
-      <div className="border-b border-border bg-surface/95 p-4 md:hidden">
+      <div className="border-b border-border bg-surface/95 p-4 xl:hidden">
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
             <span className="block text-base font-semibold text-foreground">{shellBrand.title}</span>
@@ -29,7 +29,7 @@ export function Sidebar() {
           <p className="mt-2 text-sm font-medium text-foreground">{shellCycleSummary.title}</p>
           <p className="mt-1 text-xs leading-5 text-foreground/80">{context.group}</p>
         </div>
-        <nav className="flex gap-2 overflow-x-auto pb-1">
+        <nav className="flex min-w-0 gap-2 overflow-x-auto pb-1">
           {shellSections.flatMap((section) => section.items).map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
             const Icon = item.icon;
@@ -38,7 +38,7 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 aria-current={isActive ? 'page' : undefined}
-                className={`flex shrink-0 items-center gap-2 rounded-md border px-3 py-2 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md border px-3 py-2 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                   isActive
                     ? 'border-primary/50 bg-primary/15 text-primary shadow-[inset_0_0_0_1px_var(--color-primary)]'
                     : 'border-border bg-surface-muted text-muted-foreground hover:border-border-strong hover:text-foreground'
@@ -51,7 +51,7 @@ export function Sidebar() {
           })}
         </nav>
       </div>
-      <aside className="hidden h-dvh w-[19rem] shrink-0 flex-col border-r border-border bg-surface/90 text-foreground shadow-2xl shadow-black/10 backdrop-blur md:flex">
+      <aside className="hidden min-h-0 h-dvh w-[20rem] shrink-0 flex-col border-r border-border bg-surface/90 text-foreground shadow-2xl shadow-black/10 backdrop-blur xl:flex">
         <div className="border-b border-border px-6 py-6">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-primary/30 bg-primary/10 shadow-[0_0_28px_var(--color-primary)]">
@@ -71,7 +71,7 @@ export function Sidebar() {
                   <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {section.title}
                   </div>
-                  <p className="mt-1 text-xs leading-5 text-foreground/70">{section.description}</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{section.description}</p>
                 </div>
               </div>
               <ul className="space-y-1">
@@ -113,8 +113,8 @@ export function Sidebar() {
               <FiInfo className="h-4 w-4 text-primary" aria-hidden="true" />
               Contexto operacional
             </div>
-            <p className="mt-2 text-sm text-foreground/85">{shellCycleSummary.title}</p>
-            <p className="mt-1 text-xs leading-5 text-foreground/80">{shellCycleSummary.description}</p>
+            <p className="mt-2 text-sm text-foreground">{shellCycleSummary.title}</p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">{shellCycleSummary.description}</p>
           </div>
         </div>
       </aside>
