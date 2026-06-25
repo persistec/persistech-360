@@ -10,6 +10,7 @@ export {
   MetricCard,
   PageHeader,
   PageSection,
+  ProgressCard,
   SurfaceCard,
 } from './surface';
 export { EmptyState, StatusBadge, Table, TableCell, TableRow } from './table';

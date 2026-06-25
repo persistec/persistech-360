@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { FiCheckSquare, FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi";
 
 import { apiClient } from "@/lib/api-client";
-import { ActionBar, Alert, Button, EmptyState, FormField, FormPanel, Input, LoadingSpinner, PageHeader, StatusBadge, Table, TableCell, TableRow } from "@/components/ui";
+import { ActionBar, Alert, Button, EmptyState, FormField, FormPanel, Input, LoadingSpinner, PageHeader, ProgressCard, StatusBadge, Table, TableCell, TableRow } from "@/components/ui";
 
 interface Cycle {
   id: string;
@@ -139,6 +139,8 @@ export default function CyclesPage() {
     return new Date(dateString).toISOString().slice(0, 16);
   };
 
+  const requiredFieldsCompleted = [formData.name, formData.startAt, formData.endAt].filter(Boolean).length;
+
   if (loading && view === "list") return <LoadingSpinner />;
 
   return (
@@ -200,11 +202,15 @@ export default function CyclesPage() {
                     </ActionBar>
 
                     <ActionBar>
-                      {(cycle.status === "draft" || cycle.status === "scheduled") ? (
-                        <Button size="sm" variant="primary" onClick={() => handleAction(cycle.id, "open")}>Abrir</Button>
+                      {cycle.status === "draft" || cycle.status === "scheduled" ? (
+                        <Button size="sm" variant="primary" onClick={() => handleAction(cycle.id, "open")}>
+                          Abrir
+                        </Button>
                       ) : null}
-                      {(cycle.status === "open" || cycle.status === "closing_soon") ? (
-                        <Button size="sm" variant="danger" onClick={() => handleAction(cycle.id, "close")}>Fechar</Button>
+                      {cycle.status === "open" || cycle.status === "closing_soon" ? (
+                        <Button size="sm" variant="danger" onClick={() => handleAction(cycle.id, "close")}>
+                          Fechar
+                        </Button>
                       ) : null}
                       <Button size="sm" variant="secondary" onClick={() => handleAction(cycle.id, "generate-assignments")}>
                         Gerar atribuições
@@ -218,6 +224,14 @@ export default function CyclesPage() {
         </Table>
       ) : (
         <FormPanel title={view === "create" ? "Criar ciclo" : "Editar ciclo"} className="max-w-xl">
+          <div className="mb-5">
+            <ProgressCard
+              label="Progresso da configuração"
+              completed={requiredFieldsCompleted}
+              total={3}
+              description="A barra mostra quantos campos obrigatórios já foram preenchidos antes de guardar o ciclo."
+            />
+          </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormField label="Nome" description="Use um nome claro para identificar o período de avaliação." required>
               <Input
@@ -227,7 +241,7 @@ export default function CyclesPage() {
                 placeholder="Avaliação do 1.º trimestre de 2026"
               />
             </FormField>
-            <FormField label="Descrição (Opcional)" description="Opcional. Ajuda a distinguir ciclos semelhantes." >
+            <FormField label="Descrição" description="Opcional. Ajuda a distinguir ciclos semelhantes.">
               <Input value={formData.description} onChange={(event) => setFormData({ ...formData, description: event.target.value })} />
             </FormField>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -251,7 +265,7 @@ export default function CyclesPage() {
 
             <ActionBar className="pt-4">
               <Button type="submit">
-                <FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar
+                <FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar ciclo
               </Button>
               <Button
                 type="button"

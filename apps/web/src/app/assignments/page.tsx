@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { FiCheckSquare, FiPlus, FiTrash2 } from "react-icons/fi";
 
 import { apiClient } from "@/lib/api-client";
-import { ActionBar, Alert, Button, EmptyState, FormField, FormPanel, LoadingSpinner, PageHeader, Select, StatusBadge, Table, TableCell, TableRow } from "@/components/ui";
+import { ActionBar, Alert, Button, EmptyState, FormField, FormPanel, LoadingSpinner, PageHeader, ProgressCard, Select, StatusBadge, Table, TableCell, TableRow } from "@/components/ui";
 
 interface Assignment {
   id: string;
@@ -27,7 +27,7 @@ interface Cycle {
 }
 
 const assignmentStatusLabels: Record<string, string> = {
-  completed: "ConcluÃ­da",
+  completed: "Concluída",
   pending: "Pendente",
   draft: "Rascunho",
 };
@@ -66,7 +66,7 @@ export default function AssignmentsPage() {
       setUsers(usersRes.data || []);
       setCycles(cyclesRes.data || []);
     } catch (err: any) {
-      setError(err.message || "Falha ao obter atribuiÃ§Ãµes.");
+      setError(err.message || "Falha ao obter atribuições.");
     } finally {
       setLoading(false);
     }
@@ -96,35 +96,37 @@ export default function AssignmentsPage() {
       setView("list");
       fetchData();
     } catch (err: any) {
-      setError(err.message || "Falha ao criar atribuiÃ§Ã£o manual.");
+      setError(err.message || "Falha ao criar atribuição manual.");
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem a certeza de que pretende eliminar esta atribuiÃ§Ã£o?")) return;
+    if (!confirm("Tem a certeza de que pretende eliminar esta atribuição?")) return;
     setError(null);
     try {
       await apiClient.delete(`/evaluation-assignments/${id}`);
       fetchData();
     } catch (err: any) {
-      setError(err.message || "Falha ao eliminar atribuiÃ§Ã£o.");
+      setError(err.message || "Falha ao eliminar atribuição.");
     }
   };
 
   const getUserName = (id: string) => users.find((user) => user.id === id)?.name || id;
   const getCycleName = (id: string) => cycles.find((cycle) => cycle.id === id)?.name || id;
 
+  const requiredFieldsCompleted = [formData.cycleId, formData.evaluatorId, formData.evaluateeId].filter(Boolean).length;
+
   if (loading && view === "list") return <LoadingSpinner />;
 
   return (
     <div>
       <PageHeader
-        title="AtribuiÃ§Ãµes"
-        description="Inspeccionar atribuiÃ§Ãµes geradas e criar atribuiÃ§Ãµes manuais atravÃ©s do contrato de API existente."
+        title="Atribuições"
+        description="Inspeccionar atribuições geradas e criar atribuições manuais através do contrato de API existente."
         action={
           view === "list" && (
             <Button onClick={openCreateForm}>
-              <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar atribuiÃ§Ã£o manual
+              <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar atribuição manual
             </Button>
           )
         }
@@ -133,15 +135,15 @@ export default function AssignmentsPage() {
       {error ? <Alert className="mb-6">{error}</Alert> : null}
 
       {view === "list" ? (
-        <Table headers={["Ciclo", "Avaliador", "Avaliado", "RelaÃ§Ã£o", "Estado", "ObrigatÃ³ria", "AcÃ§Ãµes"]}>
+        <Table headers={["Ciclo", "Avaliador", "Avaliado", "Relação", "Estado", "Obrigatória", "Acções"]}>
           {assignments.length === 0 ? (
             <EmptyState
               colSpan={7}
-              title="Ainda nÃ£o existem atribuiÃ§Ãµes"
-              description="Crie uma atribuiÃ§Ã£o manual para testar o fluxo actual ou aguarde pela geraÃ§Ã£o automÃ¡tica do ciclo."
+              title="Ainda não existem atribuições"
+              description="Crie uma atribuição manual para testar o fluxo actual ou aguarde pela geração automática do ciclo."
               action={
                 <Button size="sm" onClick={openCreateForm}>
-                  <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar atribuiÃ§Ã£o manual
+                  <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar atribuição manual
                 </Button>
               }
             />
@@ -155,7 +157,7 @@ export default function AssignmentsPage() {
                 <TableCell>
                   <StatusBadge tone={assignmentStatusTone(assignment.status)}>{assignmentStatusLabels[assignment.status] || assignment.status}</StatusBadge>
                 </TableCell>
-                <TableCell>{assignment.isRequired ? "Sim" : "NÃ£o"}</TableCell>
+                <TableCell>{assignment.isRequired ? "Sim" : "Não"}</TableCell>
                 <TableCell>
                   <Button size="sm" variant="danger" onClick={() => handleDelete(assignment.id)}>
                     <FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar
@@ -166,9 +168,17 @@ export default function AssignmentsPage() {
           )}
         </Table>
       ) : (
-        <FormPanel title="Criar atribuiÃ§Ã£o manual" className="max-w-xl">
+        <FormPanel title="Criar atribuição manual" className="max-w-xl">
+          <div className="mb-5">
+            <ProgressCard
+              label="Progresso da criação"
+              completed={requiredFieldsCompleted}
+              total={3}
+              description="A barra mostra quantos campos obrigatórios já foram preenchidos antes de guardar a atribuição."
+            />
+          </div>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <FormField label="Ciclo" description="Escolha o ciclo onde a atribuiÃ§Ã£o serÃ¡ aplicada." required>
+            <FormField label="Ciclo" description="Escolha o ciclo onde a atribuição será aplicada." required>
               <Select required value={formData.cycleId} onChange={(event) => setFormData({ ...formData, cycleId: event.target.value })}>
                 <option value="">Seleccionar ciclo</option>
                 {cycles.map((cycle) => (
@@ -209,17 +219,17 @@ export default function AssignmentsPage() {
                 />
                 <div>
                   <label htmlFor="isRequired" className="block text-sm font-medium text-foreground">
-                    AtribuiÃ§Ã£o obrigatÃ³ria
+                    Atribuição obrigatória
                   </label>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    Quando activo, o fluxo trata esta atribuiÃ§Ã£o como obrigatÃ³ria no ciclo actual.
+                    Quando activo, o fluxo trata esta atribuição como obrigatória no ciclo actual.
                   </p>
                 </div>
               </div>
             </div>
             <ActionBar className="pt-4">
               <Button type="submit">
-                <FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar
+                <FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar atribuição
               </Button>
               <Button
                 type="button"
