@@ -20,6 +20,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Handle system preference changes
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
     const handleChange = () => {
       if (mode === 'system') {
         const newResolved = mediaQuery.matches ? 'dark' : 'light';
@@ -36,6 +37,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Handle initial load and mode changes
   useEffect(() => {
     const stored = localStorage.getItem('persistech-360-theme-mode');
+    
     // Normalize legacy/invalid values
     let initialMode: ThemeMode = 'system';
     if (stored) {
@@ -44,6 +46,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       else if (lower === 'escuro' || lower === 'dark') initialMode = 'dark';
       // else it remains 'system'
     }
+    
     setModeState(initialMode);
     localStorage.setItem('persistech-360-theme-mode', initialMode); // fix legacy storage immediately
 
@@ -65,6 +68,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setMode = (newMode: ThemeMode) => {
     setModeState(newMode);
     localStorage.setItem('persistech-360-theme-mode', newMode);
+    
     let resolved: ResolvedTheme;
     if (newMode === 'system') {
       resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
