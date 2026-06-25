@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Select, Label, LoadingSpinner, FormPanel, EmptyState } from '@/components/ui';
+import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Select, LoadingSpinner, FormPanel, EmptyState, FormField, ActionBar } from '@/components/ui';
 
 interface DepartmentApiItem {
   id: string;
@@ -73,7 +73,7 @@ export default function DepartmentsPage() {
       } else {
         await apiClient.patch(`/departments/${formData.id}`, payload);
       }
-      
+
       setView('list');
       fetchDepartments();
     } catch (err: any) {
@@ -96,7 +96,7 @@ export default function DepartmentsPage() {
 
   return (
     <div>
-      <PageHeader 
+      <PageHeader
         title="Departamentos"
         description="Manter departamentos da organização usados por utilizadores, funções e relatórios de avaliação."
         action={
@@ -104,7 +104,8 @@ export default function DepartmentsPage() {
             <Button onClick={() => {
               setFormData({ id: '', name: '', parentId: '' });
               setView('create');
-            }}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Departamento
+            }}>
+              <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Departamento
             </Button>
           )
         }
@@ -123,13 +124,21 @@ export default function DepartmentsPage() {
                 <TableCell>{dept.parentId || '-'}</TableCell>
                 <TableCell>{new Date(dept.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="secondary" onClick={() => {
-                      setFormData({ id: dept.id, name: dept.name, parentId: dept.parentId || '' });
-                      setView('edit');
-                    }}><FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar</Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(dept.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
-                  </div>
+                  <ActionBar>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        setFormData({ id: dept.id, name: dept.name, parentId: dept.parentId || '' });
+                        setView('edit');
+                      }}
+                    >
+                      <FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar
+                    </Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(dept.id)}>
+                      <FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar
+                    </Button>
+                  </ActionBar>
                 </TableCell>
               </TableRow>
             ))
@@ -138,39 +147,44 @@ export default function DepartmentsPage() {
       ) : (
         <FormPanel title={view === 'create' ? 'Criar Novo Departamento' : 'Editar Departamento'} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label>Nome</Label>
-              <Input 
-                required 
-                value={formData.name} 
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
+            <FormField label="Nome" required>
+              <Input
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Engenharia"
               />
-            </div>
-            <div>
-              <Label>Departamento Ascendente (Opcional)</Label>
+            </FormField>
+            <FormField label="Departamento Ascendente (Opcional)">
               <Select
                 value={formData.parentId}
                 onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
               >
                 <option value="">Nenhum</option>
                 {departments
-                  .filter(d => d.id !== formData.id) // Cannot be own parent
-                  .map(d => (
-                    <option key={d.id} value={d.id}>{d.name}</option>
-                  ))
-                }
+                  .filter((d) => d.id !== formData.id)
+                  .map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
               </Select>
-            </div>
-            <div className="flex gap-2 pt-4">
-              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
-              <Button type="button" variant="ghost" onClick={() => {
-                setView('list');
-                setError(null);
-              }}>
+            </FormField>
+            <ActionBar className="pt-4">
+              <Button type="submit">
+                <FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setView('list');
+                  setError(null);
+                }}
+              >
                 Cancelar
               </Button>
-            </div>
+            </ActionBar>
           </form>
         </FormPanel>
       )}

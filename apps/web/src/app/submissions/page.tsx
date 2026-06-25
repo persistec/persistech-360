@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
@@ -39,7 +39,7 @@ export default function SubmissionsPage() {
 
   return (
     <div>
-      <PageHeader 
+      <PageHeader
         title="Submissões"
         description="Ver estado das submissões de avaliação. A edição de respostas não está disponível na interface de administração."
       />
@@ -55,9 +55,7 @@ export default function SubmissionsPage() {
               <TableCell className="font-mono text-xs">{sub.id}</TableCell>
               <TableCell className="font-mono text-xs text-muted-foreground">{sub.assignmentId}</TableCell>
               <TableCell>
-                <StatusBadge tone={sub.status === 'SUBMITTED' ? 'success' : 'warning'}>
-                  {sub.status}
-                </StatusBadge>
+                <StatusBadge tone={sub.status === 'SUBMITTED' ? 'success' : 'warning'}>{sub.status}</StatusBadge>
               </TableCell>
               <TableCell>{sub.submittedAt ? new Date(sub.submittedAt).toLocaleString() : '-'}</TableCell>
               <TableCell>{new Date(sub.createdAt).toLocaleString()}</TableCell>

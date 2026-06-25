@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 import { FiPlus, FiTrash2, FiCheckSquare } from 'react-icons/fi';
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Select, Label, LoadingSpinner, FormPanel, EmptyState, StatusBadge } from '@/components/ui';
+import { PageHeader, Table, TableRow, TableCell, Button, Alert, Select, LoadingSpinner, FormPanel, EmptyState, StatusBadge, FormField, ActionBar } from '@/components/ui';
 
 interface Assignment {
   id: string;
@@ -29,15 +29,15 @@ export default function AssignmentsPage() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [cycles, setCycles] = useState<Cycle[]>([]);
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<'list' | 'create'>('list');
-  const [formData, setFormData] = useState({ 
-    cycleId: '', 
-    evaluatorId: '', 
-    evaluateeId: '', 
-    isRequired: true 
+  const [formData, setFormData] = useState({
+    cycleId: '',
+    evaluatorId: '',
+    evaluateeId: '',
+    isRequired: true,
   });
 
   const fetchData = async () => {
@@ -72,9 +72,9 @@ export default function AssignmentsPage() {
         evaluatorId: formData.evaluatorId,
         evaluateeId: formData.evaluateeId,
         isRequired: formData.isRequired,
-        relationshipType: 'MANUAL', // assuming manual override
+        relationshipType: 'MANUAL',
       });
-      
+
       setView('list');
       fetchData();
     } catch (err: any) {
@@ -93,19 +93,20 @@ export default function AssignmentsPage() {
     }
   };
 
-  const getUserName = (id: string) => users.find(u => u.id === id)?.name || id;
-  const getCycleName = (id: string) => cycles.find(c => c.id === id)?.name || id;
+  const getUserName = (id: string) => users.find((u) => u.id === id)?.name || id;
+  const getCycleName = (id: string) => cycles.find((c) => c.id === id)?.name || id;
 
   if (loading && view === 'list') return <LoadingSpinner />;
 
   return (
     <div>
-      <PageHeader 
+      <PageHeader
         title="Atribuições"
         description="Inspeccionar atribuições geradas e criar atribuições manuais através do contrato de API existente."
         action={
           view === 'list' && (
-            <Button onClick={() => setView('create')}><FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Atribuição Manual
+            <Button onClick={() => setView('create')}>
+              <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Atribuição Manual
             </Button>
           )
         }
@@ -125,13 +126,13 @@ export default function AssignmentsPage() {
                 <TableCell>{getUserName(assignment.evaluateeId)}</TableCell>
                 <TableCell>{assignment.relationshipType}</TableCell>
                 <TableCell>
-                  <StatusBadge tone={assignment.status === 'completed' ? 'success' : 'neutral'}>
-                    {assignment.status}
-                  </StatusBadge>
+                  <StatusBadge tone={assignment.status === 'completed' ? 'success' : 'neutral'}>{assignment.status}</StatusBadge>
                 </TableCell>
                 <TableCell>{assignment.isRequired ? 'Sim' : 'Não'}</TableCell>
                 <TableCell>
-                  <Button size="sm" variant="danger" onClick={() => handleDelete(assignment.id)}><FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar</Button>
+                  <Button size="sm" variant="danger" onClick={() => handleDelete(assignment.id)}>
+                    <FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar
+                  </Button>
                 </TableCell>
               </TableRow>
             ))
@@ -140,58 +141,63 @@ export default function AssignmentsPage() {
       ) : (
         <FormPanel title="Criar Atribuição Manual" className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label>Ciclo</Label>
-              <Select
-                required
-                value={formData.cycleId}
-                onChange={(e) => setFormData({ ...formData, cycleId: e.target.value })}
-              >
+            <FormField label="Ciclo" required>
+              <Select required value={formData.cycleId} onChange={(e) => setFormData({ ...formData, cycleId: e.target.value })}>
                 <option value="">Seleccionar Ciclo</option>
-                {cycles.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                {cycles.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
               </Select>
-            </div>
-            <div>
-              <Label>Avaliador</Label>
-              <Select
-                required
-                value={formData.evaluatorId}
-                onChange={(e) => setFormData({ ...formData, evaluatorId: e.target.value })}
-              >
+            </FormField>
+            <FormField label="Avaliador" required>
+              <Select required value={formData.evaluatorId} onChange={(e) => setFormData({ ...formData, evaluatorId: e.target.value })}>
                 <option value="">Seleccionar Avaliador</option>
-                {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                {users.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.name}
+                  </option>
+                ))}
               </Select>
-            </div>
-            <div>
-              <Label>Avaliado</Label>
-              <Select
-                required
-                value={formData.evaluateeId}
-                onChange={(e) => setFormData({ ...formData, evaluateeId: e.target.value })}
-              >
+            </FormField>
+            <FormField label="Avaliado" required>
+              <Select required value={formData.evaluateeId} onChange={(e) => setFormData({ ...formData, evaluateeId: e.target.value })}>
                 <option value="">Seleccionar Avaliado</option>
-                {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                {users.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.name}
+                  </option>
+                ))}
               </Select>
-            </div>
+            </FormField>
             <div className="flex items-center gap-2">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 id="isRequired"
-                className="h-4 w-4 rounded border-border bg-input/20 text-primary focus:ring-primary/80"
+                className="h-4 w-4 rounded border-border bg-surface text-primary focus:ring-ring"
                 checked={formData.isRequired}
                 onChange={(e) => setFormData({ ...formData, isRequired: e.target.checked })}
               />
-              <Label htmlFor="isRequired">É Obrigatório</Label>
+              <label htmlFor="isRequired" className="text-sm font-medium text-foreground">
+                É Obrigatório
+              </label>
             </div>
-            <div className="flex gap-2 pt-4">
-              <Button type="submit"><FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar</Button>
-              <Button type="button" variant="ghost" onClick={() => {
-                setView('list');
-                setError(null);
-              }}>
+            <ActionBar className="pt-4">
+              <Button type="submit">
+                <FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setView('list');
+                  setError(null);
+                }}
+              >
                 Cancelar
               </Button>
-            </div>
+            </ActionBar>
           </form>
         </FormPanel>
       )}
