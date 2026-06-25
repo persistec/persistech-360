@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { FiInbox } from 'react-icons/fi';
 
 export function Table({

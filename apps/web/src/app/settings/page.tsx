@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { PageHeader, Card } from '@/components/ui';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';

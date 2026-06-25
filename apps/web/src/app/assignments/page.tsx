@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { FiCheckSquare, FiPlus, FiTrash2 } from "react-icons/fi";

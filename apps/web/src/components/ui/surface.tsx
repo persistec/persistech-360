@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { FiAlertCircle, FiAlertTriangle, FiCheckCircle, FiInfo } from 'react-icons/fi';
 
 export function Alert({

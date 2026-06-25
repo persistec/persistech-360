@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { FiLoader } from 'react-icons/fi';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'subtle' | 'danger' | 'destructive';
