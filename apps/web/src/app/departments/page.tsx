@@ -1,9 +1,10 @@
-﻿'use client';
-import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
+﻿"use client";
 
-import { useState, useEffect } from 'react';
-import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, Select, LoadingSpinner, FormPanel, EmptyState, FormField, ActionBar } from '@/components/ui';
+import { useEffect, useState } from "react";
+import { FiCheckSquare, FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi";
+
+import { apiClient } from "@/lib/api-client";
+import { ActionBar, Alert, Button, EmptyState, FormField, FormPanel, Input, LoadingSpinner, PageHeader, Select, Table, TableCell, TableRow } from "@/components/ui";
 
 interface DepartmentApiItem {
   id: string;
@@ -31,28 +32,26 @@ const mapDepartmentFromApi = (department: DepartmentApiItem): Department => ({
   createdAt: department.createdAt,
 });
 
-const buildDepartmentPayload = (formData: { name: string; parentId: string }): DepartmentPayload => {
-  return {
-    name: formData.name.trim(),
-    parentDepartmentId: formData.parentId || null,
-  };
-};
+const buildDepartmentPayload = (formData: { name: string; parentId: string }): DepartmentPayload => ({
+  name: formData.name.trim(),
+  parentDepartmentId: formData.parentId || null,
+});
 
 export default function DepartmentsPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [view, setView] = useState<'list' | 'create' | 'edit'>('list');
-  const [formData, setFormData] = useState({ id: '', name: '', parentId: '' });
+  const [view, setView] = useState<"list" | "create" | "edit">("list");
+  const [formData, setFormData] = useState({ id: "", name: "", parentId: "" });
 
   const fetchDepartments = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<{ data: DepartmentApiItem[] }>('/departments');
+      const response = await apiClient.get<{ data: DepartmentApiItem[] }>("/departments");
       setDepartments((response.data || []).map(mapDepartmentFromApi));
     } catch (err: any) {
-      setError(err.message || 'Falha ao obter departamentos');
+      setError(err.message || "Falha ao obter departamentos.");
     } finally {
       setLoading(false);
     }
@@ -62,37 +61,49 @@ export default function DepartmentsPage() {
     fetchDepartments();
   }, []);
 
+  const openCreateForm = () => {
+    setFormData({ id: "", name: "", parentId: "" });
+    setView("create");
+  };
+
+  const openEditForm = (department: Department) => {
+    setFormData({ id: department.id, name: department.name, parentId: department.parentId || "" });
+    setView("edit");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     try {
       const payload = buildDepartmentPayload(formData);
 
-      if (view === 'create') {
-        await apiClient.post('/departments', payload);
+      if (view === "create") {
+        await apiClient.post("/departments", payload);
       } else {
         await apiClient.patch(`/departments/${formData.id}`, payload);
       }
 
-      setView('list');
+      setView("list");
       fetchDepartments();
     } catch (err: any) {
-      setError(err.message || 'Falha ao guardar departamento');
+      setError(err.message || "Falha ao guardar departamento.");
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Tem a certeza que deseja eliminar este departamento?')) return;
+    if (!confirm("Tem a certeza de que pretende eliminar este departamento?")) return;
     setError(null);
     try {
       await apiClient.delete(`/departments/${id}`);
       fetchDepartments();
     } catch (err: any) {
-      setError(err.message || 'Falha ao eliminar departamento');
+      setError(err.message || "Falha ao eliminar departamento.");
     }
   };
 
-  if (loading && view === 'list') return <LoadingSpinner />;
+  if (loading && view === "list") return <LoadingSpinner />;
+
+  const parentName = (parentId: string | null) => departments.find((department) => department.id === parentId)?.name || "-";
 
   return (
     <div>
@@ -100,42 +111,41 @@ export default function DepartmentsPage() {
         title="Departamentos"
         description="Manter departamentos da organização usados por utilizadores, funções e relatórios de avaliação."
         action={
-          view === 'list' && (
-            <Button onClick={() => {
-              setFormData({ id: '', name: '', parentId: '' });
-              setView('create');
-            }}>
-              <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Departamento
+          view === "list" && (
+            <Button onClick={openCreateForm}>
+              <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar departamento
             </Button>
           )
         }
       />
 
-      {error && <Alert className="mb-6">{error}</Alert>}
+      {error ? <Alert className="mb-6">{error}</Alert> : null}
 
-      {view === 'list' ? (
-        <Table headers={['Nome', 'ID Ascendente', 'Data de Criação', 'Acções']}>
+      {view === "list" ? (
+        <Table headers={["Nome", "Departamento ascendente", "Data de criação", "Acções"]}>
           {departments.length === 0 ? (
-            <EmptyState colSpan={4}>Nenhum departamento encontrado.</EmptyState>
+            <EmptyState
+              colSpan={4}
+              title="Ainda não existem departamentos"
+              description="Crie o primeiro departamento para começar a estruturar a organização e ligar utilizadores às áreas certas."
+              action={
+                <Button size="sm" onClick={openCreateForm}>
+                  <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar departamento
+                </Button>
+              }
+            />
           ) : (
-            departments.map((dept) => (
-              <TableRow key={dept.id}>
-                <TableCell className="font-medium">{dept.name}</TableCell>
-                <TableCell>{dept.parentId || '-'}</TableCell>
-                <TableCell>{new Date(dept.createdAt).toLocaleDateString()}</TableCell>
+            departments.map((department) => (
+              <TableRow key={department.id}>
+                <TableCell className="font-medium">{department.name}</TableCell>
+                <TableCell>{parentName(department.parentId)}</TableCell>
+                <TableCell>{new Date(department.createdAt).toLocaleDateString("pt-AO")}</TableCell>
                 <TableCell>
                   <ActionBar>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => {
-                        setFormData({ id: dept.id, name: dept.name, parentId: dept.parentId || '' });
-                        setView('edit');
-                      }}
-                    >
+                    <Button size="sm" variant="secondary" onClick={() => openEditForm(department)}>
                       <FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar
                     </Button>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(dept.id)}>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(department.id)}>
                       <FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar
                     </Button>
                   </ActionBar>
@@ -145,27 +155,34 @@ export default function DepartmentsPage() {
           )}
         </Table>
       ) : (
-        <FormPanel title={view === 'create' ? 'Criar Novo Departamento' : 'Editar Departamento'} className="max-w-xl">
+        <FormPanel title={view === "create" ? "Criar departamento" : "Editar departamento"} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <FormField label="Nome" required>
+            <FormField
+              label="Nome"
+              description="Use um nome curto e claro para facilitar a leitura nas listas e nos relatórios."
+              required
+            >
               <Input
                 required
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(event) => setFormData({ ...formData, name: event.target.value })}
                 placeholder="Engenharia"
               />
             </FormField>
-            <FormField label="Departamento Ascendente (Opcional)">
+            <FormField
+              label="Departamento ascendente (Opcional)"
+              description="Opcional. Ajuda a organizar a estrutura hierárquica da organização."
+            >
               <Select
                 value={formData.parentId}
-                onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
+                onChange={(event) => setFormData({ ...formData, parentId: event.target.value })}
               >
                 <option value="">Nenhum</option>
                 {departments
-                  .filter((d) => d.id !== formData.id)
-                  .map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
+                  .filter((department) => department.id !== formData.id)
+                  .map((department) => (
+                    <option key={department.id} value={department.id}>
+                      {department.name}
                     </option>
                   ))}
               </Select>
@@ -178,7 +195,7 @@ export default function DepartmentsPage() {
                 type="button"
                 variant="ghost"
                 onClick={() => {
-                  setView('list');
+                  setView("list");
                   setError(null);
                 }}
               >

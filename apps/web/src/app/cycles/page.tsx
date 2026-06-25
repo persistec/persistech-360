@@ -1,9 +1,10 @@
-﻿'use client';
-import { FiPlus, FiEdit2, FiTrash2, FiCheckSquare } from 'react-icons/fi';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { apiClient } from '@/lib/api-client';
-import { PageHeader, Table, TableRow, TableCell, Button, Alert, Input, LoadingSpinner, FormPanel, EmptyState, StatusBadge, FormField, ActionBar } from '@/components/ui';
+import { useEffect, useState } from "react";
+import { FiCheckSquare, FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi";
+
+import { apiClient } from "@/lib/api-client";
+import { ActionBar, Alert, Button, EmptyState, FormField, FormPanel, Input, LoadingSpinner, PageHeader, StatusBadge, Table, TableCell, TableRow } from "@/components/ui";
 
 interface Cycle {
   id: string;
@@ -15,28 +16,44 @@ interface Cycle {
   createdAt: string;
 }
 
+const cycleStatusLabels: Record<string, string> = {
+  draft: "Rascunho",
+  scheduled: "Agendado",
+  open: "Aberto",
+  closing_soon: "A fechar",
+  closed: "Fechado",
+};
+
+const cycleStatusTone = (status: string) => (status === "open" ? "success" : status === "closed" ? "danger" : status === "closing_soon" ? "warning" : "neutral");
+
+const actionLabels: Record<string, string> = {
+  open: "abrir",
+  close: "fechar",
+  "generate-assignments": "gerar atribuições",
+};
+
 export default function CyclesPage() {
   const [cycles, setCycles] = useState<Cycle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [view, setView] = useState<'list' | 'create' | 'edit'>('list');
+  const [view, setView] = useState<"list" | "create" | "edit">("list");
 
   const [formData, setFormData] = useState({
-    id: '',
-    name: '',
-    description: '',
-    startAt: '',
-    endAt: '',
+    id: "",
+    name: "",
+    description: "",
+    startAt: "",
+    endAt: "",
   });
 
   const fetchCycles = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<{ data: Cycle[] }>('/cycles');
+      const response = await apiClient.get<{ data: Cycle[] }>("/cycles");
       setCycles(response.data || []);
     } catch (err: any) {
-      setError(err.message || 'Falha ao obter ciclos');
+      setError(err.message || "Falha ao obter ciclos.");
     } finally {
       setLoading(false);
     }
@@ -46,151 +63,151 @@ export default function CyclesPage() {
     fetchCycles();
   }, []);
 
+  const openCreateForm = () => {
+    const now = new Date();
+    const nextMonth = new Date();
+    nextMonth.setMonth(now.getMonth() + 1);
+
+    setFormData({
+      id: "",
+      name: "",
+      description: "",
+      startAt: now.toISOString().slice(0, 16),
+      endAt: nextMonth.toISOString().slice(0, 16),
+    });
+    setView("create");
+  };
+
+  const openEditForm = (cycle: Cycle) => {
+    setFormData({
+      id: cycle.id,
+      name: cycle.name,
+      description: cycle.description || "",
+      startAt: formatForInput(cycle.startAt),
+      endAt: formatForInput(cycle.endAt),
+    });
+    setView("edit");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     try {
       const payload = {
-        name: formData.name,
-        description: formData.description || null,
+        name: formData.name.trim(),
+        description: formData.description.trim() || null,
         startAt: new Date(formData.startAt).toISOString(),
         endAt: new Date(formData.endAt).toISOString(),
       };
 
-      if (view === 'create') {
-        await apiClient.post('/cycles', payload);
+      if (view === "create") {
+        await apiClient.post("/cycles", payload);
       } else {
         await apiClient.patch(`/cycles/${formData.id}`, payload);
       }
 
-      setView('list');
+      setView("list");
       fetchCycles();
     } catch (err: any) {
-      setError(err.message || 'Falha ao guardar ciclo');
+      setError(err.message || "Falha ao guardar ciclo.");
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Tem a certeza que deseja eliminar este rascunho de ciclo?')) return;
+    if (!confirm("Tem a certeza de que pretende eliminar este rascunho de ciclo?")) return;
     setError(null);
     try {
       await apiClient.delete(`/cycles/${id}`);
       fetchCycles();
     } catch (err: any) {
-      setError(err.message || 'Falha ao eliminar ciclo');
+      setError(err.message || "Falha ao eliminar ciclo.");
     }
   };
 
-  const handleAction = async (id: string, action: 'open' | 'close' | 'generate-assignments') => {
+  const handleAction = async (id: string, action: "open" | "close" | "generate-assignments") => {
     setError(null);
     try {
       await apiClient.post(`/cycles/${id}/${action}`);
       fetchCycles();
     } catch (err: any) {
-      setError(err.message || `Falha ao ${action.replace('-', ' ')} ciclo`);
+      setError(err.message || `Falha ao ${actionLabels[action]} ciclo.`);
     }
   };
 
   const formatForInput = (dateString: string) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
     return new Date(dateString).toISOString().slice(0, 16);
   };
 
-  if (loading && view === 'list') return <LoadingSpinner />;
+  if (loading && view === "list") return <LoadingSpinner />;
 
   return (
     <div>
       <PageHeader
         title="Ciclos de Avaliação"
-        description="Configurar períodos de avaliação e accionar ações do ciclo sem alterar as regras de backend."
+        description="Configurar períodos de avaliação e accionar acções do ciclo sem alterar as regras de backend."
         action={
-          view === 'list' && (
-            <Button
-              onClick={() => {
-                const now = new Date();
-                const nextMonth = new Date();
-                nextMonth.setMonth(now.getMonth() + 1);
-
-                setFormData({
-                  id: '',
-                  name: '',
-                  description: '',
-                  startAt: now.toISOString().slice(0, 16),
-                  endAt: nextMonth.toISOString().slice(0, 16),
-                });
-                setView('create');
-              }}
-            >
-              <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar Ciclo
+          view === "list" && (
+            <Button onClick={openCreateForm}>
+              <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar ciclo
             </Button>
           )
         }
       />
 
-      {error && <Alert className="mb-6">{error}</Alert>}
+      {error ? <Alert className="mb-6">{error}</Alert> : null}
 
-      {view === 'list' ? (
-        <Table headers={['Nome', 'Estado', 'Início / Fim', 'Acções']}>
+      {view === "list" ? (
+        <Table headers={["Nome", "Estado", "Início / Fim", "Acções"]}>
           {cycles.length === 0 ? (
-            <EmptyState colSpan={4}>Nenhum ciclo encontrado.</EmptyState>
+            <EmptyState
+              colSpan={4}
+              title="Ainda não existem ciclos"
+              description="Crie o primeiro ciclo para poder abrir avaliações, gerar atribuições e acompanhar resultados."
+              action={
+                <Button size="sm" onClick={openCreateForm}>
+                  <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" /> Criar ciclo
+                </Button>
+              }
+            />
           ) : (
             cycles.map((cycle) => (
               <TableRow key={cycle.id}>
                 <TableCell>
                   <div className="font-medium">{cycle.name}</div>
-                  <div className="text-xs text-muted-foreground">{cycle.description}</div>
+                  <div className="text-xs text-muted-foreground">{cycle.description || "Sem descrição adicional."}</div>
                 </TableCell>
                 <TableCell>
-                  <StatusBadge tone={cycle.status === 'open' ? 'success' : cycle.status === 'closed' ? 'danger' : 'neutral'}>
-                    {cycle.status}
-                  </StatusBadge>
+                  <StatusBadge tone={cycleStatusTone(cycle.status)}>{cycleStatusLabels[cycle.status] || cycle.status}</StatusBadge>
                 </TableCell>
                 <TableCell>
-                  <div className="text-sm">
-                    {new Date(cycle.startAt).toLocaleDateString()} - <br />
-                    {new Date(cycle.endAt).toLocaleDateString()}
+                  <div className="text-sm text-foreground">
+                    {new Date(cycle.startAt).toLocaleString("pt-AO")} - <br />
+                    {new Date(cycle.endAt).toLocaleString("pt-AO")}
                   </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex w-48 flex-col gap-2">
                     <ActionBar>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => {
-                          setFormData({
-                            id: cycle.id,
-                            name: cycle.name,
-                            description: cycle.description || '',
-                            startAt: formatForInput(cycle.startAt),
-                            endAt: formatForInput(cycle.endAt),
-                          });
-                          setView('edit');
-                        }}
-                      >
+                      <Button size="sm" variant="secondary" onClick={() => openEditForm(cycle)}>
                         <FiEdit2 className="mr-2 h-4 w-4" aria-hidden="true" /> Editar
                       </Button>
-
-                      {cycle.status === 'draft' && (
+                      {cycle.status === "draft" ? (
                         <Button size="sm" variant="danger" onClick={() => handleDelete(cycle.id)}>
                           <FiTrash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Eliminar
                         </Button>
-                      )}
+                      ) : null}
                     </ActionBar>
 
                     <ActionBar>
-                      {(cycle.status === 'draft' || cycle.status === 'scheduled') && (
-                        <Button size="sm" variant="primary" onClick={() => handleAction(cycle.id, 'open')}>
-                          Abrir
-                        </Button>
-                      )}
-                      {(cycle.status === 'open' || cycle.status === 'closing_soon') && (
-                        <Button size="sm" variant="danger" onClick={() => handleAction(cycle.id, 'close')}>
-                          Fechar
-                        </Button>
-                      )}
-                      <Button size="sm" variant="secondary" onClick={() => handleAction(cycle.id, 'generate-assignments')}>
-                        Gerar Atribuições
+                      {(cycle.status === "draft" || cycle.status === "scheduled") ? (
+                        <Button size="sm" variant="primary" onClick={() => handleAction(cycle.id, "open")}>Abrir</Button>
+                      ) : null}
+                      {(cycle.status === "open" || cycle.status === "closing_soon") ? (
+                        <Button size="sm" variant="danger" onClick={() => handleAction(cycle.id, "close")}>Fechar</Button>
+                      ) : null}
+                      <Button size="sm" variant="secondary" onClick={() => handleAction(cycle.id, "generate-assignments")}>
+                        Gerar atribuições
                       </Button>
                     </ActionBar>
                   </div>
@@ -200,34 +217,34 @@ export default function CyclesPage() {
           )}
         </Table>
       ) : (
-        <FormPanel title={view === 'create' ? 'Criar Novo Ciclo' : 'Editar Ciclo'} className="max-w-xl">
+        <FormPanel title={view === "create" ? "Criar ciclo" : "Editar ciclo"} className="max-w-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <FormField label="Nome" required>
+            <FormField label="Nome" description="Use um nome claro para identificar o período de avaliação." required>
               <Input
                 required
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(event) => setFormData({ ...formData, name: event.target.value })}
                 placeholder="Avaliação do 1.º trimestre de 2026"
               />
             </FormField>
-            <FormField label="Descrição (Opcional)">
-              <Input value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+            <FormField label="Descrição (Opcional)" description="Opcional. Ajuda a distinguir ciclos semelhantes." >
+              <Input value={formData.description} onChange={(event) => setFormData({ ...formData, description: event.target.value })} />
             </FormField>
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="Data de Início" required>
+              <FormField label="Data de início" description="Momento em que o ciclo fica disponível." required>
                 <Input
                   type="datetime-local"
                   required
                   value={formData.startAt}
-                  onChange={(e) => setFormData({ ...formData, startAt: e.target.value })}
+                  onChange={(event) => setFormData({ ...formData, startAt: event.target.value })}
                 />
               </FormField>
-              <FormField label="Data de Fim" required>
+              <FormField label="Data de fim" description="Momento em que o ciclo deixa de aceitar submissões." required>
                 <Input
                   type="datetime-local"
                   required
                   value={formData.endAt}
-                  onChange={(e) => setFormData({ ...formData, endAt: e.target.value })}
+                  onChange={(event) => setFormData({ ...formData, endAt: event.target.value })}
                 />
               </FormField>
             </div>
@@ -240,7 +257,7 @@ export default function CyclesPage() {
                 type="button"
                 variant="ghost"
                 onClick={() => {
-                  setView('list');
+                  setView("list");
                   setError(null);
                 }}
               >

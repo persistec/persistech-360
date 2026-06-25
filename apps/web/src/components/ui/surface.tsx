@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { FiAlertCircle, FiAlertTriangle, FiCheckCircle, FiInfo } from 'react-icons/fi';
 
 export function Alert({
@@ -82,11 +82,11 @@ export function MetricCard({
   return (
     <Card className={`flex h-full flex-col justify-between gap-4 ${className}`}>
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-medium text-foreground/80">{label}</p>
+        <p className="text-sm font-medium text-muted-foreground">{label}</p>
         {Icon ? <Icon className="h-5 w-5 text-primary" aria-hidden="true" /> : null}
       </div>
       <div className="text-3xl font-semibold tracking-tight text-foreground">{value}</div>
-      {description ? <p className="text-sm leading-6 text-foreground/80">{description}</p> : null}
+      {description ? <p className="text-sm leading-6 text-muted-foreground">{description}</p> : null}
     </Card>
   );
 }
@@ -106,7 +106,7 @@ export function DashboardCard({
         {Icon ? <Icon className="h-5 w-5" aria-hidden="true" /> : <span className="h-2 w-2 rounded-full bg-primary" />}
       </div>
       <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-foreground/80">{description}</p>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
     </Card>
   );
 }
@@ -125,7 +125,7 @@ export function PageHeader({
       <div className="max-w-3xl">
         <div className="mb-2 h-1 w-12 rounded-full bg-primary shadow-[0_0_18px_var(--color-primary)]" />
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
-        {description ? <p className="mt-2 text-sm leading-6 text-foreground/80">{description}</p> : null}
+        {description ? <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p> : null}
       </div>
       {action ? <div className="flex shrink-0 items-center gap-2">{action}</div> : null}
     </div>
@@ -150,7 +150,7 @@ export function PageSection({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-sm font-semibold uppercase tracking-wide text-foreground/80">{title}</h2>
-          {description ? <p className="mt-1 text-sm leading-6 text-foreground/80">{description}</p> : null}
+          {description ? <p className="mt-1 text-sm leading-6 text-muted-foreground">{description}</p> : null}
         </div>
         {action ? <div className="flex items-center gap-2">{action}</div> : null}
       </div>
@@ -176,8 +176,9 @@ export function ActionBar({
 
 export function LoadingSpinner() {
   return (
-    <div className="flex min-h-48 items-center justify-center p-8">
+    <div className="flex min-h-48 flex-col items-center justify-center gap-3 p-8 text-sm text-muted-foreground" role="status" aria-live="polite">
       <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary/20 border-b-primary" />
+      <p>A carregar conteúdo...</p>
     </div>
   );
 }

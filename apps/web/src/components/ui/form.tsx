@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useId } from 'react';
 
@@ -90,7 +90,7 @@ export function FormField({
       </Label>
       {control}
       {description ? (
-        <p id={descriptionId} className="mt-1 text-xs leading-5 text-foreground/80">
+        <p id={descriptionId} className="mt-1 text-xs leading-5 text-muted-foreground">
           {description}
         </p>
       ) : null}
