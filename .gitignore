@@ -18,6 +18,9 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 
+# temporary local scripts
+tmp-fix-mojibake.cjs
+
 # OS / editor
 .DS_Store
 .vscode/
