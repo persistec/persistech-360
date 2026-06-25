@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from "next";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
+import { OperationalShellHeader } from "@/components/OperationalShellHeader";
 
 import { ThemeProvider } from "@/components/ThemeProvider";
 
@@ -46,9 +47,12 @@ export default function RootLayout({
         <ThemeProvider>
           <div className="flex h-dvh flex-col overflow-hidden md:flex-row">
             <Sidebar />
-            <main className="min-w-0 flex-1 overflow-y-auto p-5 sm:p-8">
-              <div className="mx-auto w-full max-w-7xl">{children}</div>
-            </main>
+            <div className="min-w-0 flex-1 overflow-y-auto">
+              <OperationalShellHeader />
+              <main className="min-w-0 px-5 py-5 sm:px-8 sm:py-6">
+                <div className="mx-auto w-full max-w-7xl">{children}</div>
+              </main>
+            </div>
           </div>
         </ThemeProvider>
       </body>
