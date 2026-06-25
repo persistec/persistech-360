@@ -6,8 +6,8 @@ import { OperationalShellHeader } from "@/components/OperationalShellHeader";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "Persistech 360 - MVP de AdministraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o",
-  description: "MVP de AdministraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Interna para Persistech 360",
+  title: "Persistech 360 - MVP de Administração",
+  description: "MVP de Administração Interna para Persistech 360",
 };
 
 export default function RootLayout({

@@ -1,4 +1,4 @@
-﻿import { DashboardCard, PageHeader, PageSection } from "@/components/ui";
+import { DashboardCard, PageHeader, PageSection } from "@/components/ui";
 import { FiFolder, FiUsers, FiCalendar } from "react-icons/fi";
 
 export default function Home() {

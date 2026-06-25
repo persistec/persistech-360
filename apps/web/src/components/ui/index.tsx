@@ -1,4 +1,4 @@
-﻿export { Button } from './button';
+export { Button } from './button';
 export { Input, Label, Select, Textarea, FormField } from './form';
 export {
   Alert,
