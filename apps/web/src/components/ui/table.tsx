@@ -16,7 +16,7 @@ export function Table({
             {headers.map((header, index) => (
               <th
                 key={index}
-                className="h-12 whitespace-nowrap px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                className="h-12 whitespace-nowrap px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-foreground/80"
               >
                 {header}
               </th>
@@ -74,9 +74,9 @@ export function EmptyState({
     <TableRow className={`hover:bg-transparent ${className}`}>
       <TableCell className="py-12 text-center text-muted-foreground" colSpan={colSpan}>
         <div className="mx-auto flex max-w-sm flex-col items-center justify-center rounded-lg border border-dashed border-border bg-surface-muted px-5 py-6 text-center">
-          <Icon className="mb-3 h-8 w-8 text-muted-foreground/70" aria-hidden="true" />
+          <Icon className="mb-3 h-8 w-8 text-muted-foreground" aria-hidden="true" />
           <p className="text-sm font-medium text-foreground">{children ?? title}</p>
-          {description ? <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p> : null}
+          {description ? <p className="mt-1 text-sm leading-5 text-foreground/80">{description}</p> : null}
           {action ? <div className="mt-4">{action}</div> : null}
         </div>
       </TableCell>
@@ -100,9 +100,8 @@ export function StatusBadge({
   };
 
   return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${tones[tone]}`}>
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold whitespace-nowrap ${tones[tone]}`}>
       {children}
     </span>
   );
 }
-

@@ -139,7 +139,7 @@ export default function ResultsPage() {
               <div key={dim.domainId} className="last:mb-0">
                 <div className="mb-3 flex items-center justify-between border-b border-border pb-2">
                   <h4 className="text-lg font-semibold text-foreground">
-                    {dim.domainName} <span className="text-sm font-normal text-muted-foreground">(Peso: {dim.weight})</span>
+                    {dim.domainName} <span className="text-sm font-normal text-foreground/80">(Peso: {dim.weight})</span>
                   </h4>
                   <span className="rounded border border-primary/35 bg-primary/10 px-3 py-1 text-lg font-bold text-primary">
                     {dim.score.toFixed(2)}
@@ -148,7 +148,7 @@ export default function ResultsPage() {
                 <ul className="space-y-2">
                   {dim.criteria.map((crit) => (
                     <li key={crit.criterionId} className="flex items-center justify-between pl-4 text-sm">
-                      <span className="text-muted-foreground">{crit.criterionName}</span>
+                      <span className="text-foreground/80">{crit.criterionName}</span>
                       <span className="font-medium text-foreground">{crit.score.toFixed(2)}</span>
                     </li>
                   ))}
@@ -202,12 +202,14 @@ export default function ResultsPage() {
 
       {(adminResult || employeeResult) && (
         <div>
-          <ActionBar className="mb-6 border-b border-border">
+          <ActionBar className="mb-6 border-b border-border" role="tablist" aria-label="Vistas de resultados">
             <Button
               type="button"
               variant={activeTab === 'admin' ? 'secondary' : 'ghost'}
               className={`rounded-b-none border-b-2 px-4 py-2 ${activeTab === 'admin' ? 'border-primary text-primary' : 'border-transparent'}`}
               onClick={() => setActiveTab('admin')}
+              aria-pressed={activeTab === 'admin'}
+              aria-controls="admin-result-panel"
             >
               Vista de Administração
             </Button>
@@ -216,12 +218,18 @@ export default function ResultsPage() {
               variant={activeTab === 'employee' ? 'secondary' : 'ghost'}
               className={`rounded-b-none border-b-2 px-4 py-2 ${activeTab === 'employee' ? 'border-primary text-primary' : 'border-transparent'}`}
               onClick={() => setActiveTab('employee')}
+              aria-pressed={activeTab === 'employee'}
+              aria-controls="employee-result-panel"
             >
               Vista de Colaborador
             </Button>
           </ActionBar>
 
-          <div className="rounded-lg bg-background/30 p-1 sm:p-3">{activeTab === 'admin' ? renderResult(adminResult, true) : renderResult(employeeResult, false)}</div>
+          <div className="rounded-lg bg-background/30 p-1 sm:p-3">
+            <div id={activeTab === 'admin' ? 'admin-result-panel' : 'employee-result-panel'} role="tabpanel">
+              {activeTab === 'admin' ? renderResult(adminResult, true) : renderResult(employeeResult, false)}
+            </div>
+          </div>
         </div>
       )}
     </div>
