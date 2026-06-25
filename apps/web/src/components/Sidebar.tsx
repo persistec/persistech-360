@@ -2,18 +2,18 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  FiGrid,
-  FiFolder,
-  FiLayers,
-  FiBriefcase,
-  FiUsers,
-  FiCalendar,
-  FiClipboard,
-  FiCheckSquare,
-  FiTrendingUp,
+import { 
+  FiGrid, 
+  FiFolder, 
+  FiLayers, 
+  FiBriefcase, 
+  FiUsers, 
+  FiCalendar, 
+  FiClipboard, 
+  FiCheckSquare, 
+  FiTrendingUp, 
   FiSettings,
-  FiBox
+  FiBox 
 } from 'react-icons/fi';
 
 export function Sidebar() {
@@ -115,11 +115,11 @@ export function Sidebar() {
                           : 'text-muted-foreground hover:bg-surface-elevated hover:text-foreground'
                       }`}
                     >
-                      <Icon
+                      <Icon 
                         className={`mr-3 h-4 w-4 shrink-0 transition-colors ${
                           isActive ? 'text-primary drop-shadow-[0_0_8px_var(--color-primary)]' : 'text-muted-foreground group-hover:text-primary/80'
-                        }`}
-                        aria-hidden="true"
+                        }`} 
+                        aria-hidden="true" 
                       />
                       {item.label}
                     </Link>

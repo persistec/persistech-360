@@ -1,5 +1,7 @@
 name: Manual Render Wake Check
 
+# GitHub scheduled workflows only run from the default branch after this file exists there.
+
 on:
   workflow_dispatch:
 
@@ -13,7 +15,7 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: Call Render health endpoint
+      - name: Manually call Render health endpoint
         env:
           RENDER_API_HEALTH_URL: ${{ secrets.RENDER_API_HEALTH_URL }}
           SCHEDULED_TASK_TIMEOUT_SECONDS: ${{ secrets.SCHEDULED_TASK_TIMEOUT_SECONDS }}
@@ -38,6 +40,34 @@ jobs:
             exit 1
           fi
 
-          curl --fail --show-error --silent \
+          response_file="$(mktemp)"
+
+          status_code="$(curl \
+            --location \
+            --silent \
+            --show-error \
+            --connect-timeout 20 \
             --max-time "$SCHEDULED_TASK_TIMEOUT_SECONDS" \
-            "$RENDER_API_HEALTH_URL"
+            --retry 3 \
+            --retry-delay 10 \
+            --retry-all-errors \
+            --output "$response_file" \
+            --write-out "%{http_code}" \
+            "$RENDER_API_HEALTH_URL")"
+
+          echo "HTTP status: ${status_code}"
+
+          if [ -s "$response_file" ]; then
+            echo "Response body:"
+            head -c 1000 "$response_file"
+            echo
+          fi
+
+          rm -f "$response_file"
+
+          if [ "$status_code" -lt 200 ] || [ "$status_code" -ge 300 ]; then
+            echo "Render API health check failed"
+            exit 1
+          fi
+
+          echo "Render API health check completed successfully"

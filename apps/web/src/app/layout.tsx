@@ -29,7 +29,7 @@ export default function RootLayout({
                     if (lower === 'claro' || lower === 'light') mode = 'light';
                     else if (lower === 'escuro' || lower === 'dark') mode = 'dark';
                   }
-
+                  
                   var resolved = mode;
                   if (mode === 'system') {
                     resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

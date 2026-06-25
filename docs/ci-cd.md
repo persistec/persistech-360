@@ -104,18 +104,16 @@ A aplicação web usa o seu `VERCEL_PROJECT_ID`. A aplicação API usa o webhook
 
 ## Tarefas agendadas
 
-A Vercel Cron foi removida do caminho de deploy porque contas Hobby/free só suportam jobs diários.
-
-Render Free/Hobby services are allowed to spin down after inactivity.
-The project does not use scheduled keep-alive pings to keep Render free services awake.
-For demos, run the manual Render wake check workflow shortly before testing.
-For production or 24/7 availability, upgrade the Render API service to a paid instance.
+Os serviços Free/Hobby da Render podem entrar em repouso após um período de inactividade.
+O projecto não usa pings agendados para manter serviços gratuitos da Render sempre activos.
+Para demonstrações, execute manualmente o workflow "Manual Render Wake Check" pouco antes dos testes.
+Para produção ou disponibilidade 24/7, actualize o serviço da API na Render para uma instância paga.
 
 Variáveis e Secrets necessários para o check manual:
 
 ```text
 RENDER_API_HEALTH_URL (GitHub: deve apontar para o health check do Render, ex: https://persistech-360-api.onrender.com/api/v1/health)
-SCHEDULED_TASK_TIMEOUT_SECONDS (GitHub: tempo limite para a chamada de wake up, ex: 30)
+SCHEDULED_TASK_TIMEOUT_SECONDS (GitHub: timeout obrigatório para a chamada, ex: 90)
 ```
 
 ## Secrets necessários
