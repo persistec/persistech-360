@@ -1,9 +1,10 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
-import { apiClient } from '@/lib/api-client';
-import { PageHeader, Button, Alert, Select, LoadingSpinner, Card, FormField, MetricCard, PageSection, ActionBar } from '@/components/ui';
 import { FiTrendingUp } from 'react-icons/fi';
+
+import { apiClient } from '@/lib/api-client';
+import { ActionBar, Alert, Button, Card, FormField, LoadingSpinner, MetricCard, PageHeader, PageSection, ProgressCard, Select } from '@/components/ui';
 
 interface Cycle {
   id: string;
@@ -40,6 +41,14 @@ interface AdminResult extends ResultBase {
     score: number;
   }>;
 }
+
+const scoreLegend = [
+  { value: 1, label: 'Insuficiente' },
+  { value: 2, label: 'Abaixo do esperado' },
+  { value: 3, label: 'Adequado' },
+  { value: 4, label: 'Bom' },
+  { value: 5, label: 'Excelente' },
+];
 
 export default function ResultsPage() {
   const [cycles, setCycles] = useState<Cycle[]>([]);
@@ -91,7 +100,7 @@ export default function ResultsPage() {
       setAdminResult(adminRes);
       setEmployeeResult(empRes);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Falha ao obter resultados. Certifique-se de que o ciclo foi pontuado ou que existem atribuiÃ§Ãµes.';
+      const msg = err instanceof Error ? err.message : 'Falha ao obter resultados. Certifique-se de que o ciclo foi pontuado ou que existem atribuições.';
       setError(msg);
     } finally {
       setLoadingResults(false);
@@ -104,7 +113,7 @@ export default function ResultsPage() {
     if (data.status === 'insufficient_responses') {
       return (
         <Alert variant="info">
-          Este resultado tem respostas insuficientes e nÃ£o pode ser totalmente exibido para proteger o anonimato.
+          Este resultado tem respostas insuficientes e não pode ser totalmente exibido para proteger o anonimato.
         </Alert>
       );
     }
@@ -112,14 +121,14 @@ export default function ResultsPage() {
     return (
       <div className="space-y-6">
         <MetricCard
-          label="PontuaÃ§Ã£o Global"
+          label="Pontuação global"
           value={data.overallScore !== null ? data.overallScore.toFixed(2) : 'N/A'}
-          description="Resumo agregado disponÃ­vel para este colaborador neste ciclo."
+          description="Resumo agregado disponível para este colaborador neste ciclo."
           icon={FiTrendingUp}
         />
 
         {isAdmin && 'relationships' in data && data.relationships && data.relationships.length > 0 ? (
-          <PageSection title="AnÃ¡lise por RelaÃ§Ã£o" description="Vista disponÃ­vel apenas para AdministraÃ§Ã£o.">
+          <PageSection title="Análise por relação" description="Vista disponível apenas para Administração.">
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
               {data.relationships.map((rel) => (
                 <MetricCard
@@ -133,21 +142,21 @@ export default function ResultsPage() {
           </PageSection>
         ) : null}
 
-        <PageSection title="DimensÃµes e critÃ©rios">
+        <PageSection title="Dimensões e critérios">
           <Card className="space-y-6">
             {data.dimensions.map((dim) => (
               <div key={dim.domainId} className="last:mb-0">
-                <div className="mb-3 flex items-center justify-between border-b border-border pb-2">
+                <div className="mb-3 flex flex-col gap-2 border-b border-border pb-2 sm:flex-row sm:items-center sm:justify-between">
                   <h4 className="text-lg font-semibold text-foreground">
                     {dim.domainName} <span className="text-sm font-normal text-muted-foreground">(Peso: {dim.weight})</span>
                   </h4>
-                  <span className="rounded border border-primary/35 bg-primary/10 px-3 py-1 text-lg font-bold text-primary">
+                  <span className="inline-flex items-center rounded-full border border-primary/35 bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
                     {dim.score.toFixed(2)}
                   </span>
                 </div>
                 <ul className="space-y-2">
                   {dim.criteria.map((crit) => (
-                    <li key={crit.criterionId} className="flex items-center justify-between pl-4 text-sm">
+                    <li key={crit.criterionId} className="flex items-center justify-between gap-4 pl-4 text-sm">
                       <span className="text-muted-foreground">{crit.criterionName}</span>
                       <span className="font-medium text-foreground">{crit.score.toFixed(2)}</span>
                     </li>
@@ -161,51 +170,84 @@ export default function ResultsPage() {
     );
   };
 
+  const filtersFilled = [selectedCycle, selectedEvaluatee].filter(Boolean).length;
+
   if (loadingOptions) return <LoadingSpinner />;
 
   return (
     <div>
       <PageHeader
         title="Resultados"
-        description="Seleccione um ciclo e um colaborador para comparar as vistas de AdministraÃ§Ã£o e Colaborador."
+        description="Seleccione um ciclo e um colaborador para comparar as vistas de Administração e Colaborador."
       />
 
-      <Card className="mb-8">
-        <form onSubmit={handleFetchResults} className="grid items-end gap-4 md:grid-cols-[1fr_1fr_auto]">
-          <FormField label="Ciclo" required>
-            <Select required value={selectedCycle} onChange={(e) => setSelectedCycle(e.target.value)}>
-              <option value="">Seleccionar Ciclo</option>
-              {cycles.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </Select>
-          </FormField>
-          <FormField label="Avaliado" required>
-            <Select required value={selectedEvaluatee} onChange={(e) => setSelectedEvaluatee(e.target.value)}>
-              <option value="">Seleccionar colaborador</option>
-              {users.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.name}
-                </option>
-              ))}
-            </Select>
-          </FormField>
-          <Button type="submit" disabled={loadingResults} loading={loadingResults}>
-            Ver resultados
-          </Button>
-        </form>
-      </Card>
+      <Alert variant="info" className="mb-6">
+        As respostas são tratadas conforme as regras de confidencialidade definidas para o ciclo.
+      </Alert>
 
-      {error && <Alert className="mb-6">{error}</Alert>}
+      <PageSection title="Filtros de consulta" description="Escolha o ciclo e o colaborador antes de carregar os resultados.">
+        <Card className="space-y-5">
+          <ProgressCard
+            label="Progresso da consulta"
+            completed={filtersFilled}
+            total={2}
+            description="A barra ajuda a perceber se já existem filtros suficientes para obter as vistas de resultado."
+          />
+          <form onSubmit={handleFetchResults} className="grid items-end gap-4 md:grid-cols-[1fr_1fr_auto]">
+            <FormField label="Ciclo" required>
+              <Select required value={selectedCycle} onChange={(e) => setSelectedCycle(e.target.value)}>
+                <option value="">Seleccionar ciclo</option>
+                {cycles.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
+            <FormField label="Avaliado" required>
+              <Select required value={selectedEvaluatee} onChange={(e) => setSelectedEvaluatee(e.target.value)}>
+                <option value="">Seleccionar colaborador</option>
+                {users.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.name}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
+            <Button type="submit" disabled={loadingResults} loading={loadingResults}>
+              Ver resultados
+            </Button>
+          </form>
+        </Card>
+      </PageSection>
+
+      <PageSection title="Escala de pontuação" description="A leitura numérica é apenas explicada no interface; os valores do backend permanecem inalterados.">
+        <Card>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            {scoreLegend.map((item) => (
+              <div key={item.value} className="rounded-lg border border-border bg-surface-muted px-4 py-3">
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{item.value}</div>
+                <div className="mt-1 text-sm font-semibold text-foreground">{item.label}</div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </PageSection>
+
+      {error && <Alert className="my-6">{error}</Alert>}
+
+      {(adminResult || employeeResult) && !loadingResults && !error ? (
+        <Alert variant="success" className="my-6">
+          Resultados carregados com sucesso para esta consulta.
+        </Alert>
+      ) : null}
 
       {!adminResult && !employeeResult && !loadingResults && !error ? (
-        <Card className="mb-6 border-dashed border-border bg-surface-muted">
+        <Card className="my-6 border-dashed border-border bg-surface-muted">
           <div className="space-y-2">
             <h2 className="text-base font-semibold text-foreground">Escolha um ciclo e um colaborador</h2>
             <p className="text-sm leading-6 text-muted-foreground">
-              Depois de carregar os filtros, as vistas de AdministraÃ§Ã£o e Colaborador aparecem aqui.
+              Depois de carregar os filtros, as vistas de Administração e Colaborador aparecem aqui.
             </p>
           </div>
         </Card>
@@ -219,16 +261,18 @@ export default function ResultsPage() {
               variant={activeTab === 'admin' ? 'secondary' : 'ghost'}
               className={`rounded-b-none border-b-2 px-4 py-2 ${activeTab === 'admin' ? 'border-primary text-primary' : 'border-transparent'}`}
               onClick={() => setActiveTab('admin')}
+              role="tab"
               aria-selected={activeTab === 'admin'}
               aria-controls="admin-result-panel"
             >
-              Vista de AdministraÃ§Ã£o
+              Vista de Administração
             </Button>
             <Button
               type="button"
               variant={activeTab === 'employee' ? 'secondary' : 'ghost'}
               className={`rounded-b-none border-b-2 px-4 py-2 ${activeTab === 'employee' ? 'border-primary text-primary' : 'border-transparent'}`}
               onClick={() => setActiveTab('employee')}
+              role="tab"
               aria-selected={activeTab === 'employee'}
               aria-controls="employee-result-panel"
             >

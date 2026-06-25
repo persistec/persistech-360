@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { FiAlertCircle, FiAlertTriangle, FiCheckCircle, FiInfo } from 'react-icons/fi';
 
 export function Alert({
@@ -87,6 +87,51 @@ export function MetricCard({
       </div>
       <div className="text-3xl font-semibold tracking-tight text-foreground">{value}</div>
       {description ? <p className="text-sm leading-6 text-muted-foreground">{description}</p> : null}
+    </Card>
+  );
+}
+
+export function ProgressCard({
+  label,
+  completed,
+  total,
+  description,
+  className = '',
+}: {
+  label: string;
+  completed: number;
+  total: number;
+  description?: React.ReactNode;
+  className?: string;
+}) {
+  const safeTotal = total > 0 ? total : 0;
+  const safeCompleted = Math.min(completed, safeTotal);
+  const progress = safeTotal > 0 ? Math.min(100, Math.max(0, Math.round((safeCompleted / safeTotal) * 100))) : 0;
+
+  return (
+    <Card className={`space-y-4 ${className}`}>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+          <p className="mt-1 text-lg font-semibold text-foreground">
+            {safeCompleted} de {safeTotal} campos preenchidos
+          </p>
+        </div>
+        <span className="rounded-full border border-border bg-surface-elevated px-3 py-1 text-xs font-semibold text-foreground">
+          {progress}%
+        </span>
+      </div>
+      <div
+        className="h-2 w-full overflow-hidden rounded-full bg-surface-muted"
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={progress}
+        aria-label={label}
+      >
+        <div className="h-full rounded-full bg-primary transition-[width]" style={{ width: `${progress}%` }} />
+      </div>
+      {description ? <p className="text-xs leading-5 text-muted-foreground">{description}</p> : null}
     </Card>
   );
 }
