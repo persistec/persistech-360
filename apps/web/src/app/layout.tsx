@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 import { OperationalShellHeader } from "@/components/OperationalShellHeader";
@@ -6,8 +6,8 @@ import { OperationalShellHeader } from "@/components/OperationalShellHeader";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "Persistech 360 - MVP de Administração",
-  description: "MVP de Administração Interna para Persistech 360",
+  title: "Persistech 360 - MVP de AdministraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o",
+  description: "MVP de AdministraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o Interna para Persistech 360",
 };
 
 export default function RootLayout({
@@ -45,11 +45,11 @@ export default function RootLayout({
       </head>
       <body className="bg-background font-sans text-foreground antialiased">
         <ThemeProvider>
-          <div className="flex h-dvh flex-col overflow-hidden md:flex-row">
+          <div className="flex h-dvh min-h-0 flex-col overflow-hidden xl:flex-row">
             <Sidebar />
-            <div className="min-w-0 flex-1 overflow-y-auto">
+            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">
               <OperationalShellHeader />
-              <main className="min-w-0 px-5 py-5 sm:px-8 sm:py-6">
+              <main className="min-w-0 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
                 <div className="mx-auto w-full max-w-7xl">{children}</div>
               </main>
             </div>

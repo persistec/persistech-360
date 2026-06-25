@@ -1,4 +1,4 @@
-﻿import type { ElementType } from 'react';
+import type { ElementType } from 'react';
 import {
   FiBox,
   FiBriefcase,
@@ -27,34 +27,34 @@ export type ShellSection = {
 
 export const shellSections: ShellSection[] = [
   {
-    title: 'Visão Geral',
+    title: 'VisÃƒÂ£o Geral',
     description: 'Atalhos e contexto operacional.',
     items: [{ href: '/', label: 'Painel', icon: FiGrid }],
   },
   {
-    title: 'Organização',
-    description: 'Estrutura de base da avaliação.',
+    title: 'OrganizaÃƒÂ§ÃƒÂ£o',
+    description: 'Estrutura de base da avaliaÃƒÂ§ÃƒÂ£o.',
     items: [
       { href: '/departments', label: 'Departamentos', icon: FiFolder },
-      { href: '/hierarchy-levels', label: 'Níveis Hierárquicos', icon: FiLayers },
-      { href: '/roles', label: 'Funções', icon: FiBriefcase },
+      { href: '/hierarchy-levels', label: 'NÃƒÂ­veis HierÃƒÂ¡rquicos', icon: FiLayers },
+      { href: '/roles', label: 'FunÃƒÂ§ÃƒÂµes', icon: FiBriefcase },
       { href: '/users', label: 'Utilizadores', icon: FiUsers },
     ],
   },
   {
-    title: 'Avaliações',
-    description: 'Ciclos, atribuições e submissões.',
+    title: 'AvaliaÃƒÂ§ÃƒÂµes',
+    description: 'Ciclos, atribuiÃƒÂ§ÃƒÂµes e submissÃƒÂµes.',
     items: [
-      { href: '/cycles', label: 'Ciclos de Avaliação', icon: FiCalendar },
-      { href: '/assignments', label: 'Atribuições', icon: FiClipboard },
-      { href: '/submissions', label: 'Submissões', icon: FiCheckSquare },
+      { href: '/cycles', label: 'Ciclos de AvaliaÃƒÂ§ÃƒÂ£o', icon: FiCalendar },
+      { href: '/assignments', label: 'AtribuiÃƒÂ§ÃƒÂµes', icon: FiClipboard },
+      { href: '/submissions', label: 'SubmissÃƒÂµes', icon: FiCheckSquare },
       { href: '/results', label: 'Resultados', icon: FiTrendingUp },
     ],
   },
   {
     title: 'Sistema',
-    description: 'Preferências e configurações da interface.',
-    items: [{ href: '/settings', label: 'Definições', icon: FiSettings }],
+    description: 'PreferÃƒÂªncias e configuraÃƒÂ§ÃƒÂµes da interface.',
+    items: [{ href: '/settings', label: 'DefiniÃƒÂ§ÃƒÂµes', icon: FiSettings }],
   },
 ];
 
@@ -67,53 +67,53 @@ type ShellRouteContext = {
 const routeContexts: Record<string, ShellRouteContext> = {
   '/': {
     title: 'Painel',
-    group: 'Visão Geral',
-    description: 'Resumo operacional e atalhos para a administração interna.',
+    group: 'VisÃƒÂ£o Geral',
+    description: 'Resumo operacional e atalhos da administraÃƒÂ§ÃƒÂ£o interna.',
   },
   '/departments': {
     title: 'Departamentos',
-    group: 'Organização',
-    description: 'Estrutura hierárquica de base usada por utilizadores, funções e relatórios.',
+    group: 'OrganizaÃƒÂ§ÃƒÂ£o',
+    description: 'Estrutura hierÃƒÂ¡rquica de base usada por utilizadores, funÃƒÂ§ÃƒÂµes e relatÃƒÂ³rios.',
   },
   '/hierarchy-levels': {
-    title: 'Níveis Hierárquicos',
-    group: 'Organização',
-    description: 'Ordenação usada nas regras de elegibilidade e hierarquia.',
+    title: 'NÃƒÂ­veis HierÃƒÂ¡rquicos',
+    group: 'OrganizaÃƒÂ§ÃƒÂ£o',
+    description: 'OrdenaÃƒÂ§ÃƒÂ£o usada nas regras de elegibilidade e hierarquia.',
   },
   '/roles': {
-    title: 'Funções',
-    group: 'Organização',
-    description: 'Funções organizacionais e associações opcionais de departamento ou nível.',
+    title: 'FunÃƒÂ§ÃƒÂµes',
+    group: 'OrganizaÃƒÂ§ÃƒÂ£o',
+    description: 'FunÃƒÂ§ÃƒÂµes organizacionais e associaÃƒÂ§ÃƒÂµes opcionais de departamento ou nÃƒÂ­vel.',
   },
   '/users': {
     title: 'Utilizadores',
-    group: 'Organização',
-    description: 'Registos de colaboradores usados nos fluxos de atribuição e resultados.',
+    group: 'OrganizaÃƒÂ§ÃƒÂ£o',
+    description: 'Registos de colaboradores usados nos fluxos de atribuiÃƒÂ§ÃƒÂ£o e resultados.',
   },
   '/cycles': {
-    title: 'Ciclos de Avaliação',
-    group: 'Avaliações',
-    description: 'Configuração de períodos de avaliação e ações operacionais do ciclo.',
+    title: 'Ciclos de AvaliaÃƒÂ§ÃƒÂ£o',
+    group: 'AvaliaÃƒÂ§ÃƒÂµes',
+    description: 'ConfiguraÃƒÂ§ÃƒÂ£o de perÃƒÂ­odos de avaliaÃƒÂ§ÃƒÂ£o e aÃƒÂ§ÃƒÂµes operacionais do ciclo.',
   },
   '/assignments': {
-    title: 'Atribuições',
-    group: 'Avaliações',
-    description: 'Atribuições geradas e manuais no fluxo de avaliação 360º.',
+    title: 'AtribuiÃƒÂ§ÃƒÂµes',
+    group: 'AvaliaÃƒÂ§ÃƒÂµes',
+    description: 'AtribuiÃƒÂ§ÃƒÂµes geradas e manuais no fluxo de avaliaÃƒÂ§ÃƒÂ£o 360Ã‚Âº.',
   },
   '/submissions': {
-    title: 'Submissões',
-    group: 'Avaliações',
-    description: 'Estado das submissões recebidas no ciclo em curso.',
+    title: 'SubmissÃƒÂµes',
+    group: 'AvaliaÃƒÂ§ÃƒÂµes',
+    description: 'Estado das submissÃƒÂµes recebidas no ciclo em curso.',
   },
   '/results': {
     title: 'Resultados',
-    group: 'Avaliações',
-    description: 'Vista administrativa e colaborador para a projeção de resultados.',
+    group: 'AvaliaÃƒÂ§ÃƒÂµes',
+    description: 'Vista administrativa e colaborador para a projeÃƒÂ§ÃƒÂ£o de resultados.',
   },
   '/settings': {
-    title: 'Definições',
+    title: 'DefiniÃƒÂ§ÃƒÂµes',
     group: 'Sistema',
-    description: 'Preferências visuais e opções da aplicação.',
+    description: 'PreferÃƒÂªncias visuais e opÃƒÂ§ÃƒÂµes da aplicaÃƒÂ§ÃƒÂ£o.',
   },
 };
 
@@ -125,9 +125,9 @@ export const shellBrand = {
 
 export const shellCycleSummary = {
   label: 'Ciclo activo',
-  title: 'Ciclo de Avaliação 2026',
-  description: 'Indicador estático do shell, sem ligação em tempo real à API.',
-  badge: 'Referência operacional',
+  title: 'Ciclo de AvaliaÃƒÂ§ÃƒÂ£o 2026',
+  description: 'Indicador estático do shell; não vem da API em tempo real.',
+  badge: 'ReferÃƒÂªncia operacional',
 };
 
 export function getShellContext(pathname: string | null | undefined) {
