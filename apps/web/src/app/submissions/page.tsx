@@ -53,7 +53,7 @@ export default function SubmissionsPage() {
           submissions.map((sub) => (
             <TableRow key={sub.id}>
               <TableCell className="font-mono text-xs">{sub.id}</TableCell>
-              <TableCell className="font-mono text-xs text-muted-foreground">{sub.assignmentId}</TableCell>
+              <TableCell className="font-mono text-xs text-foreground/80">{sub.assignmentId}</TableCell>
               <TableCell>
                 <StatusBadge tone={sub.status === 'SUBMITTED' ? 'success' : 'warning'}>{sub.status}</StatusBadge>
               </TableCell>

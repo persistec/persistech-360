@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 
@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="pt-AO" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -44,12 +44,10 @@ export default function RootLayout({
       </head>
       <body className="bg-background font-sans text-foreground antialiased">
         <ThemeProvider>
-          <div className="flex h-dvh overflow-hidden flex-col md:flex-row">
+          <div className="flex h-dvh flex-col overflow-hidden md:flex-row">
             <Sidebar />
             <main className="min-w-0 flex-1 overflow-y-auto p-5 sm:p-8">
-              <div className="mx-auto w-full max-w-7xl">
-                {children}
-              </div>
+              <div className="mx-auto w-full max-w-7xl">{children}</div>
             </main>
           </div>
         </ThemeProvider>
