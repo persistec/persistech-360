@@ -16,7 +16,7 @@ export function Table({
             {headers.map((header, index) => (
               <th
                 key={index}
-                className="h-12 whitespace-nowrap px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-foreground/80"
+                className="h-12 whitespace-nowrap px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-muted-foreground"
               >
                 {header}
               </th>
@@ -76,7 +76,7 @@ export function EmptyState({
         <div className="mx-auto flex max-w-sm flex-col items-center justify-center rounded-lg border border-dashed border-border bg-surface-muted px-5 py-6 text-center">
           <Icon className="mb-3 h-8 w-8 text-muted-foreground" aria-hidden="true" />
           <p className="text-sm font-medium text-foreground">{children ?? title}</p>
-          {description ? <p className="mt-1 text-sm leading-5 text-foreground/80">{description}</p> : null}
+          {description ? <p className="mt-1 text-sm leading-5 text-muted-foreground">{description}</p> : null}
           {action ? <div className="mt-4">{action}</div> : null}
         </div>
       </TableCell>
