@@ -2,34 +2,25 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FiClock, FiInfo } from 'react-icons/fi';
+import { FiInfo } from 'react-icons/fi';
 import { StatusBadge } from '@/components/ui';
-import { getShellContext, shellBrand, shellCycleSummary, shellSections } from '@/lib/shell';
+import { shellBrand, shellCycleSummary, shellSections } from '@/lib/shell';
 
 export function Sidebar() {
   const pathname = usePathname();
-  const context = getShellContext(pathname);
   const BrandIcon = shellBrand.icon;
 
   return (
     <>
-      <div className="border-b border-border bg-surface/95 p-4 xl:hidden">
-        <div className="mb-3 flex items-start justify-between gap-3">
+      <div className="border-b border-border bg-surface/95 px-4 py-3 pb-2 xl:hidden">
+        <div className="mb-2 flex items-center justify-between gap-3">
           <div>
-            <span className="block text-base font-semibold text-foreground">{shellBrand.title}</span>
-            <span className="text-xs uppercase tracking-wide text-primary/80">{shellBrand.subtitle}</span>
+            <span className="block text-sm font-semibold text-foreground">{shellBrand.title}</span>
+            <span className="text-[10px] uppercase tracking-wider text-primary/80">{shellBrand.subtitle}</span>
           </div>
           <StatusBadge tone="success">Operacional</StatusBadge>
         </div>
-        <div className="mb-3 rounded-xl border border-border bg-surface-muted p-3">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            <FiClock className="h-4 w-4 text-primary" aria-hidden="true" />
-            {shellCycleSummary.label}
-          </div>
-          <p className="mt-2 text-sm font-medium text-foreground">{shellCycleSummary.title}</p>
-          <p className="mt-1 text-xs leading-5 text-foreground/80">{context.group}</p>
-        </div>
-        <nav className="flex min-w-0 gap-2 overflow-x-auto pb-1">
+        <nav className="flex min-w-0 gap-2 overflow-x-auto pb-1.5 [mask-image:linear-gradient(to_right,white_85%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,white_85%,transparent_100%)]">
           {shellSections.flatMap((section) => section.items).map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
             const Icon = item.icon;
@@ -38,7 +29,7 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 aria-current={isActive ? 'page' : undefined}
-                className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md border px-3 py-2 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                   isActive
                     ? 'border-primary/50 bg-primary/15 text-primary shadow-[inset_0_0_0_1px_var(--color-primary)]'
                     : 'border-border bg-surface-muted text-muted-foreground hover:border-border-strong hover:text-foreground'
