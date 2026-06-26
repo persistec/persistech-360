@@ -37,12 +37,27 @@ const buildDepartmentPayload = (formData: { name: string; parentId: string }): D
   parentDepartmentId: formData.parentId || null,
 });
 
+const getDescendantIds = (departments: Department[], parentId: string): string[] => {
+  const ids: string[] = [];
+  const findChildren = (id: string) => {
+    departments.forEach((dept) => {
+      if (dept.parentId === id) {
+        ids.push(dept.id);
+        findChildren(dept.id);
+      }
+    });
+  };
+  findChildren(parentId);
+  return ids;
+};
+
 export default function DepartmentsPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<"list" | "create" | "edit">("list");
   const [formData, setFormData] = useState({ id: "", name: "", parentId: "" });
+  const [submitting, setSubmitting] = useState(false);
 
   const fetchDepartments = async () => {
     setLoading(true);
@@ -63,17 +78,21 @@ export default function DepartmentsPage() {
 
   const openCreateForm = () => {
     setFormData({ id: "", name: "", parentId: "" });
+    setError(null);
     setView("create");
   };
 
   const openEditForm = (department: Department) => {
     setFormData({ id: department.id, name: department.name, parentId: department.parentId || "" });
+    setError(null);
     setView("edit");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     setError(null);
+    setSubmitting(true);
     try {
       const payload = buildDepartmentPayload(formData);
 
@@ -84,9 +103,12 @@ export default function DepartmentsPage() {
       }
 
       setView("list");
-      fetchDepartments();
+      setFormData({ id: "", name: "", parentId: "" });
+      await fetchDepartments();
     } catch (err: any) {
       setError(err.message || "Falha ao guardar departamento.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -95,7 +117,7 @@ export default function DepartmentsPage() {
     setError(null);
     try {
       await apiClient.delete(`/departments/${id}`);
-      fetchDepartments();
+      await fetchDepartments();
     } catch (err: any) {
       setError(err.message || "Falha ao eliminar departamento.");
     }
@@ -104,6 +126,11 @@ export default function DepartmentsPage() {
   if (loading && view === "list") return <LoadingSpinner />;
 
   const parentName = (parentId: string | null) => departments.find((department) => department.id === parentId)?.name || "-";
+
+  const descendantIds = formData.id ? getDescendantIds(departments, formData.id) : [];
+  const eligibleDepartments = departments.filter(
+    (dept) => dept.id !== formData.id && !descendantIds.includes(dept.id)
+  );
 
   return (
     <div>
@@ -164,6 +191,7 @@ export default function DepartmentsPage() {
             >
               <Input
                 required
+                disabled={submitting}
                 value={formData.name}
                 onChange={(event) => setFormData({ ...formData, name: event.target.value })}
                 placeholder="Engenharia"
@@ -174,29 +202,31 @@ export default function DepartmentsPage() {
               description="Opcional. Ajuda a organizar a estrutura hierárquica da organização."
             >
               <Select
+                disabled={submitting}
                 value={formData.parentId}
                 onChange={(event) => setFormData({ ...formData, parentId: event.target.value })}
               >
                 <option value="">Nenhum</option>
-                {departments
-                  .filter((department) => department.id !== formData.id)
-                  .map((department) => (
-                    <option key={department.id} value={department.id}>
-                      {department.name}
-                    </option>
-                  ))}
+                {eligibleDepartments.map((department) => (
+                  <option key={department.id} value={department.id}>
+                    {department.name}
+                  </option>
+                ))}
               </Select>
             </FormField>
-            <ActionBar className="pt-4">
-              <Button type="submit">
-                <FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> Guardar
+            <ActionBar className="pt-4 flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-2">
+              <Button type="submit" loading={submitting} className="w-full sm:w-auto">
+                <FiCheckSquare className="mr-2 h-4 w-4" aria-hidden="true" /> {submitting ? "A guardar..." : "Guardar"}
               </Button>
               <Button
                 type="button"
                 variant="ghost"
+                disabled={submitting}
+                className="w-full sm:w-auto"
                 onClick={() => {
                   setView("list");
                   setError(null);
+                  setFormData({ id: "", name: "", parentId: "" });
                 }}
               >
                 Cancelar
