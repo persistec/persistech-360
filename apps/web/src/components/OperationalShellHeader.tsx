@@ -25,16 +25,18 @@ export function OperationalShellHeader() {
             <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground hidden sm:block">{context.description}</p>
           </div>
 
-          <div className="hidden xl:grid xl:w-[34rem] grid-cols-2 gap-3">
+          <div className="hidden xl:grid xl:w-[36rem] grid-cols-2 gap-3">
             <div className="min-w-0 rounded-xl border border-border bg-surface px-4 py-3 shadow-sm shadow-black/5">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <FiCalendar className="h-4 w-4 text-primary" aria-hidden="true" />
                 {shellCycleSummary.label}
               </div>
-              <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="mt-2 flex flex-col gap-2.5 items-start">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-foreground">{shellCycleSummary.title}</p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{shellCycleSummary.description}</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    Referência operacional do ciclo em curso.
+                  </p>
                 </div>
                 <StatusBadge tone="success">{shellCycleSummary.badge}</StatusBadge>
               </div>
@@ -43,7 +45,7 @@ export function OperationalShellHeader() {
             <div className="min-w-0 rounded-xl border border-border bg-surface-elevated px-4 py-3 shadow-sm shadow-black/5">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <FiArrowRight className="h-4 w-4 text-primary" aria-hidden="true" />
-                Referência do shell
+                Referência organizacional
               </div>
               <p className="mt-2 text-sm font-medium text-foreground">Estrutura corporativa e operacional</p>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">
