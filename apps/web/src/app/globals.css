@@ -17,9 +17,9 @@
   --warning: #f59e0b;
   --danger: #ef4444;
   --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --input: #e2e8f0;
-  --ring: #38bdf8;
+  --muted-foreground: #475569;
+  --input: #cbd5e1;
+  --ring: #0284c7;
 }
 
 [data-theme="dark"] {
@@ -38,9 +38,9 @@
   --warning: #f59e0b;
   --danger: #ef4444;
   --muted: #0f172a;
-  --muted-foreground: #94a3b8;
+  --muted-foreground: #cbd5e1;
   --input: #1e293b;
-  --ring: #22d3ee;
+  --ring: #67e8f9;
 }
 
 @theme inline {

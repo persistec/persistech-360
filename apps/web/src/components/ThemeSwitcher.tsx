@@ -26,7 +26,7 @@ export function ThemeSwitcher() {
               type="button"
               aria-pressed={isActive}
               onClick={() => setMode(option.value)}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-sm px-3 py-1.5 text-xs font-medium transition-all ${
+              className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-sm px-3 py-2 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                 isActive
                   ? 'bg-surface text-foreground shadow-sm ring-1 ring-border-strong'
                   : 'text-muted-foreground hover:bg-surface-elevated hover:text-foreground'
