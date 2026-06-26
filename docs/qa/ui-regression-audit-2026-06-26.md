@@ -32,11 +32,11 @@ A tabela abaixo resume o comportamento visual observado e a integridade de layou
 ## 3. Ficheiros Inspecionados
 
 Os seguintes ficheiros fundamentais da arquitetura do frontend foram inspecionados:
-1. [OperationalShellHeader.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/components/OperationalShellHeader.tsx): Responsável pelo cabeçalho da aplicação, cartões informativos e breadcrumbs.
-2. [Sidebar.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/components/Sidebar.tsx): Responsável pela navegação lateral em ecrãs grandes e barra de navegação/resumo móvel em ecrãs pequenos.
-3. [layout.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/app/layout.tsx): Estrutura global do documento e definição de áreas de scroll (`overflow-y-auto`).
-4. [globals.css](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/app/globals.css): Sistema de temas (claro/escuro) e importação do Tailwind CSS v4.
-5. [page.tsx (departments)](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/app/departments/page.tsx): Página de departamentos, incluindo a tabela de listagem e o formulário de criação/edição.
+1. [apps/web/src/components/OperationalShellHeader.tsx](../../apps/web/src/components/OperationalShellHeader.tsx): Responsável pelo cabeçalho da aplicação, cartões informativos e breadcrumbs.
+2. [apps/web/src/components/Sidebar.tsx](../../apps/web/src/components/Sidebar.tsx): Responsável pela navegação lateral em ecrãs grandes e barra de navegação/resumo móvel em ecrãs pequenos.
+3. [apps/web/src/app/layout.tsx](../../apps/web/src/app/layout.tsx): Estrutura global do documento e definição de áreas de scroll (`overflow-y-auto`).
+4. [apps/web/src/app/globals.css](../../apps/web/src/app/globals.css): Sistema de temas (claro/escuro) e importação do Tailwind CSS v4.
+5. [apps/web/src/app/departments/page.tsx](../../apps/web/src/app/departments/page.tsx): Página de departamentos, incluindo a tabela de listagem e o formulário de criação/edição.
 
 ---
 
@@ -45,7 +45,7 @@ Os seguintes ficheiros fundamentais da arquitetura do frontend foram inspecionad
 ### Item A: Cabeçalho Operacional com Quebra Agressiva de Texto
 * **Problema Observado:** Texto esmagado e quebras de linha inapropriadas nos cartões superiores em ecrãs desktop padrão (1280px).
 * **Evidência:** O container do grid de cartões está limitado a `xl:w-[34rem]` (544px) na linha 28 de `OperationalShellHeader.tsx`. Dividido em duas colunas (`md:grid-cols-2`), cada cartão tem no máximo 272px de largura. Dentro do card "Ciclo Activo", o título `"Ciclo de Avaliação 2026"` e o `StatusBadge` `"Referência operacional"` são dispostos em linha (`sm:flex-row`). Como o badge tem largura significativa, o título é empurrado e quebra agressivamente em múltiplas linhas verticais.
-* **Ficheiro Suspeito:** [OperationalShellHeader.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/components/OperationalShellHeader.tsx#L28-L41)
+* **Ficheiro Suspeito:** [apps/web/src/components/OperationalShellHeader.tsx#L28-L41](../../apps/web/src/components/OperationalShellHeader.tsx#L28-L41)
 * **Causa Provável:** Uso de largura rígida (`xl:w-[34rem]`) em combinação com `flex-row` sem wrapping flexível ou sem colapso condicional do badge em ecrãs médios/grandes onde a largura do cartão é reduzida.
 * **Risco:** Falha de conformidade de design visual, aspeto não profissional da UI e problemas de leitura de dados de controle de ciclos.
 * **Issue Recomendada para Correção:** `fix(ui): reestruturar grid e layout de cartões do cabeçalho operacional para evitar quebras de texto`
@@ -56,8 +56,8 @@ Os seguintes ficheiros fundamentais da arquitetura do frontend foram inspecionad
 * **Problema Observado:** Poluição informativa e duplicação desnecessária de cartões informativos no mobile.
 * **Evidência:** No mobile (< 1280px), o utilizador visualiza primeiro o card do Ciclo Activo no topo da Sidebar (linhas 24-31). Logo a seguir, no cabeçalho operacional (linhas 29-41), o mesmo card é renderizado novamente com uma descrição longa: `"Indicador estático do shell; não vem da API em tempo real."` que devia ser apenas uma anotação de desenvolvimento. O excesso de texto e a redundância prejudicam o fluxo visual.
 * **Ficheiros Suspeitos:**
-  - [Sidebar.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/components/Sidebar.tsx#L24-L31)
-  - [OperationalShellHeader.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/components/OperationalShellHeader.tsx#L29-L41)
+  - [apps/web/src/components/Sidebar.tsx#L24-L31](../../apps/web/src/components/Sidebar.tsx#L24-L31)
+  - [apps/web/src/components/OperationalShellHeader.tsx#L29-L41](../../apps/web/src/components/OperationalShellHeader.tsx#L29-L41)
 * **Causa Provável:** Falta de diferenciação de estados e responsabilidades visuais entre o cabeçalho e a barra móvel, resultando em duplicação direta de componentes.
 * **Risco:** Frustração do utilizador por duplicação de dados e desperdício de viewport útil.
 * **Issue Recomendada para Correção:** `fix(ui): consolidar informações do ciclo ativo e remover duplicação no fluxo mobile`
@@ -68,10 +68,10 @@ Os seguintes ficheiros fundamentais da arquitetura do frontend foram inspecionad
 * **Problema Observado:** Falta de ecrã utilizável no mobile devido ao acúmulo de cabeçalhos e menus fixados verticalmente.
 * **Evidência:** Em viewports de 390px e 430px, o menu da Sidebar móvel ocupa ~180px e o `OperationalShellHeader` (que é `sticky top-0 z-20`) ocupa ~350px. Juntos, consomem ~530px de altura visual fixa. Num telemóvel padrão, a janela do navegador útil tem cerca de 650px-700px. A área livre para o formulário ou tabela é inferior a 150px, tornando impossível preencher dados ou visualizar listagens de forma confortável.
 * **Ficheiros Suspeitos:**
-  - [layout.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/app/layout.tsx#L48-L56)
-  - [Sidebar.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/components/Sidebar.tsx#L16-L53)
-  - [OperationalShellHeader.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/components/OperationalShellHeader.tsx#L13-L56)
-* **Causa Provável:** O cabeçalho operacional é configurado como `sticky` em ecrãs móveis sem colapsar os cartões secundários ou a descrição da página. A sidebar móvel também exibe elementos estáticos pesados em vez de ocultá-los sob um menu hamburger.
+  - [apps/web/src/app/layout.tsx#L48-L56](../../apps/web/src/app/layout.tsx#L48-L56)
+  - [apps/web/src/components/Sidebar.tsx#L16-L53](../../apps/web/src/components/Sidebar.tsx#L16-L53)
+  - [apps/web/src/components/OperationalShellHeader.tsx#L13-L56](../../apps/web/src/components/OperationalShellHeader.tsx#L13-L56)
+* **Causa Provável:** O cabeçalho operacional é configurado como `sticky` em ecrãs móveis sem colapsar os cartões secundários ou a descrição da página. A sidebar móvel também exibe elements estáticos pesados em vez de ocultá-los sob um menu hamburger.
 * **Risco:** Inutilização prática do sistema em dispositivos móveis, violando a premissa de matriz adaptada e responsiva para colaboradores em trânsito.
 * **Issue Recomendada para Correção:** `fix(ui): otimizar navegação móvel e cabeçalho operacional para viewports responsivas`
 
@@ -81,8 +81,8 @@ Os seguintes ficheiros fundamentais da arquitetura do frontend foram inspecionad
 * **Problema Observado:** Risco de overflow horizontal no ecrã inteiro e ausência de sinalização para navegações horizontais intencionais.
 * **Evidência:** O menu móvel horizontal (`<nav className="flex min-w-0 gap-2 overflow-x-auto pb-1">`) permite scroll horizontal dos botões de link, mas não exibe qualquer indicação visual (sombreamento ou fade) de que existem mais páginas ocultas à direita. Além disso, a tabela de departamentos possui uma coluna de "Acções" larga (com botões "Editar" e "Eliminar" inline) que empurra a tabela e pode estourar o ecrã se não for contida.
 * **Ficheiros Suspeitos:**
-  - [Sidebar.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/components/Sidebar.tsx#L32-L52)
-  - [table.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/components/ui/table.tsx#L12)
+  - [apps/web/src/components/Sidebar.tsx#L32-L52](../../apps/web/src/components/Sidebar.tsx#L32-L52)
+  - [apps/web/src/components/ui/table.tsx#L12](../../apps/web/src/components/ui/table.tsx#L12)
 * **Causa Provável:** Falta de máscaras gradientes nos limites da navegação horizontal com overflow e botões dispostos horizontalmente sem wrapping em resoluções estreitas.
 * **Risco:** Funcionalidades importantes (como outras abas de navegação ou ações da tabela) ficam "invisíveis" ou inacessíveis para utilizadores menos experientes.
 * **Issue Recomendada para Correção:** `fix(ui): adicionar indicadores visuais de scroll horizontal e colapsar ações de tabela no mobile`
@@ -93,8 +93,8 @@ Os seguintes ficheiros fundamentais da arquitetura do frontend foram inspecionad
 * **Problema Observado:** Conflito de rolagens verticais que causam travamento de navegação ao usar o rato ou gestos táteis.
 * **Evidência:** O layout global define `overflow-hidden` no ecrã inteiro (`h-dvh`) e delega o scroll para a div do conteúdo principal com `overflow-y-auto` (linha 50 de `layout.tsx`). No entanto, a Sidebar também possui o seu próprio container de scroll vertical `overflow-y-auto` (linha 66). Em ecrãs pequenos ou laptops com resoluções reduzidas, o utilizador pode ter o rato capturado pela Sidebar, impedindo a rolagem natural da página.
 * **Ficheiros Suspeitos:**
-  - [layout.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/app/layout.tsx#L48-L56)
-  - [Sidebar.tsx](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/components/Sidebar.tsx#L66)
+  - [apps/web/src/app/layout.tsx#L48-L56](../../apps/web/src/app/layout.tsx#L48-L56)
+  - [apps/web/src/components/Sidebar.tsx#L66](../../apps/web/src/components/Sidebar.tsx#L66)
 * **Causa Provável:** Definição de múltiplos fluxos de scroll vertical paralelos sem restrição de altura responsiva.
 * **Risco:** Frustração de navegação física, com a página a parecer "travada" ao tentar rolar.
 * **Issue Recomendada para Correção:** `fix(ui): eliminar scroll traps e rever z-index e sticky offsets do layout`
@@ -104,7 +104,7 @@ Os seguintes ficheiros fundamentais da arquitetura do frontend foram inspecionad
 ### Item F: Falhas de Usabilidade e Hierarquia no Formulário de Departamentos
 * **Problema Observado:** Risco de dependência circular no cadastro de departamentos e layout apertado de botões no mobile.
 * **Evidência:** Ao editar um departamento, o campo de seleção de "Departamento ascendente" filtra apenas o próprio departamento (`department.id !== formData.id` na linha 182). Se o departamento A for pai do departamento B, o utilizador pode editar o departamento A e selecionar o departamento B como ascendente, gerando uma referência circular inválida que quebrará a renderização em árvore. Adicionalmente, os botões "Guardar" e "Cancelar" não empilham no mobile, sendo espremidos horizontalmente.
-* **Ficheiro Suspeito:** [page.tsx (departments)](file:///c:/Users/Bartolomeu%20Hangalo/dev/persistech-360/apps/web/src/app/departments/page.tsx#L172-L204)
+* **Ficheiro Suspeito:** [apps/web/src/app/departments/page.tsx#L172-L204](../../apps/web/src/app/departments/page.tsx#L172-L204)
 * **Causa Provável:** Ausência de verificação recursiva de descendentes no array de opções do dropdown e falta de flexibilidade responsiva no componente `ActionBar` para empilhar botões no mobile.
 * **Risco:** Corrupção lógica da árvore organizacional (erros de integridade de dados e loops de renderização infinitos) e botões de formulário inacessíveis no mobile.
 * **Issue Recomendada para Correção:** `fix(ui): implementar validação hierárquica e otimizar ações do formulário de departamentos`
