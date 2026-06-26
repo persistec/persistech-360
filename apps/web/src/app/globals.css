@@ -2,45 +2,45 @@
 
 :root,
 [data-theme="light"] {
-  --background: #f8fafc;
+  --background: #FAF9F6;
   --background-image: none;
-  --foreground: #0f172a;
-  --surface: #ffffff;
-  --surface-muted: #f1f5f9;
-  --surface-elevated: #ffffff;
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --primary: #0ea5e9;
-  --primary-foreground: #ffffff;
-  --accent: #38bdf8;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --muted: #f1f5f9;
-  --muted-foreground: #475569;
-  --input: #cbd5e1;
-  --ring: #0284c7;
+  --foreground: #0F172A;
+  --surface: #FFFFFF;
+  --surface-muted: #F3F2EE;
+  --surface-elevated: #FFFFFF;
+  --border: #E5E2D9;
+  --border-strong: #C5C2B9;
+  --primary: #B89242;
+  --primary-foreground: #000000;
+  --accent: #A78F64;
+  --success: #15803D;
+  --warning: #B45309;
+  --danger: #B91C1C;
+  --muted: #F3F2EE;
+  --muted-foreground: #6B7280;
+  --input: #E5E2D9;
+  --ring: #B89242;
 }
 
 [data-theme="dark"] {
-  --background: #020812;
-  --background-image: radial-gradient(circle at top right, rgba(14, 165, 233, 0.16), transparent 34%), linear-gradient(135deg, #020812 0%, #071426 45%, #020812 100%);
-  --foreground: #f8fafc;
-  --surface: #0b1524;
-  --surface-muted: #132338;
-  --surface-elevated: #1e293b;
-  --border: #1e293b;
-  --border-strong: #334155;
-  --primary: #06b6d4;
-  --primary-foreground: #020812;
-  --accent: #22d3ee;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --muted: #0f172a;
-  --muted-foreground: #cbd5e1;
-  --input: #1e293b;
-  --ring: #67e8f9;
+  --background: #000000;
+  --background-image: radial-gradient(circle at top right, rgba(211, 179, 103, 0.12), transparent 35%), linear-gradient(135deg, #000000 0%, #070A0F 50%, #000000 100%);
+  --foreground: #F3F4F6;
+  --surface: #070A0F;
+  --surface-muted: #111827;
+  --surface-elevated: #1F2937;
+  --border: #2C261A;
+  --border-strong: #423926;
+  --primary: #D3B367;
+  --primary-foreground: #000000;
+  --accent: #F6DB9E;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --muted: #111827;
+  --muted-foreground: #9CA3AF;
+  --input: #2C261A;
+  --ring: #D3B367;
 }
 
 @theme inline {
@@ -62,7 +62,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-sans: Arial, Helvetica, sans-serif;
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
@@ -74,7 +74,7 @@ body {
 }
 
 ::selection {
-  background: rgba(34, 211, 238, 0.32);
+  background: rgba(211, 179, 103, 0.32);
   color: inherit;
 }
 
