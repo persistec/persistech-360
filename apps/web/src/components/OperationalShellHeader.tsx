@@ -10,7 +10,7 @@ export function OperationalShellHeader() {
   const context = getShellContext(pathname);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-border bg-background/90 backdrop-blur">
+    <header className="xl:sticky xl:top-0 xl:z-20 border-b border-border bg-background/90 backdrop-blur">
       <div className="mx-auto w-full max-w-7xl px-5 py-4 sm:px-8">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="min-w-0">
@@ -22,10 +22,10 @@ export function OperationalShellHeader() {
               <h1 className="text-2xl font-semibold tracking-tight text-foreground">{context.title}</h1>
               <StatusBadge tone="info">{context.group}</StatusBadge>
             </div>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{context.description}</p>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground hidden sm:block">{context.description}</p>
           </div>
 
-          <div className="grid gap-3 grid-cols-1 md:grid-cols-2 xl:w-[34rem]">
+          <div className="hidden xl:grid xl:w-[34rem] grid-cols-2 gap-3">
             <div className="min-w-0 rounded-xl border border-border bg-surface px-4 py-3 shadow-sm shadow-black/5">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <FiCalendar className="h-4 w-4 text-primary" aria-hidden="true" />
