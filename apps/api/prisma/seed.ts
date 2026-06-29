@@ -1,8 +1,7 @@
-import { PrismaClient, AppRole } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { bootstrapAdmin } from '../src/database/seed-admin';
 
-const prisma = new PrismaClient();
-
-async function main() {
+export async function runSeed(prisma: PrismaClient, env: NodeJS.ProcessEnv = process.env) {
   console.log('Seeding database...');
 
   // 1. Hierarchy levels
@@ -115,33 +114,19 @@ async function main() {
   console.log('Seeded roles.');
 
   // 4. Initial Admin Bootstrap
-  const adminEmail = process.env.INITIAL_ADMIN_EMAIL;
-  const adminName = process.env.INITIAL_ADMIN_NAME;
-
-  if (adminEmail && adminName) {
-    console.log(`Bootstrapping initial admin: ${adminEmail}`);
-    await prisma.user.upsert({
-      where: { workspaceEmail: adminEmail },
-      update: {
-        appRole: AppRole.ADMIN,
-      },
-      create: {
-        workspaceEmail: adminEmail,
-        name: adminName,
-        appRole: AppRole.ADMIN,
-      },
-    });
-    console.log('Initial admin bootstrapped successfully.');
-  }
+  await bootstrapAdmin(prisma, env);
 
   console.log('Database seeding finished.');
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (require.main === module) {
+  const prisma = new PrismaClient();
+  runSeed(prisma, process.env)
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}
