@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, AppRole } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -113,6 +113,26 @@ async function main() {
     }
   }
   console.log('Seeded roles.');
+
+  // 4. Initial Admin Bootstrap
+  const adminEmail = process.env.INITIAL_ADMIN_EMAIL;
+  const adminName = process.env.INITIAL_ADMIN_NAME;
+
+  if (adminEmail && adminName) {
+    console.log(`Bootstrapping initial admin: ${adminEmail}`);
+    await prisma.user.upsert({
+      where: { workspaceEmail: adminEmail },
+      update: {
+        appRole: AppRole.ADMIN,
+      },
+      create: {
+        workspaceEmail: adminEmail,
+        name: adminName,
+        appRole: AppRole.ADMIN,
+      },
+    });
+    console.log('Initial admin bootstrapped successfully.');
+  }
 
   console.log('Database seeding finished.');
 }
