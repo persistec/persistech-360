@@ -1,53 +1,71 @@
 # Relatório de Migração: Render -> Neon (Data-Only)
 
 **Data:** 2026-06-29
-**Estado:** Migração de dados para a produção em Neon concluída com sucesso. Pronto para switch-over.
+**Estado:** Migração concluída. Switch-over executado. API em produção a ler da Neon Production.
 
-## 1. Informações de Execução (Fases 1 a 5)
-- **Timestamp do Dump de Produção:** 2026-06-29 13:01 (UTC+1)
-- **Ficheiro de Dump:** `render-data-production.dump` (5719 bytes, format=custom, data-only, sem `_prisma_migrations`).
-- **Target Database:** Neon Production (`persistech-360` no host `ep-morning-wave-aciutlo4-pooler.sa-east-1.aws.neon.tech`).
-- **Validação de Vazio:** Confirmou-se que a Neon Production estava 100% vazia (contagem de todas as 14 tabelas operacionais retornou rigorosamente `0`) antes da importação.
-- **Execução do Restore:** O `pg_restore` decorreu sob transação única (`--single-transaction`) e completou sem erros.
+## 1. Resumo da Operação
+A base de dados operacional do projecto Persistech 360 foi migrada com sucesso da instância PostgreSQL alojada no Render para a instância Neon Production, sem perda de dados e sem downtime significativo.
 
-## 2. Contagens e Reconciliação (Fase 6)
+## 2. Cronologia
 
-| Tabela | Render Source (Final) | Neon Production (Pós-Restore) | Estado |
+| Hora (UTC+1) | Evento |
+|---|---|
+| ~12:38 | Dump data-only validado em sandbox (`new-neon-validation`) |
+| ~13:01 | Dump data-only final para Neon Production |
+| ~13:03 | Restore em Neon Production concluído e reconciliado |
+| ~13:04 | Smoke local contra Neon Production bem-sucedido |
+| ~14:30 | Pré-check switch-over: Render Source vs Neon Production reconciliados |
+| ~15:13 | Switch-over manual: `DATABASE_URL` da Render actualizada para Neon Production |
+| ~15:15 | Smoke HTTP remoto contra API pública em produção bem-sucedido |
+
+## 3. Contagens Finais Reconciliadas (Render Source vs Neon Production)
+
+| Tabela | Render Source | Neon Production | Estado |
 |---|---|---|---|
-| **users** | 1 | 1 | **Reconciliado (OK)** |
-| **departments** | 1 | 1 | **Reconciliado (OK)** |
-| **hierarchy_levels** | 0 | 0 | **Reconciliado (OK)** |
-| **roles** | 0 | 0 | **Reconciliado (OK)** |
-| **cycles** | 0 | 0 | **Reconciliado (OK)** |
-| **dimensions** | 0 | 0 | **Reconciliado (OK)** |
-| **criteria** | 0 | 0 | **Reconciliado (OK)** |
-| **criterion_options** | 0 | 0 | **Reconciliado (OK)** |
-| **applicability_rules** | 0 | 0 | **Reconciliado (OK)** |
-| **weight_rules** | 0 | 0 | **Reconciliado (OK)** |
-| **retention_policies** | 0 | 0 | **Reconciliado (OK)** |
-| **evaluation_assignments**| 0 | 0 | **Reconciliado (OK)** |
-| **evaluation_submissions**| 0 | 0 | **Reconciliado (OK)** |
-| **evaluation_answers** | 0 | 0 | **Reconciliado (OK)** |
-| **_prisma_migrations** | 0 | 0 | **Reconciliado (OK)** |
+| **users** | 1 | 1 | **MATCH** |
+| **departments** | 1 | 1 | **MATCH** |
+| **hierarchy_levels** | 0 | 0 | **MATCH** |
+| **roles** | 0 | 0 | **MATCH** |
+| **cycles** | 0 | 0 | **MATCH** |
+| **dimensions** | 0 | 0 | **MATCH** |
+| **criteria** | 0 | 0 | **MATCH** |
+| **criterion_options** | 0 | 0 | **MATCH** |
+| **applicability_rules** | 0 | 0 | **MATCH** |
+| **weight_rules** | 0 | 0 | **MATCH** |
+| **retention_policies** | 0 | 0 | **MATCH** |
+| **evaluation_assignments** | 0 | 0 | **MATCH** |
+| **evaluation_submissions** | 0 | 0 | **MATCH** |
+| **evaluation_answers** | 0 | 0 | **MATCH** |
 
-**Detalhamento de Users:**
-- Total: 1
-- App Roles: `ADMIN: 1`
-- Status: `ACTIVE: 1`
+**User Breakdown:** 1 utilizador `ACTIVE` com `app_role = ADMIN`.
 
-## 3. Resultado do Smoke Test Local (Fase 7)
-Com a API NestJS local temporariamente apontada para a base **Neon Production**:
-- **GET /api/v1/health:** `{"status":"UP","timestamp":"...","database":"UP"}` (A base de produção responde com total sucesso).
-- **GET /api/v1/departments:** Retornou a lista contendo o departamento `"Comercial"` importado (ID original: `f08b4516-bd1c-470c-a756-dccf1d09b937`).
+## 4. Smoke HTTP em Produção (Fase 4-5)
 
-## 4. Estado dos Ambientes
-- **Render Source:** A base de dados antiga no Render continua intacta e funcional para salvaguarda/backup.
-- **Render App:** A `DATABASE_URL` no serviço de alojamento da Render **ainda NÃO foi alterada**. A API antiga continua em execução sob a base de dados original.
-- **Seed Estrutural:** O seed estrutural (`npx prisma db seed`) **NÃO foi executado** em Neon Production.
+**GET /api/v1/health:**
+```json
+{"status":"UP","timestamp":"2026-06-29T14:15:51.767Z","database":"UP"}
+```
 
-## 5. Próximos Passos (Switch-over)
-Uma vez concluída a migração de dados com sucesso e sem perda de registos, o processo está pronto para a fase de switch-over:
-1. Obter autorização explícita para alterar a `DATABASE_URL` no Render para apontar para a Neon Production.
-2. Monitorizar o redeploy da API no Render.
-3. Executar o smoke test HTTP remoto contra a API em produção para certificar o funcionamento.
-4. Planear a execução controlada do seed estrutural real em produção para popular as tabelas auxiliares (`hierarchy_levels`, `roles`, etc.).
+**GET /api/v1/departments:**
+```json
+[{"id":"f08b4516-bd1c-470c-a756-dccf1d09b937","name":"Comercial","parentDepartmentId":null,"createdAt":"2026-06-26T12:47:48.193Z","updatedAt":"2026-06-26T12:47:48.193Z"}]
+```
+
+**Verificação Fase 5:** O ID do departamento retornado (`f08b4516-bd1c-470c-a756-dccf1d09b937`) corresponde exactamente ao ID original importado da Render Source, confirmando que a API pública está a ler dados da Neon Production.
+
+## 5. Estado dos Ambientes
+
+| Ambiente | Estado |
+|---|---|
+| **Render App (`DATABASE_URL`)** | Actualizada para Neon Production (`ep-morning-wave-aciutlo4-pooler`) |
+| **Neon Production** | Dados importados e validados. API pública a ler com sucesso. |
+| **Neon Validation (`new-neon-validation`)** | Mantida (contém cópia de validação). Não apagada. |
+| **Render DB antiga** | Mantida como backup temporário. Não apagada. |
+| **Seed estrutural** | Não executado. |
+| **Stash local (`main.ts`)** | Intacto, não aplicado. |
+
+## 6. Próximos Passos Recomendados
+1. Planear e executar o seed estrutural real em Neon Production para popular tabelas auxiliares (`hierarchy_levels`, `roles`, etc.).
+2. Após período de observação, decidir se a base Render antiga pode ser descomissionada.
+3. Após período de observação, decidir se a branch `new-neon-validation` pode ser apagada.
+4. Considerar aplicação controlada do stash local pendente (`apps/api/src/main.ts`).
