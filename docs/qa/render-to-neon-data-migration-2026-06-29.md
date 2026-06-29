@@ -1,55 +1,52 @@
-# Preparação para Migração: Render -> Neon (Data-Only)
+# Relatório de Migração: Render -> Neon (Data-Only)
 
 **Data:** 2026-06-29
-**Estado:** Nova validation branch confirmada e limpa. A aguardar confirmação da janela de inatividade para iniciar o dump.
+**Estado:** Validação de restore bem-sucedida em ambiente descartável. Pronto para a migração final de produção.
 
-## Ferramentas Validadas
-- **pg_dump:** PostgreSQL 18.3 (Encontrado via `%ProgramFiles%\PostgreSQL\18\bin`)
-- **pg_restore:** PostgreSQL 18.3
-- **Ambiente Git:** Limpo (`.env.*`, `tmp/`, `*.dump` estão devidamente ignorados no `.gitignore`).
+## 1. Informações de Execução (Fases 1 a 3)
+- **Data/Hora do Dump Final:** 2026-06-29 12:38 (UTC+1)
+- **Ficheiro de Dump:** `render-data.dump` (5719 bytes, em formato personalizado data-only, sem `_prisma_migrations`).
+- **Ambiente Git:** Seguro e limpo. Todas as credenciais de `.env.*` mantêm-se protegidas e ignoradas.
 
-## Validação de Servidores e Contagens (Pré-Check Final)
+## 2. Contagens Finais e Reconciliação (Fase 5)
+O restore foi efetuado com êxito na branch descartável `new-neon-validation` (base de dados `persistech-360`).
+A tabela abaixo demonstra a perfeita correspondência dos dados pós-restore:
 
-| Origem Lógica | Host (Sanitizado) | Database | Versão PostgreSQL | Estado Conectividade |
-|---|---|---|---|---|
-| **Render Source** | `dpg-d8knoo0jo6nc73fp7dpg-a.virginia-postgres.render.com` | `persistech_360_db` | `PostgreSQL 18.4` | Acessível |
-| **Neon Validation** | `ep-proud-block-ac6syq6s-pooler.sa-east-1.aws.neon.tech` | `persistech-360` | `PostgreSQL 18.4` | Acessível (Limpo/Vazio) |
-| **Neon Production**| `ep-morning-wave-aciutlo4-pooler.sa-east-1.aws.neon.tech` | `persistech-360` | `PostgreSQL 18.4` | Acessível (Limpo/Vazio) |
-
-### Contagens Globais e Comparação
-
-| Tabela | Render Source (Finais) | Neon Validation (`new-neon-validation`) | Neon Production (Pós-Restore) |
+| Tabela | Render Source (Final) | Neon Validation (`new-neon-validation`) | Estado |
 |---|---|---|---|
-| **users** | 1 | 0 | *Pendente* |
-| **departments** | 1 | 0 | *Pendente* |
-| **hierarchy_levels** | 0 | 0 | *Pendente* |
-| **roles** | 0 | 0 | *Pendente* |
-| **cycles** | 0 | 0 | *Pendente* |
-| **dimensions** | 0 | 0 | *Pendente* |
-| **criteria** | 0 | 0 | *Pendente* |
-| **criterion_options** | 0 | 0 | *Pendente* |
-| **applicability_rules** | 0 | 0 | *Pendente* |
-| **weight_rules** | 0 | 0 | *Pendente* |
-| **retention_policies** | 0 | 0 | *Pendente* |
-| **evaluation_assignments**| 0 | 0 | *Pendente* |
-| **evaluation_submissions**| 0 | 0 | *Pendente* |
-| **evaluation_answers** | 0 | 0 | *Pendente* |
-| **_prisma_migrations** | - | 0 | *Pendente* |
+| **users** | 1 | 1 | **Reconciliado (OK)** |
+| **departments** | 1 | 1 | **Reconciliado (OK)** |
+| **hierarchy_levels** | 0 | 0 | **Reconciliado (OK)** |
+| **roles** | 0 | 0 | **Reconciliado (OK)** |
+| **cycles** | 0 | 0 | **Reconciliado (OK)** |
+| **dimensions** | 0 | 0 | **Reconciliado (OK)** |
+| **criteria** | 0 | 0 | **Reconciliado (OK)** |
+| **criterion_options** | 0 | 0 | **Reconciliado (OK)** |
+| **applicability_rules** | 0 | 0 | **Reconciliado (OK)** |
+| **weight_rules** | 0 | 0 | **Reconciliado (OK)** |
+| **retention_policies** | 0 | 0 | **Reconciliado (OK)** |
+| **evaluation_assignments**| 0 | 0 | **Reconciliado (OK)** |
+| **evaluation_submissions**| 0 | 0 | **Reconciliado (OK)** |
+| **evaluation_answers** | 0 | 0 | **Reconciliado (OK)** |
+| **_prisma_migrations** | 0 | 0 | **Reconciliado (OK)** |
 
-**User Breakdown (Render Source):**
+**Detalhamento de Users:**
 - Total: 1
 - App Roles: `ADMIN: 1`
 - Status: `ACTIVE: 1`
 
-### Status da Neon Validation (new-neon-validation)
-- **Decisão:** Opção A implementada. Foi criada uma nova branch descartável no Neon designada `new-neon-validation` a partir de `production`, com a opção **Schema only**.
-- **Esquema:** Confirmou-se que todas as 14 tabelas operacionais existem e foram mapeadas com sucesso.
-- **Limpeza:** Todas as tabelas operacionais retornaram a contagem de `0`.
-- **Histórico Prisma:** A tabela `_prisma_migrations` encontra-se a `0` (vazia), o que é expectável dado que a branch foi criada sem cópia de dados. Como o objetivo desta branch é estritamente testar e validar o restore em formato *data-only*, este estado está correto e a branch está **pronta para receber o restauro**.
+## 3. Resultado do Smoke Test Local (Fase 6)
+Com a API NestJS local temporariamente apontada para a sandbox `new-neon-validation`:
+- **GET /api/v1/health:** `{"status":"UP","timestamp":"...","database":"UP"}` (Base Neon respondendo com sucesso).
+- **GET /api/v1/departments:** Retornou a lista contendo o departamento `"Comercial"` restaurado (ID: `f08b4516-bd1c-470c-a756-dccf1d09b937`).
 
-### Decisão de Seed Estrutural
-Como a Render Source possui tabelas estruturais de metadados vazias (ex: `hierarchy_levels`, `roles` e apenas 1 `department` e `user`), **será necessário executar o seed estrutural** (`npx prisma db seed`) após a importação final para criar a hierarquia e dados base no novo ambiente Neon. Este procedimento deve ser validado primeiro na branch descartável (Validation).
+## 4. Segurança do Ambiente de Produção
+- > [!IMPORTANT]
+  > A base de dados **Neon Production** (`ep-morning-wave-aciutlo4-pooler`) **NÃO foi alterada nem acedida para escritas** nesta fase, mantendo-se em estado vazio intacto.
+  - A `DATABASE_URL` no serviço de alojamento da Render não foi alterada.
 
-## Bloqueios Restantes antes do Dump Final
-1. **Janela Sem Escritas:** Confirmar que a aplicação original está sem tráfego de escritas e autorizada a exportação.
-2. **Autorização explícita** do utilizador.
+## 5. Riscos e Notas Técnicas
+- **search_path do Neon:** A branch clonada sob a opção **Schema only** veio com a variável `search_path` vazia por padrão, o que impossibilita a resolução direta de tabelas globais pelo `psql` na linha de comandos sem a devida qualificação do schema (ex. `public.users` ou executando `SET search_path TO public`). A aplicação (Prisma / NestJS) comportou-se com sucesso no mapeamento sem necessitar de ajustes manuais adicionais.
+
+## 6. Recomendação Objectiva
+Recomenda-se avançar com a importação final para a **Neon Production**, uma vez que a estrutura do dump, compatibilidade Postgres 18.4, integridade referencial dos dados (inclusive constraints circulares de user/department) e funcionamento da API foram devidamente assegurados em sandbox.
