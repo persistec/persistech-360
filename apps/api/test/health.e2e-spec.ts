@@ -1,10 +1,5 @@
-/* eslint-disable */
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  INestApplication,
-  ValidationPipe,
-  VersioningType,
-} from '@nestjs/common';
+import { INestApplication, VersioningType } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/database/prisma.service';
@@ -36,7 +31,7 @@ describe('HealthController (e2e)', () => {
     prismaService = moduleFixture.get<PrismaService>(PrismaService);
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
   });
 
@@ -45,8 +40,9 @@ describe('HealthController (e2e)', () => {
       .get('/api/v1/health')
       .expect(200)
       .expect((res) => {
-        expect(res.body.status).toBe('UP');
-        expect(res.body.database).toBe('UP');
+        const body = res.body as { status: string; database: string };
+        expect(body.status).toBe('UP');
+        expect(body.database).toBe('UP');
       });
   });
 
@@ -58,9 +54,14 @@ describe('HealthController (e2e)', () => {
       .get('/api/v1/health')
       .expect(500)
       .expect((res) => {
-        expect(res.body.status).toBe('DOWN');
-        expect(res.body.database).toBe('DOWN');
-        expect(res.body.error).toBe('Connection failed');
+        const body = res.body as {
+          status: string;
+          database: string;
+          error: string;
+        };
+        expect(body.status).toBe('DOWN');
+        expect(body.database).toBe('DOWN');
+        expect(body.error).toBe('Connection failed');
       });
   });
 });

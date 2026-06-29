@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   INestApplication,
@@ -14,19 +13,40 @@ import { App } from 'supertest/types';
 
 describe('DepartmentsController (e2e)', () => {
   let app: INestApplication<App>;
-  let prismaMock: any;
+
+  type MockPrismaService = {
+    department: {
+      findMany: jest.Mock;
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      update: jest.Mock;
+      delete: jest.Mock;
+      count: jest.Mock;
+    };
+    user: {
+      findUnique: jest.Mock;
+      count: jest.Mock;
+    };
+    role: {
+      count: jest.Mock;
+    };
+  };
+
+  let prismaMock: MockPrismaService;
 
   beforeEach(async () => {
     prismaMock = {
       department: {
         findMany: jest.fn().mockResolvedValue([]),
-        findUnique: jest.fn().mockImplementation(({ where }) => {
-          if (where.name === 'New Dept') return null; // allow creation
-          return {
-            id: '123e4567-e89b-12d3-a456-426614174000',
-            name: 'Old Dept',
-          };
-        }),
+        findUnique: jest
+          .fn()
+          .mockImplementation(({ where }: { where: { name?: string } }) => {
+            if (where.name === 'New Dept') return null; // allow creation
+            return {
+              id: '123e4567-e89b-12d3-a456-426614174000',
+              name: 'Old Dept',
+            };
+          }),
         create: jest.fn().mockResolvedValue({
           id: '123e4567-e89b-12d3-a456-426614174000',
           name: 'New Dept',
@@ -59,8 +79,10 @@ describe('DepartmentsController (e2e)', () => {
       .useValue(prismaMock)
       .overrideGuard(AuthGuard)
       .useValue({
-        canActivate: (context) => {
+        canActivate: (context: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
           const req = context.switchToHttp().getRequest();
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           req.user = { id: 'admin-id', appRole: 'ADMIN' };
           return true;
         },
@@ -87,7 +109,7 @@ describe('DepartmentsController (e2e)', () => {
     await app.init();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
   });
 
@@ -105,7 +127,8 @@ describe('DepartmentsController (e2e)', () => {
       .send({ name: 'New Dept' })
       .expect(201)
       .expect((res) => {
-        expect(res.body.name).toBe('New Dept');
+        const body = res.body as { name: string };
+        expect(body.name).toBe('New Dept');
       });
   });
 
@@ -116,7 +139,8 @@ describe('DepartmentsController (e2e)', () => {
       .send({ unknown_field: 'Invalid' })
       .expect(400)
       .expect((res) => {
-        expect(res.body.message).toEqual(
+        const body = res.body as { message: string[] };
+        expect(body.message).toEqual(
           expect.arrayContaining([expect.stringContaining('name')]),
         );
       });
@@ -129,7 +153,8 @@ describe('DepartmentsController (e2e)', () => {
       .send({ name: 'Updated Dept' })
       .expect(200)
       .expect((res) => {
-        expect(res.body.name).toBe('Updated Dept');
+        const body = res.body as { name: string };
+        expect(body.name).toBe('Updated Dept');
       });
   });
 
@@ -139,7 +164,8 @@ describe('DepartmentsController (e2e)', () => {
       .set('x-user-id', 'admin-id')
       .expect(200)
       .expect((res) => {
-        expect(res.body.name).toBe('Deleted Dept');
+        const body = res.body as { name: string };
+        expect(body.name).toBe('Deleted Dept');
       });
   });
 
@@ -159,7 +185,8 @@ describe('DepartmentsController (e2e)', () => {
       .set('x-user-id', 'admin-id')
       .expect(400) // Expecting the application to map Prisma constraint errors to 400 Bad Request
       .expect((res) => {
-        expect(res.body.message).toContain('relat');
+        const body = res.body as { message: string };
+        expect(body.message).toContain('relat');
       });
   });
 });
