@@ -4,6 +4,11 @@
 
 Auditar os endpoints existentes da API antes de novas funcionalidades de autenticação, autorização, soft delete e RLS.
 
+## Documentação OpenAPI e Swagger
+
+- **Swagger UI**: `/api/docs` (disponível localmente em `http://localhost:4000/api/docs`).
+- **OpenAPI JSON**: `/api/docs-json` (disponível localmente em `http://localhost:4000/api/docs-json`).
+
 ## Observações Gerais e Segurança Legada
 
 - **Mecanismo de Autenticação Temporária**: A autenticação atual baseia-se no header `x-user-id`. O guard `AuthGuard` interceta o header, verifica a existência do utilizador na base de dados e valida se o estado deste é `ACTIVE`.
