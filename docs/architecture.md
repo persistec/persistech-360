@@ -122,3 +122,7 @@ Preferir módulos explícitos, testáveis e documentados no backend.
 
 Este sistema lida com dados sensíveis de avaliação de pessoas. Não deve ser tratado como uma aplicação simples de formulários com dashboard decorativo.
 
+## Documentos complementares
+
+* [Security, Access and Data Policy Architecture](architecture/security-access-and-data-policy.md)
+
