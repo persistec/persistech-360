@@ -30,8 +30,8 @@ export default function SubmissionsPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<{ data: Submission[] }>("/evaluation-submissions");
-      setSubmissions(response.data || []);
+      const response = await apiClient.get<Submission[] >("/evaluation-submissions");
+      setSubmissions((Array.isArray(response) ? response : []));
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Falha ao obter submissões.";
       setError(msg);

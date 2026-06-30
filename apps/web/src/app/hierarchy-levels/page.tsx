@@ -24,8 +24,8 @@ export default function HierarchyLevelsPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<{ data: HierarchyLevel[] }>("/hierarchy-levels");
-      const sorted = (response.data || []).sort((a, b) => a.rank - b.rank);
+      const response = await apiClient.get<HierarchyLevel[] >("/hierarchy-levels");
+      const sorted = ((Array.isArray(response) ? response : [])).sort((a, b) => a.rank - b.rank);
       setLevels(sorted);
     } catch (err: any) {
       setError(err.message || "Falha ao obter níveis hierárquicos.");

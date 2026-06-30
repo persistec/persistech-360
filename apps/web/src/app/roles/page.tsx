@@ -39,13 +39,13 @@ export default function RolesPage() {
     setError(null);
     try {
       const [rolesRes, depsRes, levelsRes] = await Promise.all([
-        apiClient.get<{ data: Role[] }>("/roles"),
-        apiClient.get<{ data: Department[] }>("/departments"),
-        apiClient.get<{ data: HierarchyLevel[] }>("/hierarchy-levels"),
+        apiClient.get<Role[] >("/roles"),
+        apiClient.get<Department[] >("/departments"),
+        apiClient.get<HierarchyLevel[] >("/hierarchy-levels"),
       ]);
-      setRoles(rolesRes.data || []);
-      setDepartments(depsRes.data || []);
-      setHierarchyLevels(levelsRes.data || []);
+      setRoles((Array.isArray(rolesRes) ? rolesRes : []));
+      setDepartments((Array.isArray(depsRes) ? depsRes : []));
+      setHierarchyLevels((Array.isArray(levelsRes) ? levelsRes : []));
     } catch (err: any) {
       setError(err.message || "Falha ao obter dados das funções.");
     } finally {

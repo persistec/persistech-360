@@ -56,15 +56,15 @@ export default function UsersPage() {
     setError(null);
     try {
       const [usersRes, depsRes, levelsRes, rolesRes] = await Promise.all([
-        apiClient.get<{ data: User[] }>("/users"),
-        apiClient.get<{ data: BasicEntity[] }>("/departments"),
-        apiClient.get<{ data: BasicEntity[] }>("/hierarchy-levels"),
-        apiClient.get<{ data: BasicEntity[] }>("/roles"),
+        apiClient.get<User[] >("/users"),
+        apiClient.get<BasicEntity[] >("/departments"),
+        apiClient.get<BasicEntity[] >("/hierarchy-levels"),
+        apiClient.get<BasicEntity[] >("/roles"),
       ]);
-      setUsers(usersRes.data || []);
-      setDepartments(depsRes.data || []);
-      setHierarchyLevels(levelsRes.data || []);
-      setRoles(rolesRes.data || []);
+      setUsers((Array.isArray(usersRes) ? usersRes : []));
+      setDepartments((Array.isArray(depsRes) ? depsRes : []));
+      setHierarchyLevels((Array.isArray(levelsRes) ? levelsRes : []));
+      setRoles((Array.isArray(rolesRes) ? rolesRes : []));
     } catch (err: any) {
       setError(err.message || "Falha ao obter dados dos utilizadores.");
     } finally {

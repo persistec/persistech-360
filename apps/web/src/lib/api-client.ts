@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export interface ApiError {
   code: string;
   message: string;
@@ -72,7 +74,7 @@ const getBaseUrl = () => {
 };
 
 const getHeaders = () => {
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
@@ -85,104 +87,107 @@ const getHeaders = () => {
   return headers;
 };
 
-async function handleResponse<T>(response: Response): Promise<T> {
-  if (!response.ok) {
-    let errorData: unknown = null;
-    try {
-      errorData = await response.json();
-    } catch {
-      // Ignore if parsing fails
+const axiosInstance = axios.create({
+  baseURL: getBaseUrl(),
+  timeout: 15000,
+});
+
+axiosInstance.interceptors.request.use((config) => {
+  const headers = getHeaders();
+  Object.keys(headers).forEach(key => {
+    config.headers.set(key, headers[key]);
+  });
+  return config;
+});
+
+function normalizeApiError(error: unknown): never {
+  if (axios.isAxiosError(error)) {
+    const response = error.response;
+    if (response) {
+      const errorData = response.data;
+      
+      const errorRecord = isRecord(errorData) ? errorData : {};
+      const nestedError = isRecord(errorRecord.error) ? errorRecord.error : null;
+      const rawMessage = errorRecord.message;
+      const message = Array.isArray(rawMessage)
+        ? typeof errorRecord.error === 'string'
+          ? errorRecord.error
+          : `Erro HTTP: ${response.status} ${response.statusText}`
+        : typeof rawMessage === 'string'
+          ? rawMessage
+          : typeof nestedError?.message === 'string'
+            ? nestedError.message
+            : `Erro HTTP: ${response.status} ${response.statusText}`;
+
+      const code = typeof nestedError?.code === 'string'
+        ? nestedError.code
+        : typeof errorRecord.error === 'string'
+          ? errorRecord.error
+          : 'UNKNOWN_ERROR';
+
+      const details = normalizeDetails(nestedError?.details ?? errorRecord.details ?? (Array.isArray(rawMessage) ? rawMessage : undefined));
+
+      const apiError: ApiError = {
+        ...(nestedError || {}),
+        code,
+        message,
+        details,
+      };
+
+      throw new ApiException(response.status, apiError, errorData);
     }
-
-    const errorRecord = isRecord(errorData) ? errorData : {};
-    const nestedError = isRecord(errorRecord.error) ? errorRecord.error : null;
-    const rawMessage = errorRecord.message;
-    const message = Array.isArray(rawMessage)
-      ? typeof errorRecord.error === 'string'
-        ? errorRecord.error
-        : `Erro HTTP: ${response.status} ${response.statusText}`
-      : typeof rawMessage === 'string'
-        ? rawMessage
-        : typeof nestedError?.message === 'string'
-          ? nestedError.message
-          : `Erro HTTP: ${response.status} ${response.statusText}`;
-
-    const code = typeof nestedError?.code === 'string'
-      ? nestedError.code
-      : typeof errorRecord.error === 'string'
-        ? errorRecord.error
-        : 'UNKNOWN_ERROR';
-
-    const details = normalizeDetails(nestedError?.details ?? errorRecord.details ?? (Array.isArray(rawMessage) ? rawMessage : undefined));
-
-    const apiError: ApiError = {
-      ...(nestedError || {}),
-      code,
-      message,
-      details,
-    };
-
-    throw new ApiException(response.status, apiError, errorData);
   }
 
-  // Handle 204 No Content
-  if (response.status === 204) {
-    return null as T;
+  if (error instanceof Error) {
+    throw error;
   }
 
-  return response.json();
+  throw new Error('Erro inesperado ao comunicar com a API');
 }
 
 export const apiClient = {
-  get: async <T>(path: string, options?: RequestInit): Promise<T> => {
-    const url = `${getBaseUrl()}${path}`;
-    const response = await fetch(url, {
-      ...options,
-      headers: { ...getHeaders(), ...options?.headers },
-    });
-    return handleResponse<T>(response);
+  get: async <T>(path: string, options?: any): Promise<T> => {
+    try {
+      const response = await axiosInstance.get<T>(path, options);
+      return response.data;
+    } catch (error) {
+      normalizeApiError(error);
+    }
   },
 
-  post: async <T>(path: string, body?: any, options?: RequestInit): Promise<T> => {
-    const url = `${getBaseUrl()}${path}`;
-    const response = await fetch(url, {
-      method: 'POST',
-      body: body ? JSON.stringify(body) : undefined,
-      ...options,
-      headers: { ...getHeaders(), ...options?.headers },
-    });
-    return handleResponse<T>(response);
+  post: async <T>(path: string, body?: any, options?: any): Promise<T> => {
+    try {
+      const response = await axiosInstance.post<T>(path, body, options);
+      return response.data;
+    } catch (error) {
+      normalizeApiError(error);
+    }
   },
 
-  patch: async <T>(path: string, body?: any, options?: RequestInit): Promise<T> => {
-    const url = `${getBaseUrl()}${path}`;
-    const response = await fetch(url, {
-      method: 'PATCH',
-      body: body ? JSON.stringify(body) : undefined,
-      ...options,
-      headers: { ...getHeaders(), ...options?.headers },
-    });
-    return handleResponse<T>(response);
+  patch: async <T>(path: string, body?: any, options?: any): Promise<T> => {
+    try {
+      const response = await axiosInstance.patch<T>(path, body, options);
+      return response.data;
+    } catch (error) {
+      normalizeApiError(error);
+    }
   },
 
-  put: async <T>(path: string, body?: any, options?: RequestInit): Promise<T> => {
-    const url = `${getBaseUrl()}${path}`;
-    const response = await fetch(url, {
-      method: 'PUT',
-      body: body ? JSON.stringify(body) : undefined,
-      ...options,
-      headers: { ...getHeaders(), ...options?.headers },
-    });
-    return handleResponse<T>(response);
+  put: async <T>(path: string, body?: any, options?: any): Promise<T> => {
+    try {
+      const response = await axiosInstance.put<T>(path, body, options);
+      return response.data;
+    } catch (error) {
+      normalizeApiError(error);
+    }
   },
 
-  delete: async <T>(path: string, options?: RequestInit): Promise<T> => {
-    const url = `${getBaseUrl()}${path}`;
-    const response = await fetch(url, {
-      method: 'DELETE',
-      ...options,
-      headers: { ...getHeaders(), ...options?.headers },
-    });
-    return handleResponse<T>(response);
+  delete: async <T>(path: string, options?: any): Promise<T> => {
+    try {
+      const response = await axiosInstance.delete<T>(path, options);
+      return response.data;
+    } catch (error) {
+      normalizeApiError(error);
+    }
   },
 };

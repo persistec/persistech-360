@@ -45,9 +45,9 @@ export default function RootLayout({
       </head>
       <body className="bg-background font-sans text-foreground antialiased">
         <ThemeProvider>
-          <div className="flex h-dvh min-h-0 flex-col overflow-hidden xl:flex-row">
+          <div className="flex min-h-dvh flex-col xl:h-dvh xl:min-h-0 xl:flex-row xl:overflow-hidden">
             <Sidebar />
-            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">
+            <div className="min-w-0 flex-1 xl:min-h-0 xl:overflow-y-auto">
               <OperationalShellHeader />
               <main className="min-w-0 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
                 <div className="mx-auto w-full max-w-7xl">{children}</div>

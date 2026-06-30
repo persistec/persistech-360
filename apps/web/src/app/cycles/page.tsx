@@ -50,8 +50,8 @@ export default function CyclesPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<{ data: Cycle[] }>("/cycles");
-      setCycles(response.data || []);
+      const response = await apiClient.get<Cycle[] >("/cycles");
+      setCycles((Array.isArray(response) ? response : []));
     } catch (err: any) {
       setError(err.message || "Falha ao obter ciclos.");
     } finally {

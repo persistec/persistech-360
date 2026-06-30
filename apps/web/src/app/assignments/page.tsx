@@ -58,13 +58,13 @@ export default function AssignmentsPage() {
     setError(null);
     try {
       const [assignRes, usersRes, cyclesRes] = await Promise.all([
-        apiClient.get<{ data: Assignment[] }>("/evaluation-assignments"),
-        apiClient.get<{ data: User[] }>("/users"),
-        apiClient.get<{ data: Cycle[] }>("/cycles"),
+        apiClient.get<Assignment[] >("/evaluation-assignments"),
+        apiClient.get<User[] >("/users"),
+        apiClient.get<Cycle[] >("/cycles"),
       ]);
-      setAssignments(assignRes.data || []);
-      setUsers(usersRes.data || []);
-      setCycles(cyclesRes.data || []);
+      setAssignments((Array.isArray(assignRes) ? assignRes : []));
+      setUsers((Array.isArray(usersRes) ? usersRes : []));
+      setCycles((Array.isArray(cyclesRes) ? cyclesRes : []));
     } catch (err: any) {
       setError(err.message || "Falha ao obter atribuições.");
     } finally {
