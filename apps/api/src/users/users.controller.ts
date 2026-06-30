@@ -17,7 +17,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiHeader,
 } from '@nestjs/swagger';
 import { AppRole } from '@prisma/client';
 import { AuthGuard, AppRoleGuard, RequireAppRole } from '../auth';
@@ -49,7 +48,6 @@ export class UsersController {
   @Post()
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Create a user' })
   @ApiCreatedResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'Invalid relation' })
@@ -63,7 +61,6 @@ export class UsersController {
   @Patch(':id')
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Update a user' })
   @ApiOkResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'Invalid relation' })
@@ -78,7 +75,6 @@ export class UsersController {
   @Delete(':id')
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Delete a user' })
   @ApiOkResponse({ type: UserResponseDto })
   @ApiBadRequestResponse({ description: 'User still has relations' })

@@ -16,7 +16,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiHeader,
 } from '@nestjs/swagger';
 import { AppRole } from '@prisma/client';
 import { AuthGuard, AppRoleGuard, RequireAppRole } from '../auth';
@@ -48,7 +47,6 @@ export class RolesController {
   @Post()
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Create a role' })
   @ApiCreatedResponse({ type: RoleResponseDto })
   @ApiBadRequestResponse({
@@ -61,7 +59,6 @@ export class RolesController {
   @Patch(':id')
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Update a role' })
   @ApiOkResponse({ type: RoleResponseDto })
   @ApiBadRequestResponse({
@@ -75,7 +72,6 @@ export class RolesController {
   @Delete(':id')
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Delete a role' })
   @ApiOkResponse({ type: RoleResponseDto })
   @ApiBadRequestResponse({ description: 'Role still has users' })

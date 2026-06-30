@@ -4,20 +4,22 @@ import {
   ExecutionContext,
   ForbiddenException,
 } from '@nestjs/common';
-import { User, AppRole } from '@prisma/client';
-import { AuthenticatedRequest } from './auth.guard';
+import { AppRole } from '@prisma/client';
+import { CurrentUserPayload } from '../decorators/current-user.decorator';
 
 @Injectable()
 export class EvaluateeAccessGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
-    const user: User | undefined = request.user;
+    const request = context
+      .switchToHttp()
+      .getRequest<{ user?: CurrentUserPayload; params: any }>();
+    const user: CurrentUserPayload | undefined = request.user;
 
     if (!user) {
       throw new ForbiddenException('User is not authenticated');
     }
 
-    if (user.appRole === AppRole.ADMIN) {
+    if (user.role === AppRole.ADMIN) {
       return true;
     }
 

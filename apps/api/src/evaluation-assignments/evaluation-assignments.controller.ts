@@ -62,7 +62,6 @@ export class EvaluationAssignmentsController {
   @Post()
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Create a manual evaluation assignment' })
   @ApiCreatedResponse({ type: AssignmentResponseDto })
   @ApiBadRequestResponse({
@@ -76,7 +75,6 @@ export class EvaluationAssignmentsController {
   @Patch(':id')
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Update an evaluation assignment' })
   @ApiOkResponse({ type: AssignmentResponseDto })
   @ApiBadRequestResponse({
@@ -94,7 +92,6 @@ export class EvaluationAssignmentsController {
   @Delete(':id')
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Delete an evaluation assignment' })
   @ApiOkResponse({ type: AssignmentResponseDto })
   @ApiNotFoundResponse({ description: 'Evaluation assignment not found' })

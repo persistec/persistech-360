@@ -1,6 +1,6 @@
-import { AppRoleGuard } from './roles.guard';
-import { Reflector } from '@nestjs/core';
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { AppRoleGuard } from './roles.guard';
 import { AppRole } from '@prisma/client';
 
 describe('AppRoleGuard', () => {
@@ -12,8 +12,9 @@ describe('AppRoleGuard', () => {
     guard = new AppRoleGuard(reflector);
   });
 
-  it('should return true if no roles required', () => {
+  it('should return true if no roles are required', () => {
     jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(undefined);
+
     const mockContext = {
       getHandler: jest.fn(),
       getClass: jest.fn(),
@@ -22,26 +23,14 @@ describe('AppRoleGuard', () => {
     expect(guard.canActivate(mockContext)).toBe(true);
   });
 
-  it('should throw if user is not authenticated', () => {
+  it('should throw if user is not present', () => {
     jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([AppRole.ADMIN]);
+
     const mockContext = {
       getHandler: jest.fn(),
       getClass: jest.fn(),
       switchToHttp: () => ({
-        getRequest: () => ({ user: null }),
-      }),
-    } as unknown as ExecutionContext;
-
-    expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
-  });
-
-  it('should throw if user does not have required role', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([AppRole.ADMIN]);
-    const mockContext = {
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
-      switchToHttp: () => ({
-        getRequest: () => ({ user: { appRole: AppRole.EMPLOYEE } }),
+        getRequest: () => ({}),
       }),
     } as unknown as ExecutionContext;
 
@@ -50,14 +39,33 @@ describe('AppRoleGuard', () => {
 
   it('should return true if user has required role', () => {
     jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([AppRole.ADMIN]);
+
     const mockContext = {
       getHandler: jest.fn(),
       getClass: jest.fn(),
       switchToHttp: () => ({
-        getRequest: () => ({ user: { appRole: AppRole.ADMIN } }),
+        getRequest: () => ({
+          user: { role: AppRole.ADMIN },
+        }),
       }),
     } as unknown as ExecutionContext;
 
     expect(guard.canActivate(mockContext)).toBe(true);
+  });
+
+  it('should throw if user lacks required role', () => {
+    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([AppRole.ADMIN]);
+
+    const mockContext = {
+      getHandler: jest.fn(),
+      getClass: jest.fn(),
+      switchToHttp: () => ({
+        getRequest: () => ({
+          user: { role: AppRole.EMPLOYEE },
+        }),
+      }),
+    } as unknown as ExecutionContext;
+
+    expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
   });
 });

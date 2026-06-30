@@ -293,3 +293,20 @@ A auditoria de contratos e OpenAPI servem como base para a fase de segurança.
 * RLS.
 * Alterações de UI.
 * Limpeza de dados em produção.
+
+## Variáveis de Ambiente de Segurança
+
+As seguintes variáveis de ambiente devem ser configuradas para suportar a autenticação Google e as sessões JWT:
+
+### Backend (`apps/api/.env`)
+* `GOOGLE_CLIENT_ID`: ID do cliente OAuth2 fornecido pela Google Cloud Console.
+* `GOOGLE_CLIENT_SECRET`: Segredo do cliente OAuth2 fornecido pela Google Cloud Console.
+* `GOOGLE_CALLBACK_URL`: URL completo de retorno (ex: `http://localhost:4000/api/v1/auth/google/callback`).
+* `JWT_SECRET`: Chave simétrica longa e segura para assinar o JWT.
+* `AUTH_COOKIE_NAME`: (Opcional) Nome do cookie da sessão (padrão: `PERSISTECH360_SESSION`).
+* `AUTH_COOKIE_SECURE`: `true` em produção (requer HTTPS), `false` em desenvolvimento local.
+* `WEB_APP_URL`: URL base do frontend para redirecionamento após o login.
+
+### Frontend (`apps/web/.env`)
+* `NEXT_PUBLIC_API_BASE_URL`: URL base da API para redirecionar o botão de login (ex: `http://localhost:4000/api/v1`).
+* (A injeção de `NEXT_PUBLIC_ADMIN_USER_ID` é removida).
