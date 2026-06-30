@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { AuthGuard } from './auth.guard';
 import { UnauthorizedException } from '@nestjs/common';
 
@@ -15,7 +16,9 @@ describe('AuthGuard', () => {
     });
 
     it('should throw UnauthorizedException if user is missing', () => {
-      expect(() => guard.handleRequest(null, null, null)).toThrow(UnauthorizedException);
+      expect(() => guard.handleRequest(null, null, null)).toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should return the user if present', () => {

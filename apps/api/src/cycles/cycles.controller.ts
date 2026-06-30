@@ -16,7 +16,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiHeader,
 } from '@nestjs/swagger';
 import { AppRole } from '@prisma/client';
 import { AuthGuard, AppRoleGuard, RequireAppRole } from '../auth';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/require-await */
 import {
   Controller,
   Get,
@@ -11,11 +12,9 @@ import { GoogleOAuthGuard } from './guards/google-oauth.guard';
 import { AuthGuard } from './guards/auth.guard';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
-import {
-  CurrentUser,
-  CurrentUserPayload,
-} from './decorators/current-user.decorator';
-import { Response } from 'express';
+import { CurrentUser } from './decorators/current-user.decorator';
+import type { CurrentUserPayload } from './decorators/current-user.decorator';
+import type { Response, Request } from 'express';
 import {
   ApiTags,
   ApiOperation,
@@ -34,14 +33,14 @@ export class AuthController {
   @Get('google')
   @UseGuards(GoogleOAuthGuard)
   @ApiOperation({ summary: 'Initiate Google OAuth2 login flow' })
-  async googleAuth(@Req() req) {
+  async googleAuth(@Req() req: Request) {
     // Initiates the Google OAuth2 flow via Passport.
   }
 
   @Get('google/callback')
   @UseGuards(GoogleOAuthGuard)
   @ApiOperation({ summary: 'Google OAuth2 callback' })
-  async googleAuthRedirect(@Req() req, @Res() res: Response) {
+  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
     if (!req.user) {
       throw new UnauthorizedException('Authentication failed');
     }
