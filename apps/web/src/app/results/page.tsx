@@ -68,11 +68,11 @@ export default function ResultsPage() {
     const fetchOptions = async () => {
       try {
         const [cyclesRes, usersRes] = await Promise.all([
-          apiClient.get<{ data: Cycle[] }>('/cycles'),
-          apiClient.get<{ data: User[] }>('/users'),
+          apiClient.get<Cycle[] >('/cycles'),
+          apiClient.get<User[] >('/users'),
         ]);
-        setCycles(cyclesRes.data || []);
-        setUsers(usersRes.data || []);
+        setCycles((Array.isArray(cyclesRes) ? cyclesRes : []));
+        setUsers((Array.isArray(usersRes) ? usersRes : []));
       } catch (err) {
         console.error('Error fetching options:', err);
         setError('Falha ao carregar ciclos ou utilizadores.');

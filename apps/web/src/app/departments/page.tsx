@@ -102,8 +102,8 @@ export default function DepartmentsPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<{ data: DepartmentApiItem[] }>("/departments");
-      setDepartments((response.data || []).map(mapDepartmentFromApi));
+      const response = await apiClient.get<DepartmentApiItem[] >("/departments");
+      setDepartments(((Array.isArray(response) ? response : [])).map(mapDepartmentFromApi));
     } catch (err: any) {
       setError(getFriendlyErrorMessage(err, "fetch"));
     } finally {
