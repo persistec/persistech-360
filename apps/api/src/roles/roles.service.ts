@@ -15,6 +15,7 @@ export class RolesService {
 
   findAll() {
     return this.prisma.role.findMany({
+      where: { archivedAt: null },
       orderBy: { name: 'asc' },
     });
   }
@@ -22,7 +23,7 @@ export class RolesService {
   async findOne(id: string) {
     const role = await this.prisma.role.findUnique({ where: { id } });
 
-    if (!role) {
+    if (!role || role.archivedAt) {
       throw new NotFoundException('Role not found.');
     }
 
@@ -59,19 +60,27 @@ export class RolesService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string, currentUserId: string) {
     await this.findOne(id);
 
-    const users = await this.prisma.user.count({ where: { roleId: id } });
+    const users = await this.prisma.user.count({
+      where: { roleId: id, archivedAt: null },
+    });
 
     if (users > 0) {
       throw new BadRequestException(
-        'Role cannot be deleted while it has users.',
+        'Role cannot be deleted while it has active users.',
       );
     }
 
     try {
-      return await this.prisma.role.delete({ where: { id } });
+      return await this.prisma.role.update({
+        where: { id },
+        data: {
+          archivedAt: new Date(),
+          archivedBy: currentUserId,
+        },
+      });
     } catch (error) {
       this.handlePrismaError(error);
     }

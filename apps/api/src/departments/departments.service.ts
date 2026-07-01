@@ -16,6 +16,7 @@ export class DepartmentsService {
 
   findAll() {
     return this.prisma.department.findMany({
+      where: { archivedAt: null },
       orderBy: { name: 'asc' },
     });
   }
@@ -25,7 +26,7 @@ export class DepartmentsService {
       where: { id },
     });
 
-    if (!department) {
+    if (!department || department.archivedAt) {
       throw new NotFoundException('Department not found.');
     }
 
@@ -72,23 +73,31 @@ export class DepartmentsService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string, currentUserId: string) {
     await this.findOne(id);
 
     const [users, roles, children] = await Promise.all([
-      this.prisma.user.count({ where: { departmentId: id } }),
-      this.prisma.role.count({ where: { departmentId: id } }),
-      this.prisma.department.count({ where: { parentDepartmentId: id } }),
+      this.prisma.user.count({ where: { departmentId: id, archivedAt: null } }),
+      this.prisma.role.count({ where: { departmentId: id, archivedAt: null } }),
+      this.prisma.department.count({
+        where: { parentDepartmentId: id, archivedAt: null },
+      }),
     ]);
 
     if (users > 0 || roles > 0 || children > 0) {
       throw new BadRequestException(
-        'Department cannot be deleted while it has users, roles, or child departments.',
+        'Department cannot be deleted while it has active users, roles, or child departments.',
       );
     }
 
     try {
-      return await this.prisma.department.delete({ where: { id } });
+      return await this.prisma.department.update({
+        where: { id },
+        data: {
+          archivedAt: new Date(),
+          archivedBy: currentUserId,
+        },
+      });
     } catch (error) {
       this.handlePrismaError(error);
     }

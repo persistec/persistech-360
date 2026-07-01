@@ -21,6 +21,8 @@ describe('RolesService', () => {
     name: 'Developer',
     departmentId: null,
     hierarchyLevelId: null,
+    archivedAt: null,
+    archivedBy: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -86,7 +88,7 @@ describe('RolesService', () => {
     prisma.role.findUnique.mockResolvedValue(role);
     prisma.user.count.mockResolvedValue(1);
 
-    await expect(service.remove('role-id')).rejects.toBeInstanceOf(
+    await expect(service.remove('role-id', 'admin-id')).rejects.toBeInstanceOf(
       BadRequestException,
     );
   });

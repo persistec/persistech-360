@@ -24,6 +24,8 @@ describe('DepartmentsService', () => {
     id: 'department-id',
     name: 'Engineering',
     parentDepartmentId: null,
+    archivedAt: null,
+    archivedBy: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -90,8 +92,8 @@ describe('DepartmentsService', () => {
     prisma.role.count.mockResolvedValue(0);
     prisma.department.count.mockResolvedValue(1);
 
-    await expect(service.remove('department-id')).rejects.toBeInstanceOf(
-      BadRequestException,
-    );
+    await expect(
+      service.remove('department-id', 'admin-id'),
+    ).rejects.toBeInstanceOf(BadRequestException);
   });
 });

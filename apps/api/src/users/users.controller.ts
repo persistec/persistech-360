@@ -19,7 +19,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AppRole } from '@prisma/client';
-import { AuthGuard, AppRoleGuard, RequireAppRole } from '../auth';
+import { AuthGuard, AppRoleGuard, RequireAppRole, CurrentUser } from '../auth';
+import type { CurrentUserPayload } from '../auth';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -75,11 +76,14 @@ export class UsersController {
   @Delete(':id')
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiOperation({ summary: 'Delete a user' })
+  @ApiOperation({ summary: 'Archive a user' })
   @ApiOkResponse({ type: UserResponseDto })
-  @ApiBadRequestResponse({ description: 'User still has relations' })
+  @ApiBadRequestResponse({ description: 'User still has active relations' })
   @ApiNotFoundResponse({ description: 'User not found' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.remove(id);
+  remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    return this.usersService.remove(id, user.id);
   }
 }

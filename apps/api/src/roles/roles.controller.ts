@@ -18,7 +18,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AppRole } from '@prisma/client';
-import { AuthGuard, AppRoleGuard, RequireAppRole } from '../auth';
+import { AuthGuard, AppRoleGuard, RequireAppRole, CurrentUser } from '../auth';
+import type { CurrentUserPayload } from '../auth';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { RoleResponseDto } from './dto/role-response.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -72,11 +73,14 @@ export class RolesController {
   @Delete(':id')
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiOperation({ summary: 'Delete a role' })
+  @ApiOperation({ summary: 'Archive a role' })
   @ApiOkResponse({ type: RoleResponseDto })
-  @ApiBadRequestResponse({ description: 'Role still has users' })
+  @ApiBadRequestResponse({ description: 'Role still has active users' })
   @ApiNotFoundResponse({ description: 'Role not found' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.rolesService.remove(id);
+  remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    return this.rolesService.remove(id, user.id);
   }
 }

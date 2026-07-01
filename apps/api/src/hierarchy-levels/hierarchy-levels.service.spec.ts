@@ -23,6 +23,8 @@ describe('HierarchyLevelsService', () => {
     id: 'level-id',
     name: 'Manager',
     rank: 5,
+    archivedAt: null,
+    archivedBy: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -77,7 +79,7 @@ describe('HierarchyLevelsService', () => {
     prisma.user.count.mockResolvedValue(1);
     prisma.role.count.mockResolvedValue(0);
 
-    await expect(service.remove('level-id')).rejects.toBeInstanceOf(
+    await expect(service.remove('level-id', 'admin-id')).rejects.toBeInstanceOf(
       BadRequestException,
     );
   });

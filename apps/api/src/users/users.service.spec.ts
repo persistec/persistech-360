@@ -32,6 +32,8 @@ describe('UsersService', () => {
     hierarchyLevelId: null,
     managerId: null,
     status: UserStatus.ACTIVE,
+    archivedAt: null,
+    archivedBy: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -135,7 +137,7 @@ describe('UsersService', () => {
     prisma.user.findUnique.mockResolvedValue(user);
     prisma.user.count.mockResolvedValue(1);
 
-    await expect(service.remove('user-id')).rejects.toBeInstanceOf(
+    await expect(service.remove('user-id', 'admin-id')).rejects.toBeInstanceOf(
       BadRequestException,
     );
   });
