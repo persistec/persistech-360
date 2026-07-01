@@ -178,4 +178,14 @@ describe('UsersService', () => {
       }),
     );
   });
+
+  it('throws not found when findOne is called on an archived user', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      ...user,
+      archivedAt: new Date(),
+    });
+    await expect(service.findOne('user-id')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
 });

@@ -125,4 +125,14 @@ describe('RolesService', () => {
       }),
     );
   });
+
+  it('throws not found when findOne is called on an archived role', async () => {
+    prisma.role.findUnique.mockResolvedValue({
+      ...role,
+      archivedAt: new Date(),
+    });
+    await expect(service.findOne('role-id')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
 });

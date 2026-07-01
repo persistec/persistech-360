@@ -131,4 +131,14 @@ describe('DepartmentsService', () => {
       }),
     );
   });
+
+  it('throws not found when findOne is called on an archived department', async () => {
+    prisma.department.findUnique.mockResolvedValue({
+      ...department,
+      archivedAt: new Date(),
+    });
+    await expect(service.findOne('department-id')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
 });

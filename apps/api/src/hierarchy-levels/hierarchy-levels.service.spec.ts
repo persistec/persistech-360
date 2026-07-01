@@ -117,4 +117,14 @@ describe('HierarchyLevelsService', () => {
       }),
     );
   });
+
+  it('throws not found when findOne is called on an archived hierarchy level', async () => {
+    prisma.hierarchyLevel.findUnique.mockResolvedValue({
+      ...hierarchyLevel,
+      archivedAt: new Date(),
+    });
+    await expect(service.findOne('level-id')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
 });
