@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   BadRequestException,
   ConflictException,
@@ -81,6 +82,39 @@ describe('HierarchyLevelsService', () => {
 
     await expect(service.remove('level-id', 'admin-id')).rejects.toBeInstanceOf(
       BadRequestException,
+    );
+  });
+
+  it('archives a hierarchy level instead of hard deleting it', async () => {
+    prisma.hierarchyLevel.findUnique.mockResolvedValue(hierarchyLevel);
+    prisma.user.count.mockResolvedValue(0);
+    prisma.role.count.mockResolvedValue(0);
+    prisma.hierarchyLevel.update.mockResolvedValue({
+      ...hierarchyLevel,
+      archivedAt: new Date(),
+      archivedBy: 'admin-id',
+    });
+
+    await service.remove('level-id', 'admin-id');
+
+    expect(prisma.hierarchyLevel.update).toHaveBeenCalledWith({
+      where: { id: 'level-id' },
+      data: expect.objectContaining({
+        archivedBy: 'admin-id',
+        archivedAt: expect.any(Date),
+      }),
+    });
+
+    expect(prisma.hierarchyLevel.delete).not.toHaveBeenCalled();
+  });
+
+  it('findAll filters out archived hierarchy levels', async () => {
+    prisma.hierarchyLevel.findMany.mockResolvedValue([hierarchyLevel]);
+    await service.findAll();
+    expect(prisma.hierarchyLevel.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { archivedAt: null },
+      }),
     );
   });
 });

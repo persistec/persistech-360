@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { RolesService } from './roles.service';
@@ -90,6 +91,38 @@ describe('RolesService', () => {
 
     await expect(service.remove('role-id', 'admin-id')).rejects.toBeInstanceOf(
       BadRequestException,
+    );
+  });
+
+  it('archives a role instead of hard deleting it', async () => {
+    prisma.role.findUnique.mockResolvedValue(role);
+    prisma.user.count.mockResolvedValue(0);
+    prisma.role.update.mockResolvedValue({
+      ...role,
+      archivedAt: new Date(),
+      archivedBy: 'admin-id',
+    });
+
+    await service.remove('role-id', 'admin-id');
+
+    expect(prisma.role.update).toHaveBeenCalledWith({
+      where: { id: 'role-id' },
+      data: expect.objectContaining({
+        archivedBy: 'admin-id',
+        archivedAt: expect.any(Date),
+      }),
+    });
+
+    expect(prisma.role.delete).not.toHaveBeenCalled();
+  });
+
+  it('findAll filters out archived roles', async () => {
+    prisma.role.findMany.mockResolvedValue([role]);
+    await service.findAll();
+    expect(prisma.role.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { archivedAt: null },
+      }),
     );
   });
 });

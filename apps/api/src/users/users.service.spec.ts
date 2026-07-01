@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   BadRequestException,
   ConflictException,
@@ -139,6 +140,42 @@ describe('UsersService', () => {
 
     await expect(service.remove('user-id', 'admin-id')).rejects.toBeInstanceOf(
       BadRequestException,
+    );
+  });
+
+  it('archives a user and changes status to REMOVED instead of hard deleting', async () => {
+    prisma.user.findUnique.mockResolvedValue(user);
+    prisma.user.count.mockResolvedValue(0);
+    prisma.user.update.mockResolvedValue({
+      ...user,
+      status: UserStatus.REMOVED,
+      archivedAt: new Date(),
+      archivedBy: 'admin-id',
+    });
+
+    await service.remove('user-id', 'admin-id');
+
+    expect(prisma.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'user-id' },
+        data: expect.objectContaining({
+          status: UserStatus.REMOVED,
+          archivedBy: 'admin-id',
+          archivedAt: expect.any(Date),
+        }),
+      }),
+    );
+
+    expect(prisma.user.delete).not.toHaveBeenCalled();
+  });
+
+  it('findAll filters out archived users', async () => {
+    prisma.user.findMany.mockResolvedValue([user]);
+    await service.findAll();
+    expect(prisma.user.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { archivedAt: null },
+      }),
     );
   });
 });
