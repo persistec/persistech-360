@@ -1,16 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unused-vars */
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { User, AppRole } from '@prisma/client';
-
-export type CurrentUserPayload = {
-  id: string;
-  email: string;
-  role: AppRole;
-};
+import {
+  CurrentUserPayload,
+  AuthenticatedRequest,
+} from '../interfaces/auth.interfaces';
 
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): CurrentUserPayload => {
-    const request = ctx.switchToHttp().getRequest();
+    const request = ctx.switchToHttp().getRequest<AuthenticatedRequest>();
+    if (!request.user) {
+      throw new Error(
+        'CurrentUser decorator used outside of an authenticated context',
+      );
+    }
     return request.user;
   },
 );

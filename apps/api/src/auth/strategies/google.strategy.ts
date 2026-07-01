@@ -1,9 +1,24 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../database/prisma.service';
+import {
+  GoogleProfile,
+  CurrentUserPayload,
+} from '../interfaces/auth.interfaces';
+
+function requireConfig(configService: ConfigService, key: string): string {
+  const value = configService.get<string>(key);
+  if (!value) {
+    throw new Error(`Missing required configuration: ${key}`);
+  }
+  return value;
+}
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -12,12 +27,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     private prisma: PrismaService,
   ) {
     super({
-      clientID: configService.get<string>('GOOGLE_CLIENT_ID') || 'mock-id',
-      clientSecret:
-        configService.get<string>('GOOGLE_CLIENT_SECRET') || 'mock-secret',
-      callbackURL:
-        configService.get<string>('GOOGLE_CALLBACK_URL') ||
-        'http://localhost:4000/api/v1/auth/google/callback',
+      clientID: requireConfig(configService, 'GOOGLE_CLIENT_ID'),
+      clientSecret: requireConfig(configService, 'GOOGLE_CLIENT_SECRET'),
+      callbackURL: requireConfig(configService, 'GOOGLE_CALLBACK_URL'),
       scope: ['email', 'profile'],
     });
   }
@@ -25,14 +37,20 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile: any,
+    profile: GoogleProfile,
     done: VerifyCallback,
-  ): Promise<any> {
+  ): Promise<void> {
     const { id, emails } = profile;
-    const email = emails[0].value;
 
-    // Only previously authorized internal users can login.
-    // Try to find the user by their googleSub or workspaceEmail.
+    if (!emails || emails.length === 0 || !emails[0].value) {
+      return done(
+        new UnauthorizedException('Conta Google sem email associado.'),
+        false,
+      );
+    }
+
+    const email = emails[0].value.toLowerCase().trim();
+
     let user = await this.prisma.user.findFirst({
       where: {
         OR: [{ googleSub: id }, { workspaceEmail: email }],
@@ -40,7 +58,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     });
 
     if (!user) {
-      // User not found in our database - deny access (no open registration)
       return done(
         new ForbiddenException('Conta Google não autorizada.'),
         false,
@@ -51,7 +68,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       return done(new ForbiddenException('Conta inactiva.'), false);
     }
 
-    // Link googleSub if not already linked (progressive migration)
     if (!user.googleSub) {
       user = await this.prisma.user.update({
         where: { id: user.id },
@@ -59,7 +75,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       });
     }
 
-    const payload = {
+    const payload: CurrentUserPayload = {
       id: user.id,
       email: user.workspaceEmail,
       role: user.appRole,

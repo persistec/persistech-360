@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { CurrentUserPayload } from './decorators/current-user.decorator';
+import { CurrentUserPayload } from './interfaces/auth.interfaces';
 
 @Injectable()
 export class AuthService {

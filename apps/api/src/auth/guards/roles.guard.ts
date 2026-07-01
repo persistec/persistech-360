@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { AppRole } from '@prisma/client';
-import { CurrentUserPayload } from '../decorators/current-user.decorator';
+import { CurrentUserPayload } from '../interfaces/auth.interfaces';
 
 @Injectable()
 export class AppRoleGuard implements CanActivate {

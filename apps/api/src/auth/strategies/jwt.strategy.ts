@@ -1,17 +1,28 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/require-await */
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import {
+  JwtPayload,
+  CurrentUserPayload,
+  CookieRequest,
+} from '../interfaces/auth.interfaces';
+
+function requireConfig(configService: ConfigService, key: string): string {
+  const value = configService.get<string>(key);
+  if (!value) {
+    throw new Error(`Missing required configuration: ${key}`);
+  }
+  return value;
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private configService: ConfigService) {
-    const cookieName =
-      configService.get<string>('AUTH_COOKIE_NAME') || 'PERSISTECH360_SESSION';
+    const cookieName = 'PERSISTECH360_SESSION';
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: any) => {
+        (request: CookieRequest) => {
           let token = null;
           if (request && request.cookies) {
             token = request.cookies[cookieName];
@@ -20,12 +31,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET') || 'default-secret',
+      secretOrKey: requireConfig(configService, 'JWT_SECRET'),
     });
   }
 
-  async validate(payload: any) {
-    // The payload is what we signed in auth.service (id, email, role)
+  validate(payload: JwtPayload): CurrentUserPayload {
     return { id: payload.id, email: payload.email, role: payload.role };
   }
 }

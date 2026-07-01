@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/require-await */
 import {
   Controller,
   Get,
@@ -13,7 +12,10 @@ import { AuthGuard } from './guards/auth.guard';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { CurrentUser } from './decorators/current-user.decorator';
-import type { CurrentUserPayload } from './decorators/current-user.decorator';
+import type {
+  CurrentUserPayload,
+  AuthenticatedRequest,
+} from './interfaces/auth.interfaces';
 import type { Response, Request } from 'express';
 import {
   ApiTags,
@@ -21,6 +23,8 @@ import {
   ApiResponse,
   ApiCookieAuth,
 } from '@nestjs/swagger';
+
+const SESSION_COOKIE_NAME = 'PERSISTECH360_SESSION';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -33,42 +37,44 @@ export class AuthController {
   @Get('google')
   @UseGuards(GoogleOAuthGuard)
   @ApiOperation({ summary: 'Initiate Google OAuth2 login flow' })
-  async googleAuth(@Req() req: Request) {
+  googleAuth(): void {
     // Initiates the Google OAuth2 flow via Passport.
   }
 
   @Get('google/callback')
   @UseGuards(GoogleOAuthGuard)
   @ApiOperation({ summary: 'Google OAuth2 callback' })
-  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-    if (!req.user) {
+  googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
+    const user = (req as AuthenticatedRequest).user;
+    if (!user) {
       throw new UnauthorizedException('Authentication failed');
     }
 
-    const token = this.authService.generateJwt(req.user as CurrentUserPayload);
-    const cookieName =
-      this.configService.get<string>('AUTH_COOKIE_NAME') ||
-      'PERSISTECH360_SESSION';
-    const isSecure =
-      this.configService.get<string>('AUTH_COOKIE_SECURE') === 'true';
-    const webAppUrl =
-      this.configService.get<string>('WEB_APP_URL') || 'http://localhost:3000';
+    const accessToken = this.authService.generateJwt(user);
 
-    res.cookie(cookieName, token, {
+    const isProduction =
+      this.configService.get<string>('NODE_ENV') === 'production';
+    const isSecure =
+      this.configService.get<string>('AUTH_COOKIE_SECURE') === 'true' ||
+      isProduction;
+
+    res.cookie(SESSION_COOKIE_NAME, accessToken, {
       httpOnly: true,
       secure: isSecure,
-      sameSite: isSecure ? 'none' : 'lax',
+      sameSite: 'lax',
       path: '/',
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.redirect(webAppUrl + '/app');
+    const redirectUrl =
+      this.configService.get<string>('WEB_APP_URL') || 'http://localhost:3000';
+    return res.redirect(redirectUrl);
   }
 
   @Get('me')
   @UseGuards(AuthGuard)
-  @ApiCookieAuth('PERSISTECH360_SESSION')
-  @ApiOperation({ summary: 'Get current authenticated user' })
+  @ApiCookieAuth(SESSION_COOKIE_NAME)
+  @ApiOperation({ summary: 'Get current authenticated user payload' })
   @ApiResponse({ status: 200, description: 'Return current user.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   getProfile(@CurrentUser() user: CurrentUserPayload) {
@@ -76,20 +82,10 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(AuthGuard)
-  @ApiCookieAuth('PERSISTECH360_SESSION')
-  @ApiOperation({ summary: 'Logout and clear session cookie' })
+  @ApiOperation({ summary: 'Clear the authentication cookie' })
+  @ApiResponse({ status: 200, description: 'Logged out successfully.' })
   logout(@Res({ passthrough: true }) res: Response) {
-    const cookieName =
-      this.configService.get<string>('AUTH_COOKIE_NAME') ||
-      'PERSISTECH360_SESSION';
-    res.clearCookie(cookieName, {
-      httpOnly: true,
-      secure: this.configService.get<string>('AUTH_COOKIE_SECURE') === 'true',
-      sameSite:
-        this.configService.get<string>('AUTH_COOKIE_SECURE') === 'true'
-          ? 'none'
-          : 'lax',
+    res.clearCookie(SESSION_COOKIE_NAME, {
       path: '/',
     });
     return { success: true };

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -10,9 +10,11 @@ import {
   CycleResultsSummaryDto,
   EvaluateeResultsDto,
 } from './dto/scoring-results.dto';
+import { AuthGuard } from '../auth';
 
 @ApiTags('Scoring and Results')
 @Controller('cycles')
+@UseGuards(AuthGuard)
 export class ScoringController {
   constructor(private readonly scoringService: ScoringService) {}
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
 import {
   Injectable,
   CanActivate,
@@ -6,14 +5,17 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { AppRole } from '@prisma/client';
-import { CurrentUserPayload } from '../decorators/current-user.decorator';
+import {
+  CurrentUserPayload,
+  AuthenticatedRequest,
+} from '../interfaces/auth.interfaces';
 
 @Injectable()
 export class EvaluateeAccessGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context
       .switchToHttp()
-      .getRequest<{ user?: CurrentUserPayload; params: any }>();
+      .getRequest<AuthenticatedRequest & { params: Record<string, string> }>();
     const user: CurrentUserPayload | undefined = request.user;
 
     if (!user) {

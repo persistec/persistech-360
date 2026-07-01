@@ -27,6 +27,7 @@ import { UpdateDepartmentDto } from './dto/update-department.dto';
 
 @ApiTags('Departments')
 @Controller('departments')
+@UseGuards(AuthGuard)
 export class DepartmentsController {
   constructor(private readonly departmentsService: DepartmentsService) {}
 
@@ -46,7 +47,7 @@ export class DepartmentsController {
   }
 
   @Post()
-  @UseGuards(AuthGuard, AppRoleGuard)
+  @UseGuards(AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
   @ApiOperation({ summary: 'Create a department' })
   @ApiCreatedResponse({ type: DepartmentResponseDto })
@@ -57,7 +58,7 @@ export class DepartmentsController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard, AppRoleGuard)
+  @UseGuards(AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
   @ApiOperation({ summary: 'Update a department' })
   @ApiOkResponse({ type: DepartmentResponseDto })
@@ -72,7 +73,7 @@ export class DepartmentsController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard, AppRoleGuard)
+  @UseGuards(AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
   @ApiOperation({ summary: 'Delete a department' })
   @ApiOkResponse({ type: DepartmentResponseDto })
