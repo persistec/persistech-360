@@ -3,9 +3,12 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(cookieParser());
 
   const port = Number(process.env.PORT ?? 4000);
 
@@ -79,6 +82,7 @@ async function bootstrap() {
     .setTitle('Persistech 360 API')
     .setDescription('API do sistema de avaliação 360º Persistech 360')
     .setVersion('1.0')
+    .addCookieAuth('PERSISTECH360_SESSION')
     .addBearerAuth()
     .build();
 

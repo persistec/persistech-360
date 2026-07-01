@@ -79,17 +79,13 @@ const getHeaders = () => {
     Accept: 'application/json',
   };
 
-  const userId = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
-  if (userId) {
-    headers['x-user-id'] = userId;
-  }
-
   return headers;
 };
 
 const axiosInstance = axios.create({
   baseURL: getBaseUrl(),
   timeout: 15000,
+  withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use((config) => {

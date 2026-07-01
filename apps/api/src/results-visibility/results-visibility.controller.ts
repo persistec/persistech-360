@@ -1,11 +1,5 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
-  ApiHeader,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { ResultsVisibilityService } from './results-visibility.service';
 import {
   AdminResultViewDto,
@@ -29,11 +23,6 @@ export class ResultsVisibilityController {
   @Get('admin')
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({
-    name: 'x-user-id',
-    description: 'Temporary authentication header containing User UUID',
-    required: true,
-  })
   @ApiOperation({
     summary: 'Get admin result view',
     description: 'Returns a detailed scoring projection. Requires ADMIN role.',
@@ -57,11 +46,6 @@ export class ResultsVisibilityController {
 
   @Get('employee')
   @UseGuards(AuthGuard, EvaluateeAccessGuard)
-  @ApiHeader({
-    name: 'x-user-id',
-    description: 'Temporary authentication header containing User UUID',
-    required: true,
-  })
   @ApiOperation({
     summary: 'Get evaluated employee result view',
     description:

@@ -6,7 +6,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
-import { AppRole, User } from '@prisma/client';
+import { AppRole } from '@prisma/client';
+import { CurrentUserPayload } from '../interfaces/auth.interfaces';
 
 @Injectable()
 export class AppRoleGuard implements CanActivate {
@@ -22,13 +23,15 @@ export class AppRoleGuard implements CanActivate {
       return true;
     }
 
-    const { user } = context.switchToHttp().getRequest<{ user: User }>();
+    const { user } = context
+      .switchToHttp()
+      .getRequest<{ user: CurrentUserPayload }>();
 
     if (!user) {
       throw new ForbiddenException('User is not authenticated');
     }
 
-    if (!requiredRoles.includes(user.appRole)) {
+    if (!requiredRoles.includes(user.role)) {
       throw new ForbiddenException(
         `Require one of roles: ${requiredRoles.join(', ')}`,
       );

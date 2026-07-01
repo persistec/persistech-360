@@ -1,5 +1,5 @@
-import { EvaluateeAccessGuard } from './evaluatee-access.guard';
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
+import { EvaluateeAccessGuard } from './evaluatee-access.guard';
 import { AppRole } from '@prisma/client';
 
 describe('EvaluateeAccessGuard', () => {
@@ -9,10 +9,10 @@ describe('EvaluateeAccessGuard', () => {
     guard = new EvaluateeAccessGuard();
   });
 
-  it('should throw if user is not authenticated', () => {
+  it('should throw if user is missing', () => {
     const mockContext = {
       switchToHttp: () => ({
-        getRequest: () => ({ user: null }),
+        getRequest: () => ({ params: {} }),
       }),
     } as unknown as ExecutionContext;
 
@@ -22,18 +22,21 @@ describe('EvaluateeAccessGuard', () => {
   it('should return true if user is ADMIN', () => {
     const mockContext = {
       switchToHttp: () => ({
-        getRequest: () => ({ user: { appRole: AppRole.ADMIN } }),
+        getRequest: () => ({
+          user: { role: AppRole.ADMIN },
+          params: {},
+        }),
       }),
     } as unknown as ExecutionContext;
 
     expect(guard.canActivate(mockContext)).toBe(true);
   });
 
-  it('should throw if evaluateeId param is missing', () => {
+  it('should throw if evaluateeId param is missing for EMPLOYEE', () => {
     const mockContext = {
       switchToHttp: () => ({
         getRequest: () => ({
-          user: { appRole: AppRole.EMPLOYEE },
+          user: { role: AppRole.EMPLOYEE, id: 'user-id' },
           params: {},
         }),
       }),
@@ -42,12 +45,12 @@ describe('EvaluateeAccessGuard', () => {
     expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
   });
 
-  it('should throw if employee tries to access another evaluatee', () => {
+  it('should throw if EMPLOYEE evaluateeId does not match user id', () => {
     const mockContext = {
       switchToHttp: () => ({
         getRequest: () => ({
-          user: { id: 'user-1', appRole: AppRole.EMPLOYEE },
-          params: { evaluateeId: 'user-2' },
+          user: { role: AppRole.EMPLOYEE, id: 'user-id' },
+          params: { evaluateeId: 'other-id' },
         }),
       }),
     } as unknown as ExecutionContext;
@@ -55,12 +58,12 @@ describe('EvaluateeAccessGuard', () => {
     expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
   });
 
-  it('should return true if employee accesses their own evaluatee endpoint', () => {
+  it('should return true if EMPLOYEE evaluateeId matches user id', () => {
     const mockContext = {
       switchToHttp: () => ({
         getRequest: () => ({
-          user: { id: 'user-1', appRole: AppRole.EMPLOYEE },
-          params: { evaluateeId: 'user-1' },
+          user: { role: AppRole.EMPLOYEE, id: 'user-id' },
+          params: { evaluateeId: 'user-id' },
         }),
       }),
     } as unknown as ExecutionContext;

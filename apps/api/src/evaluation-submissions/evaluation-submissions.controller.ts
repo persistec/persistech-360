@@ -7,6 +7,7 @@ import {
   Param,
   Put,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { EvaluationSubmissionsService } from './evaluation-submissions.service';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
@@ -14,9 +15,11 @@ import { UpsertAnswersDto } from './dto/upsert-answers.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SubmissionResponseDto } from './dto/submission-response.dto';
 import { EvaluationAnswerResponseDto } from './dto/evaluation-answer-response.dto';
+import { AuthGuard } from '../auth';
 
 @ApiTags('Evaluation Submissions')
 @Controller()
+@UseGuards(AuthGuard)
 export class EvaluationSubmissionsController {
   constructor(private readonly service: EvaluationSubmissionsService) {}
 

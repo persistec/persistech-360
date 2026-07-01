@@ -17,7 +17,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiHeader,
 } from '@nestjs/swagger';
 import { AppRole } from '@prisma/client';
 import { AuthGuard, AppRoleGuard, RequireAppRole } from '../auth';
@@ -51,7 +50,6 @@ export class HierarchyLevelsController {
   @Post()
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Create a hierarchy level' })
   @ApiCreatedResponse({ type: HierarchyLevelResponseDto })
   @ApiConflictResponse({ description: 'Name or rank already exists' })
@@ -62,7 +60,6 @@ export class HierarchyLevelsController {
   @Patch(':id')
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Update a hierarchy level' })
   @ApiOkResponse({ type: HierarchyLevelResponseDto })
   @ApiConflictResponse({ description: 'Name or rank already exists' })
@@ -77,7 +74,6 @@ export class HierarchyLevelsController {
   @Delete(':id')
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiHeader({ name: 'x-user-id', required: true })
   @ApiOperation({ summary: 'Delete a hierarchy level' })
   @ApiOkResponse({ type: HierarchyLevelResponseDto })
   @ApiBadRequestResponse({
