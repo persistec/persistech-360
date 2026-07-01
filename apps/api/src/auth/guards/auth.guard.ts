@@ -12,10 +12,13 @@ export class AuthGuard extends PassportAuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest<TUser = CurrentUserPayload>(err: any, user: any): TUser {
+  handleRequest<TUser = CurrentUserPayload>(
+    err: Error | null,
+    user: CurrentUserPayload | false | null,
+  ): TUser {
     if (err || !user) {
       throw err || new UnauthorizedException('Sessão inválida ou ausente');
     }
-    return user;
+    return user as unknown as TUser;
   }
 }

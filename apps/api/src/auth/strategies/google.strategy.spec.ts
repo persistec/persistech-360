@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { GoogleStrategy } from './google.strategy';
 import { ConfigService } from '@nestjs/config';
@@ -36,7 +36,7 @@ describe('GoogleStrategy', () => {
   });
 
   it('should throw UnauthorizedException if email is missing', async () => {
-    const profile = { id: '123', emails: [] };
+    const profile = { id: '123', emails: [] } as any;
     const done = jest.fn();
 
     await strategy.validate('token', 'refresh', profile, done);
@@ -44,7 +44,10 @@ describe('GoogleStrategy', () => {
   });
 
   it('should throw ForbiddenException if user is not in database', async () => {
-    const profile = { id: '123', emails: [{ value: 'test@example.com' }] };
+    const profile = {
+      id: '123',
+      emails: [{ value: 'test@example.com' }],
+    } as any;
     const done = jest.fn();
     jest.spyOn(prismaService.user, 'findFirst').mockResolvedValue(null);
 
@@ -53,7 +56,10 @@ describe('GoogleStrategy', () => {
   });
 
   it('should throw ForbiddenException if user is INACTIVE', async () => {
-    const profile = { id: '123', emails: [{ value: 'test@example.com' }] };
+    const profile = {
+      id: '123',
+      emails: [{ value: 'test@example.com' }],
+    } as any;
     const done = jest.fn();
     jest
       .spyOn(prismaService.user, 'findFirst')
@@ -63,21 +69,69 @@ describe('GoogleStrategy', () => {
     expect(done).toHaveBeenCalledWith(expect.any(ForbiddenException), false);
   });
 
-  it('should return payload if user is ACTIVE and valid', async () => {
-    const profile = { id: '123', emails: [{ value: 'test@example.com' }] };
+  it('should update googleSub if it is empty and user is ACTIVE (progressive linking)', async () => {
+    const profile = {
+      id: '123',
+      emails: [{ value: 'test@example.com' }],
+    } as any;
     const done = jest.fn();
     const mockUser = {
       id: 'uuid',
       workspaceEmail: 'test@example.com',
       appRole: 'ADMIN',
       status: 'ACTIVE',
+      googleSub: null, // empty
+    };
+
+    const mockUpdatedUser = {
+      ...mockUser,
       googleSub: '123',
     };
+
     jest
       .spyOn(prismaService.user, 'findFirst')
       .mockResolvedValue(mockUser as any);
+    const updateSpy = jest
+      .spyOn(prismaService.user, 'update')
+      .mockResolvedValue(mockUpdatedUser as any);
 
     await strategy.validate('token', 'refresh', profile, done);
+
+    expect(updateSpy).toHaveBeenCalledWith({
+      where: { id: 'uuid' },
+      data: { googleSub: '123' },
+    });
+
+    expect(done).toHaveBeenCalledWith(null, {
+      id: 'uuid',
+      email: 'test@example.com',
+      role: 'ADMIN',
+    });
+  });
+
+  it('should not update googleSub if it is already present', async () => {
+    const profile = {
+      id: '123',
+      emails: [{ value: 'test@example.com' }],
+    } as any;
+    const done = jest.fn();
+    const mockUser = {
+      id: 'uuid',
+      workspaceEmail: 'test@example.com',
+      appRole: 'ADMIN',
+      status: 'ACTIVE',
+      googleSub: '123', // already present
+    };
+
+    jest
+      .spyOn(prismaService.user, 'findFirst')
+      .mockResolvedValue(mockUser as any);
+    const updateSpy = jest.spyOn(prismaService.user, 'update');
+
+    await strategy.validate('token', 'refresh', profile, done);
+
+    expect(updateSpy).not.toHaveBeenCalled();
+
     expect(done).toHaveBeenCalledWith(null, {
       id: 'uuid',
       email: 'test@example.com',

@@ -26,6 +26,14 @@ import {
 
 const SESSION_COOKIE_NAME = 'PERSISTECH360_SESSION';
 
+function getRequiredConfig(configService: ConfigService, key: string): string {
+  const value = configService.get<string>(key);
+  if (!value) {
+    throw new Error(`Missing required configuration: ${key}`);
+  }
+  return value;
+}
+
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -33,6 +41,23 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {}
+
+  private getCookieOptions() {
+    const isProduction =
+      this.configService.get<string>('NODE_ENV') === 'production';
+    const isSecure =
+      this.configService.get<string>('AUTH_COOKIE_SECURE') === 'true' ||
+      isProduction;
+    const cookieDomain = this.configService.get<string>('AUTH_COOKIE_DOMAIN');
+
+    return {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: 'lax' as const,
+      path: '/',
+      ...(cookieDomain ? { domain: cookieDomain } : {}),
+    };
+  }
 
   @Get('google')
   @UseGuards(GoogleOAuthGuard)
@@ -51,23 +76,25 @@ export class AuthController {
     }
 
     const accessToken = this.authService.generateJwt(user);
-
-    const isProduction =
-      this.configService.get<string>('NODE_ENV') === 'production';
-    const isSecure =
-      this.configService.get<string>('AUTH_COOKIE_SECURE') === 'true' ||
-      isProduction;
+    const options = this.getCookieOptions();
 
     res.cookie(SESSION_COOKIE_NAME, accessToken, {
-      httpOnly: true,
-      secure: isSecure,
-      sameSite: 'lax',
-      path: '/',
+      ...options,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    const redirectUrl =
-      this.configService.get<string>('WEB_APP_URL') || 'http://localhost:3000';
+    const isProduction =
+      this.configService.get<string>('NODE_ENV') === 'production';
+
+    let redirectUrl: string;
+    if (isProduction) {
+      redirectUrl = getRequiredConfig(this.configService, 'WEB_APP_URL');
+    } else {
+      redirectUrl =
+        this.configService.get<string>('WEB_APP_URL') ||
+        'http://localhost:3000';
+    }
+
     return res.redirect(redirectUrl);
   }
 
@@ -85,9 +112,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Clear the authentication cookie' })
   @ApiResponse({ status: 200, description: 'Logged out successfully.' })
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie(SESSION_COOKIE_NAME, {
-      path: '/',
-    });
+    const options = this.getCookieOptions();
+    res.clearCookie(SESSION_COOKIE_NAME, options);
     return { success: true };
   }
 }
