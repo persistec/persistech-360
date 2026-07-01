@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   BadRequestException,
   ConflictException,
@@ -24,6 +25,8 @@ describe('DepartmentsService', () => {
     id: 'department-id',
     name: 'Engineering',
     parentDepartmentId: null,
+    archivedAt: null,
+    archivedBy: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -90,8 +93,52 @@ describe('DepartmentsService', () => {
     prisma.role.count.mockResolvedValue(0);
     prisma.department.count.mockResolvedValue(1);
 
-    await expect(service.remove('department-id')).rejects.toBeInstanceOf(
-      BadRequestException,
+    await expect(
+      service.remove('department-id', 'admin-id'),
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('archives a department instead of hard deleting it', async () => {
+    prisma.department.findUnique.mockResolvedValue(department);
+    prisma.user.count.mockResolvedValue(0);
+    prisma.role.count.mockResolvedValue(0);
+    prisma.department.count.mockResolvedValue(0);
+    prisma.department.update.mockResolvedValue({
+      ...department,
+      archivedAt: new Date(),
+      archivedBy: 'admin-id',
+    });
+
+    await service.remove('department-id', 'admin-id');
+
+    expect(prisma.department.update).toHaveBeenCalledWith({
+      where: { id: 'department-id' },
+      data: expect.objectContaining({
+        archivedBy: 'admin-id',
+        archivedAt: expect.any(Date),
+      }),
+    });
+
+    expect(prisma.department.delete).not.toHaveBeenCalled();
+  });
+
+  it('findAll filters out archived departments', async () => {
+    prisma.department.findMany.mockResolvedValue([department]);
+    await service.findAll();
+    expect(prisma.department.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { archivedAt: null },
+      }),
+    );
+  });
+
+  it('throws not found when findOne is called on an archived department', async () => {
+    prisma.department.findUnique.mockResolvedValue({
+      ...department,
+      archivedAt: new Date(),
+    });
+    await expect(service.findOne('department-id')).rejects.toBeInstanceOf(
+      NotFoundException,
     );
   });
 });

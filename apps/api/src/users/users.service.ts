@@ -19,6 +19,7 @@ const publicUserSelect = {
   hierarchyLevelId: true,
   managerId: true,
   status: true,
+  archivedAt: true,
   createdAt: true,
   updatedAt: true,
 } satisfies Prisma.UserSelect;
@@ -29,6 +30,7 @@ export class UsersService {
 
   findAll() {
     return this.prisma.user.findMany({
+      where: { archivedAt: null },
       orderBy: { name: 'asc' },
       select: publicUserSelect,
     });
@@ -40,7 +42,7 @@ export class UsersService {
       select: publicUserSelect,
     });
 
-    if (!user) {
+    if (!user || user.archivedAt) {
       throw new NotFoundException('User not found.');
     }
 
@@ -99,22 +101,27 @@ export class UsersService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string, currentUserId: string) {
     await this.findOne(id);
 
     const subordinates = await this.prisma.user.count({
-      where: { managerId: id },
+      where: { managerId: id, archivedAt: null },
     });
 
     if (subordinates > 0) {
       throw new BadRequestException(
-        'User cannot be deleted while assigned as manager of other users.',
+        'User cannot be deleted while assigned as manager of other active users.',
       );
     }
 
     try {
-      return await this.prisma.user.delete({
+      return await this.prisma.user.update({
         where: { id },
+        data: {
+          archivedAt: new Date(),
+          archivedBy: currentUserId,
+          status: 'REMOVED',
+        },
         select: publicUserSelect,
       });
     } catch (error) {

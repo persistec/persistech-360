@@ -19,7 +19,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AppRole } from '@prisma/client';
-import { AuthGuard, AppRoleGuard, RequireAppRole } from '../auth';
+import { AuthGuard, AppRoleGuard, RequireAppRole, CurrentUser } from '../auth';
+import type { CurrentUserPayload } from '../auth';
 import { DepartmentsService } from './departments.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { DepartmentResponseDto } from './dto/department-response.dto';
@@ -75,11 +76,14 @@ export class DepartmentsController {
   @Delete(':id')
   @UseGuards(AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiOperation({ summary: 'Delete a department' })
+  @ApiOperation({ summary: 'Archive a department' })
   @ApiOkResponse({ type: DepartmentResponseDto })
   @ApiBadRequestResponse({ description: 'Department still has relations' })
   @ApiNotFoundResponse({ description: 'Department not found' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.departmentsService.remove(id);
+  remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    return this.departmentsService.remove(id, user.id);
   }
 }

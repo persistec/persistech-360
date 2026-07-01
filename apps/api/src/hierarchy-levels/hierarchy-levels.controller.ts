@@ -19,7 +19,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AppRole } from '@prisma/client';
-import { AuthGuard, AppRoleGuard, RequireAppRole } from '../auth';
+import { AuthGuard, AppRoleGuard, RequireAppRole, CurrentUser } from '../auth';
+import type { CurrentUserPayload } from '../auth';
 import { CreateHierarchyLevelDto } from './dto/create-hierarchy-level.dto';
 import { HierarchyLevelResponseDto } from './dto/hierarchy-level-response.dto';
 import { UpdateHierarchyLevelDto } from './dto/update-hierarchy-level.dto';
@@ -74,13 +75,16 @@ export class HierarchyLevelsController {
   @Delete(':id')
   @UseGuards(AuthGuard, AppRoleGuard)
   @RequireAppRole(AppRole.ADMIN)
-  @ApiOperation({ summary: 'Delete a hierarchy level' })
+  @ApiOperation({ summary: 'Archive a hierarchy level' })
   @ApiOkResponse({ type: HierarchyLevelResponseDto })
   @ApiBadRequestResponse({
     description: 'Hierarchy level still has relations',
   })
   @ApiNotFoundResponse({ description: 'Hierarchy level not found' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.hierarchyLevelsService.remove(id);
+  remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: CurrentUserPayload,
+  ) {
+    return this.hierarchyLevelsService.remove(id, user.id);
   }
 }

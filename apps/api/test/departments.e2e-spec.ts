@@ -159,6 +159,12 @@ describe('DepartmentsController (e2e)', () => {
   });
 
   it('/api/v1/departments/:id (DELETE) deletes department', () => {
+    // Override update mock specifically for this test to simulate archive
+    prismaMock.department.update.mockResolvedValueOnce({
+      id: '123e4567-e89b-12d3-a456-426614174000',
+      name: 'Deleted Dept',
+    });
+
     return request(app.getHttpServer())
       .delete('/api/v1/departments/123e4567-e89b-12d3-a456-426614174000')
       .set('x-user-id', 'admin-id')
@@ -169,24 +175,17 @@ describe('DepartmentsController (e2e)', () => {
       });
   });
 
-  it('/api/v1/departments/:id (DELETE) returns controlled error on dependencies (Prisma error conversion)', () => {
-    prismaMock.department.delete.mockRejectedValueOnce(
-      new Prisma.PrismaClientKnownRequestError(
-        'Foreign key constraint failed',
-        {
-          code: 'P2003',
-          clientVersion: '1.0',
-        },
-      ),
-    );
+  it('/api/v1/departments/:id (DELETE) returns controlled error on dependencies', () => {
+    // Simulate finding dependencies (e.g. users) that block deletion
+    prismaMock.user.count.mockResolvedValueOnce(1);
 
     return request(app.getHttpServer())
       .delete('/api/v1/departments/123e4567-e89b-12d3-a456-426614174000')
       .set('x-user-id', 'admin-id')
-      .expect(400) // Expecting the application to map Prisma constraint errors to 400 Bad Request
+      .expect(400) // Expecting 400 Bad Request
       .expect((res) => {
         const body = res.body as { message: string };
-        expect(body.message).toContain('relat');
+        expect(body.message).toContain('Department cannot be deleted while it has active');
       });
   });
 });

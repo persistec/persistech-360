@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   BadRequestException,
   ConflictException,
@@ -23,6 +24,8 @@ describe('HierarchyLevelsService', () => {
     id: 'level-id',
     name: 'Manager',
     rank: 5,
+    archivedAt: null,
+    archivedBy: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -77,8 +80,51 @@ describe('HierarchyLevelsService', () => {
     prisma.user.count.mockResolvedValue(1);
     prisma.role.count.mockResolvedValue(0);
 
-    await expect(service.remove('level-id')).rejects.toBeInstanceOf(
+    await expect(service.remove('level-id', 'admin-id')).rejects.toBeInstanceOf(
       BadRequestException,
+    );
+  });
+
+  it('archives a hierarchy level instead of hard deleting it', async () => {
+    prisma.hierarchyLevel.findUnique.mockResolvedValue(hierarchyLevel);
+    prisma.user.count.mockResolvedValue(0);
+    prisma.role.count.mockResolvedValue(0);
+    prisma.hierarchyLevel.update.mockResolvedValue({
+      ...hierarchyLevel,
+      archivedAt: new Date(),
+      archivedBy: 'admin-id',
+    });
+
+    await service.remove('level-id', 'admin-id');
+
+    expect(prisma.hierarchyLevel.update).toHaveBeenCalledWith({
+      where: { id: 'level-id' },
+      data: expect.objectContaining({
+        archivedBy: 'admin-id',
+        archivedAt: expect.any(Date),
+      }),
+    });
+
+    expect(prisma.hierarchyLevel.delete).not.toHaveBeenCalled();
+  });
+
+  it('findAll filters out archived hierarchy levels', async () => {
+    prisma.hierarchyLevel.findMany.mockResolvedValue([hierarchyLevel]);
+    await service.findAll();
+    expect(prisma.hierarchyLevel.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { archivedAt: null },
+      }),
+    );
+  });
+
+  it('throws not found when findOne is called on an archived hierarchy level', async () => {
+    prisma.hierarchyLevel.findUnique.mockResolvedValue({
+      ...hierarchyLevel,
+      archivedAt: new Date(),
+    });
+    await expect(service.findOne('level-id')).rejects.toBeInstanceOf(
+      NotFoundException,
     );
   });
 });

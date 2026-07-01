@@ -16,6 +16,7 @@ export class HierarchyLevelsService {
 
   findAll() {
     return this.prisma.hierarchyLevel.findMany({
+      where: { archivedAt: null },
       orderBy: { rank: 'asc' },
     });
   }
@@ -25,7 +26,7 @@ export class HierarchyLevelsService {
       where: { id },
     });
 
-    if (!hierarchyLevel) {
+    if (!hierarchyLevel || hierarchyLevel.archivedAt) {
       throw new NotFoundException('Hierarchy level not found.');
     }
 
@@ -64,22 +65,32 @@ export class HierarchyLevelsService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string, currentUserId: string) {
     await this.findOne(id);
 
     const [users, roles] = await Promise.all([
-      this.prisma.user.count({ where: { hierarchyLevelId: id } }),
-      this.prisma.role.count({ where: { hierarchyLevelId: id } }),
+      this.prisma.user.count({
+        where: { hierarchyLevelId: id, archivedAt: null },
+      }),
+      this.prisma.role.count({
+        where: { hierarchyLevelId: id, archivedAt: null },
+      }),
     ]);
 
     if (users > 0 || roles > 0) {
       throw new BadRequestException(
-        'Hierarchy level cannot be deleted while it has users or roles.',
+        'Hierarchy level cannot be deleted while it has active users or roles.',
       );
     }
 
     try {
-      return await this.prisma.hierarchyLevel.delete({ where: { id } });
+      return await this.prisma.hierarchyLevel.update({
+        where: { id },
+        data: {
+          archivedAt: new Date(),
+          archivedBy: currentUserId,
+        },
+      });
     } catch (error) {
       this.handlePrismaError(error);
     }
